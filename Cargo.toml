@@ -1,5 +1,5 @@
 [package]
-name = "emo-template" #改这个
+name = "nvd-rs" #改这个
 version = "0.1.0"
 edition = "2021"
 authors = ["Kali-Team <root@kali-team.cn>"]
@@ -7,7 +7,7 @@ include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["."]
+members = ["cpe"]
 
 #https://github.com/johnthagen/min-sized-rust
 [profile.release]
@@ -30,3 +30,4 @@ opt-level = 3
 
 
 [dependencies]
+cpe = { path = "cpe" }
