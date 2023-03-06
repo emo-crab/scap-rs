@@ -1,0 +1,305 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns:meta="http://scap.nist.gov/schema/cpe-dictionary-metadata/0.2"
+    xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.1"
+    targetNamespace="http://scap.nist.gov/schema/cpe-dictionary-metadata/0.2"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    version="0.2">
+    <!-- ================================================== -->
+    <!-- =====  Schema imports  -->
+    <!-- ================================================== -->
+    <xsd:import namespace="http://scap.nist.gov/schema/scap-core/0.1" schemaLocation="../../nvd/scap-core_0.1.xsd"/>
+    <!-- ================================================== -->
+    <!-- =====  Element Declarations  -->
+    <!-- ================================================== -->
+    <xsd:element name="list-metadata">
+        <xsd:annotation>
+            <xsd:documentation>Additional metadata information that applies to a
+                cpe-list</xsd:documentation>
+        </xsd:annotation>
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="generation-criteria" type="meta:generationCriteriaType">
+                    <xsd:annotation>
+                        <xsd:documentation>A declaration of the dynamic criteria
+                            that was used to generate the CPE dictionary</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="item-metadata">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="status-history" type="meta:statusHistoryType" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>A date qualified list of status changes that a
+                            CPE has gone through.</xsd:documentation>
+                    </xsd:annotation>
+                </xsd:element>
+            </xsd:sequence>
+            <xsd:attribute name="nvd-id" type="xsd:long" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>The NVD specific unique identifier for a CPE.
+                        This is provided as a long-term identifier that can be used
+                        to map different versions of CPE syntax to a CPE with the
+                        same meaning.  This is not a replacement of a CPEName.  Use
+                        of a CPEName is still the standard ID naming scheme for CPE
+                        2.x.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="deprecated-by-nvd-id" type="xsd:long" use="optional" />
+            <xsd:attribute name="status" type="meta:cpeStatusEnumType" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>This is the internal NVD status of a CPE.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+            <xsd:attribute name="modification-date" type="xsd:dateTime" use="required">
+                <xsd:annotation>
+                    <xsd:documentation>This date/time represents the last time that
+                        any CPE property has been modified.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:attribute>
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="component-tree">
+        <xsd:complexType>
+            <xsd:sequence>
+                <xsd:element name="vendor" type="meta:vendorComponentType" maxOccurs="unbounded">
+                    <xsd:key name="productKey">
+                        <xsd:selector xpath="meta:product"/>
+                        <xsd:field xpath="@value"/>
+                        <xsd:field xpath="@part"/>
+                    </xsd:key>
+                    <xsd:unique name="vendorTitleLangUnique">
+                        <xsd:selector xpath="meta:vendor/meta:title"/>
+                        <xsd:field xpath="@xml:lang"/>
+                    </xsd:unique>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+        <xsd:unique name="vendorValueUnique">
+            <xsd:selector xpath="meta:vendor"/>
+            <xsd:field xpath="@value"/>
+        </xsd:unique>
+    </xsd:element>
+    <!-- ================================================== -->
+    <!-- =====  Simple Type Definitions  -->
+    <!-- ================================================== -->
+    <xsd:simpleType name="cpeStatusEnumType">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="NEW">
+                <xsd:annotation>
+                    <xsd:documentation>A newly created CPE that has not undergone
+                        moderation.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="DRAFT">
+                <xsd:annotation>
+                    <xsd:documentation>A CPE that has been reviewed by one or more
+                        moderators, but that has not completed the review process.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="FINAL">
+                <xsd:annotation>
+                    <xsd:documentation>A CPE that has completed the moderation
+                        process.  CPEs with this status are the only CPEs included
+                        in the official CPE dictionary.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="RETIRED">
+                <xsd:annotation>
+                    <xsd:documentation>The state of a CPE that was once in the
+                        "final" state, but has been removed from the offical CPE
+                        dictionary.  This is typical if the CPE is nolonger in
+                        general use.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+            <xsd:enumeration value="REJECTED">
+                <xsd:annotation>
+                    <xsd:documentation>The state of a CPE that indicates that it
+                        was rejected during the moderation process.  CPEs with
+                        this state will never be posted to the offical CPE
+                        dictionary and should not be used.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:enumeration>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- ================================================== -->
+    <!-- =====  Complex Type Definitions  -->
+    <!-- ================================================== -->
+    <xsd:complexType name="statusHistoryType">
+        <xsd:annotation>
+            <xsd:documentation>A list of date qualified CPE status transitions.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="status" maxOccurs="unbounded">
+                <xsd:complexType>
+                    <xsd:simpleContent>
+                        <xsd:extension base="meta:cpeStatusEnumType">
+                            <xsd:attribute name="date" type="xsd:dateTime" use="required"/>
+                        </xsd:extension>
+                    </xsd:simpleContent>
+                </xsd:complexType>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="componentType">
+        <xsd:annotation>
+            <xsd:documentation>The prototype of a single CPE component.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="title" type="scap-core:textType">
+                <xsd:annotation>
+                    <xsd:documentation>Human readable format of CPE component name.  Capitalization, XML allowed punctuation, spaces allowed.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="reference" type="scap-core:referenceType">
+                <xsd:annotation>
+                    <xsd:documentation>May contain text and/or point to a URL that is the main page for information about a particular CPE component.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+        <xsd:attribute name="value" type="xsd:token" use="required">
+            <xsd:annotation>
+                <xsd:documentation>The component's text value.</xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+    <xsd:complexType name="vendorComponentType">
+        <xsd:complexContent>
+            <xsd:extension base="meta:componentType">
+                <xsd:sequence>
+                    <xsd:element name="product" type="meta:productComponentType" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:unique name="productTitleLangUnique">
+                            <xsd:selector xpath="meta:title"/>
+                            <xsd:field xpath="@xml:lang"/>
+                        </xsd:unique>
+                        <xsd:unique name="versionValueUnique">
+                            <xsd:selector xpath="meta:version"/>
+                            <xsd:field xpath="@value"/>
+                        </xsd:unique>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="productComponentType">
+        <xsd:complexContent>
+            <xsd:extension base="meta:componentType">
+                <xsd:sequence>
+                    <xsd:element name="version" type="meta:versionComponentType" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:unique name="versionTitleLangUnique">
+                            <xsd:selector xpath="meta:title"/>
+                            <xsd:field xpath="@xml:lang"/>
+                        </xsd:unique>
+                        <xsd:unique name="updateValueUnique">
+                            <xsd:selector xpath="meta:update"/>
+                            <xsd:field xpath="@value"/>
+                        </xsd:unique>
+                    </xsd:element>
+                </xsd:sequence>
+                <xsd:attribute name="part" type="scap-core:cpePartComponentPatternType" use="required"/>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="versionComponentType">
+        <xsd:complexContent>
+            <xsd:extension base="meta:componentType">
+                <xsd:sequence>
+                    <xsd:element name="update" type="meta:updateComponentType" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:unique name="updateTitleLangUnique">
+                            <xsd:selector xpath="meta:title"/>
+                            <xsd:field xpath="@xml:lang"/>
+                        </xsd:unique>
+                        <xsd:unique name="editionValueUnique">
+                            <xsd:selector xpath="meta:edition"/>
+                            <xsd:field xpath="@value"/>
+                        </xsd:unique>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="updateComponentType">
+        <xsd:complexContent>
+            <xsd:extension base="meta:componentType">
+                <xsd:sequence>
+                    <xsd:element name="edition" type="meta:editionComponentType" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:unique name="editionTitleLangUnique">
+                            <xsd:selector xpath="meta:title"/>
+                            <xsd:field xpath="@xml:lang"/>
+                        </xsd:unique>
+                        <xsd:unique name="languageValueUnique">
+                            <xsd:selector xpath="meta:language"/>
+                            <xsd:field xpath="@value"/>
+                        </xsd:unique>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:complexType name="editionComponentType">
+        <xsd:complexContent>
+            <xsd:extension base="meta:componentType">
+                <xsd:sequence>
+                    <xsd:element name="language" type="meta:componentType" minOccurs="0" maxOccurs="unbounded">
+                        <xsd:unique name="languageTitleLangUnique">
+                            <xsd:selector xpath="meta:title"/>
+                            <xsd:field xpath="@xml:lang"/>
+                        </xsd:unique>
+                    </xsd:element>
+                </xsd:sequence>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+    
+    <xsd:complexType name="generationCriteriaType">
+        <xsd:annotation>
+            <xsd:documentation>A listing of dynamic dictionary generation criteria.</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="include-cpe-with-status">
+                <xsd:annotation>
+                    <xsd:documentation>Constrains the listed to CPEs to those with
+                        a current status that is included in the list.</xsd:documentation>
+                </xsd:annotation>
+                <xsd:complexType>
+                    <xsd:sequence>
+                        <xsd:element name="cpe-status" type="meta:cpeStatusEnumType" maxOccurs="unbounded"/>
+                    </xsd:sequence>
+                </xsd:complexType>
+            </xsd:element>
+            <xsd:element name="include-deprecated-cpe" type="xsd:boolean">
+                <xsd:annotation>
+                    <xsd:documentation>Indicates if deprecated CPEs are included.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="include-cpe-modified-since" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>Indicates that CPEs included are limited to
+                        those modified on or after the given date.  Uses
+                        cpe-item/item-metadata/@modification-date to determine
+                        inclusion.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="include-products" type="scap-core:searchableCpeReferencesType" minOccurs="0" maxOccurs="1"/>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- ================================================== -->
+    <!-- =====  Change History  -->
+    <!-- ================================================== -->
+    <!--
+        v0.1 - Initial working version
+        v0.2 - Initial public draft
+    -->
+</xsd:schema>

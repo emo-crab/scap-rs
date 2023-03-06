@@ -11,6 +11,7 @@ pub use part::CpePart;
 pub use component::Component;
 
 // view-source:https://csrc.nist.gov/schema/cpe/2.3/cpe-dictionary_2.3.xsd
+// https://scap.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
 // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CpeAttributes {
@@ -48,17 +49,17 @@ impl FromStr for CpeAttributes {
         let part = if let Some(part) = components.next() {
             CpePart::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid part string".to_string());
         };
         let vendor = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid vendor string".to_string());
         };
         let product = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid product string".to_string());
         };
         let version = if let Some(part) = components.next() {
             Component::try_from(part)?
@@ -68,37 +69,37 @@ impl FromStr for CpeAttributes {
         let update = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid update string".to_string());
         };
         let edition = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid edition string".to_string());
         };
         let language = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid language string".to_string());
         };
         let sw_edition = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid sw_edition string".to_string());
         };
         let target_sw = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid target_sw string".to_string());
         };
         let target_hw = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid target_hw string".to_string());
         };
         let other = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err("invalid other string".to_string());
         };
 
         Ok(Self {
