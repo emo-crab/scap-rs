@@ -1,5 +1,7 @@
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt, str::FromStr};
+use crate::error::CpeError;
+use crate::parse_uri_attribute;
 
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Component {
@@ -9,9 +11,16 @@ pub enum Component {
 }
 
 impl TryFrom<&str> for Component {
-    type Error = String;
+    type Error = CpeError;
     fn try_from(val: &str) -> Result<Self, Self::Error> {
         Self::from_str(val)
+    }
+}
+
+impl TryFrom<String> for Component {
+    type Error = CpeError;
+    fn try_from(val: String) -> Result<Self, Self::Error> {
+        Self::from_str(val.as_str())
     }
 }
 
@@ -22,20 +31,19 @@ impl Default for Component {
 }
 
 impl FromStr for Component {
-    type Err = String;
+    type Err = CpeError;
 
     fn from_str(val: &str) -> Result<Self, Self::Err> {
         Ok(match val {
             "*" => Component::Any,
             "-" => Component::NA,
-            _ => Component::Value(val.to_owned()),
+            _ => Component::Value(parse_uri_attribute(val).unwrap_or(val.to_owned())),
         })
     }
 }
 
 impl Component {
-    #[allow(dead_code)]
-    fn matches(&self, val: &str) -> bool {
+    pub fn matches(&self, val: &str) -> bool {
         match self {
             Component::Any => true,
             Component::NA => false,

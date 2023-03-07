@@ -6,9 +6,12 @@ use std::{convert::TryFrom, fmt, str::FromStr};
 
 pub mod part;
 pub mod component;
+pub mod dictionary;
+pub mod error;
 
 pub use part::CpePart;
 pub use component::Component;
+use crate::error::{CpeError, Result};
 
 // view-source:https://csrc.nist.gov/schema/cpe/2.3/cpe-dictionary_2.3.xsd
 // https://scap.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
@@ -28,20 +31,11 @@ pub struct CpeAttributes {
     other: Component,
 }
 
-impl TryFrom<&str> for CpeAttributes {
-    type Error = String;
-    fn try_from(val: &str) -> Result<Self, Self::Error> {
-        CpeAttributes::from_str(val)
-    }
-}
-
-impl FromStr for CpeAttributes {
-    type Err = String;
-
-    fn from_str(uri: &str) -> Result<Self, Self::Err> {
+impl CpeAttributes {
+    pub fn from_uri(uri: &str) -> Result<Self> {
         let uri = match uri.strip_prefix("cpe:2.3:") {
             Some(u) => u,
-            None => return Err("invalid prefix".to_string()),
+            None => return Err(CpeError::InvalidPrefix { value: uri.to_string() }),
         };
 
         let mut components = uri.split(':');
@@ -49,57 +43,57 @@ impl FromStr for CpeAttributes {
         let part = if let Some(part) = components.next() {
             CpePart::try_from(part)?
         } else {
-            return Err("invalid part string".to_string());
+            return Err(CpeError::InvalidPart { value: uri.to_string() });
         };
         let vendor = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid vendor string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let product = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid product string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let version = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid version string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let update = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid update string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let edition = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid edition string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let language = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid language string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let sw_edition = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid sw_edition string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let target_sw = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid target_sw string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let target_hw = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid target_hw string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
         let other = if let Some(part) = components.next() {
             Component::try_from(part)?
         } else {
-            return Err("invalid other string".to_string());
+            return Err(CpeError::InvalidUri { value: uri.to_string() });
         };
 
         Ok(Self {
@@ -115,6 +109,58 @@ impl FromStr for CpeAttributes {
             target_hw,
             other,
         })
+    }
+    pub fn from_wfn(name: &str) -> Result<Self> {
+        let prefix = match name.strip_prefix("wfn:[") {
+            Some(u) => u,
+            None => return Err(CpeError::InvalidPrefix { value: name.to_string() }),
+        };
+        let components = match prefix.strip_suffix("]") {
+            Some(u) => u,
+            None => return Err(CpeError::InvalidPrefix { value: name.to_string() }),
+        };
+        println!("{}", components);
+        println!("{}", name);
+        let mut att = CpeAttributes {
+            part: CpePart::default(),
+            vendor: Default::default(),
+            product: Default::default(),
+            version: Default::default(),
+            update: Default::default(),
+            edition: Default::default(),
+            language: Default::default(),
+            sw_edition: Default::default(),
+            target_sw: Default::default(),
+            target_hw: Default::default(),
+            other: Default::default(),
+        };
+        for component in components.split(',') {
+            match component.split_once('=') {
+                None => { return Err(CpeError::InvalidPart { value: component.to_string() }); }
+                Some((k, v)) => {
+                    match k {
+                        "part" => { att.part = CpePart::try_from(v)? }
+                        _ => {}
+                    }
+                }
+            }
+        }
+        println!("{:?}", components);
+        Ok(att)
+    }
+}
+
+impl TryFrom<&str> for CpeAttributes {
+    type Error = CpeError;
+    fn try_from(val: &str) -> Result<Self> {
+        CpeAttributes::from_str(val)
+    }
+}
+
+impl FromStr for CpeAttributes {
+    type Err = CpeError;
+    fn from_str(uri: &str) -> Result<Self> {
+        CpeAttributes::from_uri(uri)
     }
 }
 
@@ -136,20 +182,48 @@ impl fmt::Display for CpeAttributes {
 
         write!(
             f,
-            "cpe:2.3:{:#}:{}:{}:{}:{}:{}:{}:{}:{}:{}:{}",
-            part,
-            vendor,
-            product,
-            version,
-            update,
-            edition,
-            language,
-            sw_edition,
-            target_sw,
-            target_hw,
-            other
-        )?;
-
-        Ok(())
+            "cpe:2.3:{part:#}:{vendor}:{product}:{version}:{update}:{edition}:{language}:{sw_edition}:{target_sw}:{target_hw}:{other}",
+        )
     }
+}
+
+fn strip_slashes(s: &str) -> String {
+    let mut out = String::new();
+    let mut chats = s.chars();
+    while let Some(c) = chats.next() {
+        if c == '\\' {
+            if let Some(cc) = chats.next() {
+                match cc {
+                    '\\' => { continue; }
+                    _ => {
+                        out.push(cc);
+                    }
+                }
+            }
+        } else {
+            out.push(c);
+        }
+    }
+    out
+}
+
+fn parse_uri_attribute(value: &str) -> Result<String> {
+    let value = if value.contains("%01") || value.contains("%02") {
+        let value = value.replace("%01", "?").replace("%02", "*");
+        percent_encoding::percent_decode_str(&value)
+            .decode_utf8()
+            .map_err(|source| CpeError::Utf8Error {
+                source,
+                value: value.to_owned(),
+            })?.to_string()
+    } else {
+        percent_encoding::percent_decode_str(&value)
+            .decode_utf8()
+            .map_err(|source| CpeError::Utf8Error {
+                source,
+                value: value.to_owned(),
+            })?.to_string()
+    };
+    let value = strip_slashes(&value);
+    Ok(value)
 }

@@ -7,7 +7,7 @@ include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["cpe"]
+members = ["cpe", "examples/cpe"]
 
 #https://github.com/johnthagen/min-sized-rust
 [profile.release]
