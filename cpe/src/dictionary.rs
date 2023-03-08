@@ -31,17 +31,19 @@ pub struct CpeList {
 //                 to use or not, but this information is not required to be used or understood.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CpeItem {
-    #[serde(rename(serialize = "name", deserialize = "@name"), deserialize_with = "parse_name", )]
+    #[serde(rename(serialize = "name", deserialize = "@name"), deserialize_with = "parse_name")]
     pub name: String,
-    #[serde(default, rename = "@deprecated")]
+    #[serde(default, rename(serialize = "deprecated", deserialize = "@deprecated"), skip_serializing_if = "Option::is_none")]
     pub deprecated: Option<bool>,
-    #[serde(default, rename = "@deprecation_date")]
+    #[serde(default, rename(serialize = "deprecation_date", deserialize = "@deprecation_date"), skip_serializing_if = "Option::is_none")]
     pub deprecation_date: Option<DateTime<Utc>>,
-    #[serde(rename = "cpe23-item", deserialize_with = "uri_to_name")]
+    #[serde(rename(serialize = "cpe23", deserialize = "cpe23-item"))]
     pub cpe23_item: Cpe23Item,
     pub title: Vec<Title>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub notes: Option<Vec<Notes>>,
     pub references: Option<References>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub check: Option<Vec<Check>>,
 }
 
@@ -49,9 +51,9 @@ pub struct CpeItem {
 //                 specific language with an element's string content.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Title {
-    #[serde(rename = "@lang")]
+    #[serde(rename(serialize = "lang", deserialize = "@lang"))]
     pub lang: String,
-    #[serde(rename = "$value")]
+    #[serde(rename(serialize = "value", deserialize = "$value"), deserialize_with = "parse_name", )]
     pub desc: String,
 }
 
@@ -60,9 +62,9 @@ pub struct Title {
 //                 language as defined by their parent.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Notes {
-    #[serde(rename = "@lang")]
+    #[serde(rename(serialize = "lang", deserialize = "@lang"))]
     pub lang: String,
-    #[serde(rename = "$value")]
+    #[serde(rename(serialize = "value", deserialize = "$value"))]
     pub desc: String,
 }
 
@@ -78,7 +80,7 @@ pub struct Check {
     pub system: String,
     #[serde(rename = "href")]
     pub href: Option<String>,
-    #[serde(rename = "$value")]
+    #[serde(rename(serialize = "value", deserialize = "$value"))]
     pub value: String,
 }
 
@@ -94,9 +96,9 @@ pub struct References {
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Reference {
-    #[serde(rename = "@href")]
+    #[serde(rename(serialize = "href", deserialize = "@href"))]
     pub href: String,
-    #[serde(rename = "$value")]
+    #[serde(rename(serialize = "value", deserialize = "$value"))]
     pub desc: String,
 }
 
@@ -107,6 +109,7 @@ pub struct Reference {
 pub struct Cpe23Item {
     #[serde(rename(serialize = "name", deserialize = "@name"), deserialize_with = "uri_to_attribute")]
     pub name: CpeAttributes,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub deprecation: Option<Deprecation>,
 }
 
@@ -141,13 +144,6 @@ pub struct Generator {
     pub timestamp: DateTime<Utc>,
 }
 
-fn uri_to_name<'de, D>(deserializer: D) -> Result<Cpe23Item, D::Error>
-    where
-        D: Deserializer<'de>,
-{
-    Cpe23Item::deserialize(deserializer)
-}
-
 fn parse_name<'de, D>(deserializer: D) -> Result<String, D::Error>
     where
         D: Deserializer<'de>,
@@ -156,7 +152,7 @@ fn parse_name<'de, D>(deserializer: D) -> Result<String, D::Error>
     impl<'de> de::Visitor<'de> for ParseString {
         type Value = String;
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("string or list of strings")
+            formatter.write_str("parse_name")
         }
         fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
             where
@@ -182,11 +178,11 @@ fn uri_to_attribute<'de, D>(deserializer: D) -> Result<CpeAttributes, D::Error>
     where
         D: Deserializer<'de>,
 {
-    struct StringToHashSet(PhantomData<CpeAttributes>);
-    impl<'de> de::Visitor<'de> for StringToHashSet {
+    struct UriToAttribute(PhantomData<CpeAttributes>);
+    impl<'de> de::Visitor<'de> for UriToAttribute {
         type Value = CpeAttributes;
         fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-            formatter.write_str("string or list of strings")
+            formatter.write_str("uri_to_attribute")
         }
         fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
             where
@@ -206,5 +202,5 @@ fn uri_to_attribute<'de, D>(deserializer: D) -> Result<CpeAttributes, D::Error>
             Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))
         }
     }
-    deserializer.deserialize_any(StringToHashSet(PhantomData))
+    deserializer.deserialize_any(UriToAttribute(PhantomData))
 }

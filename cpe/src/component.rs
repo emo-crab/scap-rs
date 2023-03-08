@@ -1,13 +1,37 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{convert::TryFrom, fmt, str::FromStr};
 use crate::error::CpeError;
-use crate::parse_uri_attribute;
 
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Component {
     Any,
     NA,
     Value(String),
+}
+
+impl Serialize for Component {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+        where S: Serializer
+    {
+        serializer.serialize_str(match *self {
+            Component::Any => "*",
+            Component::NA => "-",
+            Component::Value(ref other) => other,
+        })
+    }
+}
+
+impl<'de> Deserialize<'de> for Component {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where D: Deserializer<'de>
+    {
+        let s = String::deserialize(deserializer)?;
+        Ok(match s.as_str() {
+            "*" => Component::Any,
+            "-" => Component::NA,
+            _ => Component::Value(s),
+        })
+    }
 }
 
 impl TryFrom<&str> for Component {
@@ -37,7 +61,7 @@ impl FromStr for Component {
         Ok(match val {
             "*" => Component::Any,
             "-" => Component::NA,
-            _ => Component::Value(parse_uri_attribute(val).unwrap_or(val.to_owned())),
+            _ => Component::Value(val.to_owned()),
         })
     }
 }

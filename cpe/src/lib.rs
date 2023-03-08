@@ -3,6 +3,7 @@
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7696.pdf
 use serde::{Deserialize, Serialize};
 use std::{convert::TryFrom, fmt, str::FromStr};
+use std::collections::HashSet;
 
 pub mod part;
 pub mod component;
@@ -18,17 +19,17 @@ use crate::error::{CpeError, Result};
 // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CpeAttributes {
-    part: CpePart,
-    vendor: Component,
-    product: Component,
-    version: Component,
-    update: Component,
-    edition: Component,
-    language: Component,
-    sw_edition: Component,
-    target_sw: Component,
-    target_hw: Component,
-    other: Component,
+    pub part: CpePart,
+    pub vendor: Component,
+    pub product: Component,
+    pub version: Component,
+    pub update: Component,
+    pub edition: Component,
+    pub language: Component,
+    pub sw_edition: Component,
+    pub target_sw: Component,
+    pub target_hw: Component,
+    pub other: Component,
 }
 
 impl CpeAttributes {
@@ -119,8 +120,6 @@ impl CpeAttributes {
             Some(u) => u,
             None => return Err(CpeError::InvalidPrefix { value: name.to_string() }),
         };
-        println!("{}", components);
-        println!("{}", name);
         let mut att = CpeAttributes {
             part: CpePart::default(),
             vendor: Default::default(),
@@ -134,18 +133,49 @@ impl CpeAttributes {
             target_hw: Default::default(),
             other: Default::default(),
         };
+        let mut verify_set = HashSet::from([
+            "part",
+            "vendor",
+            "product",
+            "version",
+            "update",
+            "edition",
+            "language",
+            "sw_edition",
+            "target_sw",
+            "target_hw",
+            "other",
+        ]);
         for component in components.split(',') {
             match component.split_once('=') {
                 None => { return Err(CpeError::InvalidPart { value: component.to_string() }); }
                 Some((k, v)) => {
                     match k {
                         "part" => { att.part = CpePart::try_from(v)? }
-                        _ => {}
+                        "vendor" => { att.vendor = Component::try_from(v)? }
+                        "product" => { att.product = Component::try_from(v)? }
+                        "version" => { att.version = Component::try_from(v)? }
+                        "update" => { att.update = Component::try_from(v)? }
+                        "edition" => { att.edition = Component::try_from(v)? }
+                        "language" => { att.language = Component::try_from(v)? }
+                        "sw_edition" => { att.sw_edition = Component::try_from(v)? }
+                        "target_sw" => { att.target_sw = Component::try_from(v)? }
+                        "target_hw" => { att.target_hw = Component::try_from(v)? }
+                        "other" => { att.other = Component::try_from(v)? }
+                        _ => {
+                            return Err(CpeError::InvalidPart { value: k.to_string() });
+                        }
+                    }
+                    // double
+                    if !verify_set.remove(k) {
+                        return Err(CpeError::InvalidPart { value: k.to_string() });
                     }
                 }
             }
         }
-        println!("{:?}", components);
+        if !verify_set.is_empty() {
+            return Err(CpeError::InvalidWfn { value: name.to_string() });
+        }
         Ok(att)
     }
 }
