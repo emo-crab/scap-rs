@@ -6,6 +6,6 @@ edition = "2021"
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
-quick-xml = { version = "0.27.1", features = ["serialize"] }
+quick-xml = { version = "0.28.1", features = ["serialize"] }
 serde_yaml = "0.9"
 cpe = { path = "../../cpe" }
