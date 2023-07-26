@@ -9,5 +9,6 @@ edition = "2021"
 serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", features = ["serde"] }
 percent-encoding = "2.1"
+version-compare = "0.1"
 language-tags = {version="0.3",features=["serde"]}
 thiserror = "1.0"

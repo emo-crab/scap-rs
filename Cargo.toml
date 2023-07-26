@@ -31,7 +31,7 @@ opt-level = 3
 
 [dependencies]
 cpe = { path = "cpe" }
-cve = { path = "cve"}
+cve = { path = "cve" }
 
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }

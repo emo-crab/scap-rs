@@ -320,3 +320,46 @@ fn parse_uri_attribute(value: &str) -> Result<String> {
   let value = strip_slashes(value.as_str());
   Ok(value)
 }
+
+pub fn version_cmp(a: &str, b: &str, operator: &str) -> bool {
+  if let Ok(op) = version_compare::Cmp::from_sign(operator) {
+    if let Ok(res) = version_compare::compare_to(a, b, op) {
+      return res;
+    }
+  }
+  false
+}
+
+impl CPEAttributes {
+  // 匹配指定版本是否存在漏洞
+  pub fn match_version(&self, version: &str) -> bool {
+    if self.version.is_any() {
+      return true;
+    } else if self.version.is_na() {
+      return false;
+    }
+    let my_version = if self.update.is_value() {
+      format!("{} {}", self.version, self.update)
+    } else {
+      self.version.to_string()
+    };
+    version_cmp(version, &my_version, "==")
+  }
+  // 是否匹配指定产品
+  pub fn match_product(&self, product: &str) -> bool {
+    if self.product.is_any() {
+      return true;
+    } else if self.product.is_na() {
+      return false;
+    }
+    product == self.normalize_target_software()
+  }
+  // 规范化目标软件,
+  fn normalize_target_software(&self) -> String {
+    if let Component::Value(software) = &self.target_sw {
+      format!("{}-{}", software, self.product)
+    } else {
+      self.product.to_string()
+    }
+  }
+}

@@ -1,6 +1,6 @@
 use crate::{parse_uri_attribute, CPEAttributes};
 use chrono::{DateTime, Utc};
-use serde::{de, Deserialize, Deserializer, Serialize};
+use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::marker::PhantomData;
 
@@ -86,7 +86,8 @@ pub struct Reference {
 pub struct CPE23Item {
   #[serde(
     rename(serialize = "name", deserialize = "@name"),
-    deserialize_with = "uri_to_attribute"
+    deserialize_with = "uri_to_attribute",
+    serialize_with = "attribute_to_uri"
   )]
   pub name: CPEAttributes,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -105,7 +106,8 @@ pub struct Deprecation {
 pub struct DeprecatedInfo {
   #[serde(
     rename(serialize = "name", deserialize = "@name"),
-    deserialize_with = "uri_to_attribute"
+    deserialize_with = "uri_to_attribute",
+    serialize_with = "attribute_to_uri"
   )]
   pub name: CPEAttributes,
   #[serde(rename(serialize = "type", deserialize = "@type"))]
@@ -180,4 +182,11 @@ where
     }
   }
   deserializer.deserialize_any(UriToAttribute(PhantomData))
+}
+
+pub fn attribute_to_uri<S>(cpe: &CPEAttributes, s: S) -> Result<S::Ok, S::Error>
+where
+  S: Serializer,
+{
+  s.serialize_str(&cpe.to_string())
 }
