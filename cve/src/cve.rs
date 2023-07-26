@@ -3,6 +3,7 @@ use serde::{Deserialize, Serialize};
 
 // 单个CVE信息
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 #[allow(clippy::upper_case_acronyms)]
 pub struct CVEItem {
   // CVE 信息
@@ -12,57 +13,45 @@ pub struct CVEItem {
   // 配置
   pub configurations: Configurations,
   // 公开时间
-  #[serde(rename = "publishedDate")]
   pub published_date: String,
   // 最后修改时间
-  #[serde(rename = "lastModifiedDate")]
   pub last_modified_date: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct Impact {
   // TODO: Implement V1?
   // cvssV2 过期
-  #[serde(rename = "baseMetricV2")]
-  pub metric_v2: Option<ImpactMetricV2>,
+  pub base_metric_v2: Option<ImpactMetricV2>,
   // cvssV3
-  #[serde(rename = "baseMetricV3")]
-  pub metric_v3: Option<ImpactMetricV3>,
+  pub base_metric_v3: Option<ImpactMetricV3>,
   // TODO: Implement V4?
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ImpactMetricV2 {
-  #[serde(rename = "cvssV2")]
-  pub cvss: cvss::v2::CVSS,
+  pub cvss_v2: cvss::v2::CVSS,
   // 漏洞的可利用 评分
-  #[serde(rename = "exploitabilityScore")]
   pub exploitability_score: f32,
   // 评分
-  #[serde(rename = "impactScore")]
   pub impact_score: f32,
   // 评级
   pub severity: String,
-  #[serde(rename = "acInsufInfo")]
   pub ac_insuf_info: Option<bool>,
-  #[serde(rename = "obtainAllPrivilege")]
   pub obtain_all_privilege: bool,
-  #[serde(rename = "obtainUserPrivilege")]
   pub obtain_user_privilege: bool,
-  #[serde(rename = "obtainOtherPrivilege")]
   pub obtain_other_privilege: bool,
   // 用户交互
-  #[serde(rename = "userInteractionRequired")]
   pub user_interaction_required: Option<bool>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
 pub struct ImpactMetricV3 {
-  #[serde(rename = "cvssV3")]
-  pub cvss: cvss::v3::CVSS,
+  pub cvss_v3: cvss::v3::CVSS,
   // 漏洞的可利用 评分
-  #[serde(rename = "exploitabilityScore")]
   pub exploitability_score: f32,
   // cvss 评分
-  #[serde(rename = "impactScore")]
   pub impact_score: f32,
 }
 
