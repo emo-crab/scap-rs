@@ -3,6 +3,7 @@ pub mod cvss;
 pub mod node;
 use serde::{Deserialize, Serialize};
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
+// https://github.com/CVEProject/cve-schema
 #[derive(Debug, Deserialize, Serialize)]
 #[allow(non_snake_case)]
 pub struct CVEContainer {

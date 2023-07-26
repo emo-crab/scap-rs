@@ -1,5 +1,4 @@
-use crate::cvss::{CVSSV2, CVSSV3};
-use crate::node;
+use crate::{cvss, node};
 use serde::{Deserialize, Serialize};
 
 // 单个CVE信息
@@ -34,7 +33,7 @@ pub struct Impact {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ImpactMetricV2 {
   #[serde(rename = "cvssV2")]
-  pub cvss: CVSSV2,
+  pub cvss: cvss::v2::CVSS,
   // 漏洞的可利用 评分
   #[serde(rename = "exploitabilityScore")]
   pub exploitability_score: f32,
@@ -51,13 +50,14 @@ pub struct ImpactMetricV2 {
   pub obtain_user_privilege: bool,
   #[serde(rename = "obtainOtherPrivilege")]
   pub obtain_other_privilege: bool,
+  // 用户交互
   #[serde(rename = "userInteractionRequired")]
   pub user_interaction_required: Option<bool>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ImpactMetricV3 {
   #[serde(rename = "cvssV3")]
-  pub cvss: CVSSV3,
+  pub cvss: cvss::v3::CVSS,
   // 漏洞的可利用 评分
   #[serde(rename = "exploitabilityScore")]
   pub exploitability_score: f32,
