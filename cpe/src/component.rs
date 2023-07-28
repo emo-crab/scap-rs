@@ -2,7 +2,7 @@ use language_tags::LanguageTag;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{convert::TryFrom, fmt, str::FromStr};
 
-use crate::error::{CpeError, Result};
+use crate::error::{CPEError, Result};
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub enum Language {
@@ -23,7 +23,7 @@ impl Default for Language {
 }
 
 impl FromStr for Language {
-  type Err = CpeError;
+  type Err = CPEError;
   fn from_str(s: &str) -> Result<Self> {
     match LanguageTag::parse(s) {
       Err(_) => match s {
@@ -37,14 +37,14 @@ impl FromStr for Language {
 }
 
 impl TryFrom<&str> for Language {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: &str) -> Result<Self> {
     Self::from_str(val)
   }
 }
 
 impl TryFrom<String> for Language {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: String) -> Result<Self> {
     Self::from_str(val.as_str())
   }
@@ -134,14 +134,14 @@ impl<'de> Deserialize<'de> for Component {
 }
 
 impl TryFrom<&str> for Component {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: &str) -> Result<Self> {
     Self::from_str(val)
   }
 }
 
 impl TryFrom<String> for Component {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: String) -> Result<Self> {
     Self::from_str(val.as_str())
   }
@@ -154,7 +154,7 @@ impl Default for Component {
 }
 
 impl FromStr for Component {
-  type Err = CpeError;
+  type Err = CPEError;
 
   fn from_str(val: &str) -> Result<Self> {
     Ok(match val {

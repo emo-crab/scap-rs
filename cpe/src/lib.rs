@@ -11,7 +11,7 @@ pub mod error;
 pub mod part;
 
 use crate::component::Language;
-use crate::error::{CpeError, Result};
+use crate::error::{CPEError, Result};
 pub use component::Component;
 pub use part::CPEPart;
 
@@ -51,7 +51,7 @@ impl CPEAttributes {
     let uri = match uri.strip_prefix("cpe:2.3:") {
       Some(u) => u,
       None => {
-        return Err(CpeError::InvalidPrefix {
+        return Err(CPEError::InvalidPrefix {
           value: uri.to_string(),
         });
       }
@@ -62,77 +62,77 @@ impl CPEAttributes {
     let part = if let Some(part) = components.next() {
       CPEPart::try_from(part)?
     } else {
-      return Err(CpeError::InvalidPart {
+      return Err(CPEError::InvalidPart {
         value: uri.to_string(),
       });
     };
     let vendor = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let product = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let version = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let update = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let edition = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let language = if let Some(part) = components.next() {
       Language::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let sw_edition = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let target_sw = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let target_hw = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
     let other = if let Some(part) = components.next() {
       Component::try_from(part)?
     } else {
-      return Err(CpeError::InvalidUri {
+      return Err(CPEError::InvalidUri {
         value: uri.to_string(),
       });
     };
@@ -156,7 +156,7 @@ impl CPEAttributes {
     let prefix = match name.strip_prefix("wfn:[") {
       Some(u) => u,
       None => {
-        return Err(CpeError::InvalidPrefix {
+        return Err(CPEError::InvalidPrefix {
           value: name.to_string(),
         });
       }
@@ -164,7 +164,7 @@ impl CPEAttributes {
     let components = match prefix.strip_suffix(']') {
       Some(u) => u,
       None => {
-        return Err(CpeError::InvalidPrefix {
+        return Err(CPEError::InvalidPrefix {
           value: name.to_string(),
         });
       }
@@ -198,7 +198,7 @@ impl CPEAttributes {
     for component in components.split(',') {
       match component.split_once('=') {
         None => {
-          return Err(CpeError::InvalidPart {
+          return Err(CPEError::InvalidPart {
             value: component.to_string(),
           });
         }
@@ -216,14 +216,14 @@ impl CPEAttributes {
             "target_hw" => att.target_hw = Component::try_from(v)?,
             "other" => att.other = Component::try_from(v)?,
             _ => {
-              return Err(CpeError::InvalidPart {
+              return Err(CPEError::InvalidPart {
                 value: k.to_string(),
               });
             }
           }
           // double
           if !verify_set.remove(k) {
-            return Err(CpeError::InvalidPart {
+            return Err(CPEError::InvalidPart {
               value: k.to_string(),
             });
           }
@@ -231,7 +231,7 @@ impl CPEAttributes {
       }
     }
     if !verify_set.is_empty() {
-      return Err(CpeError::InvalidWfn {
+      return Err(CPEError::InvalidWfn {
         value: name.to_string(),
       });
     }
@@ -240,14 +240,14 @@ impl CPEAttributes {
 }
 
 impl TryFrom<&str> for CPEAttributes {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: &str) -> Result<Self> {
     CPEAttributes::from_str(val)
   }
 }
 
 impl FromStr for CPEAttributes {
-  type Err = CpeError;
+  type Err = CPEError;
   fn from_str(uri: &str) -> Result<Self> {
     CPEAttributes::from_uri(uri)
   }
@@ -303,7 +303,7 @@ fn parse_uri_attribute(value: &str) -> Result<String> {
     let value = value.replace("%01", "?").replace("%02", "*");
     percent_encoding::percent_decode_str(&value)
       .decode_utf8()
-      .map_err(|source| CpeError::Utf8Error {
+      .map_err(|source| CPEError::Utf8Error {
         source,
         value: value.to_owned(),
       })?
@@ -311,7 +311,7 @@ fn parse_uri_attribute(value: &str) -> Result<String> {
   } else {
     percent_encoding::percent_decode_str(value)
       .decode_utf8()
-      .map_err(|source| CpeError::Utf8Error {
+      .map_err(|source| CPEError::Utf8Error {
         source,
         value: value.to_owned(),
       })?

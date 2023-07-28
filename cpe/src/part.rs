@@ -1,4 +1,4 @@
-use crate::error::CpeError;
+use crate::error::CPEError;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{convert::TryFrom, fmt, str::FromStr};
 
@@ -50,19 +50,19 @@ impl Default for CPEPart {
 }
 
 impl TryFrom<&str> for CPEPart {
-  type Error = CpeError;
+  type Error = CPEError;
   fn try_from(val: &str) -> Result<Self, Self::Error> {
     Self::from_str(val)
   }
 }
 
 impl FromStr for CPEPart {
-  type Err = CpeError;
+  type Err = CPEError;
 
   fn from_str(val: &str) -> Result<Self, Self::Err> {
     let c = {
       let c = val.chars().next();
-      c.ok_or(CpeError::InvalidPart {
+      c.ok_or(CPEError::InvalidPart {
         value: val.to_string(),
       })?
     };
@@ -70,7 +70,7 @@ impl FromStr for CPEPart {
       'h' => Ok(Self::Hardware),
       'o' => Ok(Self::OperatingSystem),
       'a' => Ok(Self::Application),
-      _ => Err(CpeError::InvalidPart {
+      _ => Err(CPEError::InvalidPart {
         value: c.to_string(),
       }),
     }
