@@ -2,133 +2,16 @@
 // https://csrc.nist.gov/schema/nvd/feed/1.1-Beta/cvss-v3.x_beta.json
 
 pub mod v3 {
+  use std::fmt;
+  use std::fmt::Formatter;
   use std::str::FromStr;
   // https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator
   use crate::error::{CVEError, Result};
   use serde::{Deserialize, Serialize};
 
-  // AV
-  #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
-  #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
-  pub enum AttackVectorType {
-    // AV:N
-    Network,
-    // AV:A
-    AdjacentNetwork,
-    // AV:L
-    Local,
-    // AV:P
-    Physical,
-  }
 
-  impl FromStr for AttackVectorType {
-    type Err = CVEError;
 
-    fn from_str(s: &str) -> Result<Self> {
-      let c = {
-        let c = s.to_uppercase().chars().next();
-        c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
-        })?
-      };
-      match c {
-        'N' => Ok(Self::Network),
-        'A' => Ok(Self::AdjacentNetwork),
-        'L' => Ok(Self::Local),
-        'P' => Ok(Self::Physical),
-        _ => Err(CVEError::InvalidCVSS {
-          value: c.to_string(),
-        }),
-      }
-    }
-  }
-  // AC
-  #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
-  #[serde(rename_all = "UPPERCASE")]
-  pub enum AttackComplexityType {
-    // AC:H
-    High,
-    // AC:L
-    Low,
-  }
-  impl FromStr for AttackComplexityType {
-    type Err = CVEError;
 
-    fn from_str(s: &str) -> Result<Self> {
-      let c = {
-        let c = s.to_uppercase().chars().next();
-        c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
-        })?
-      };
-      match c {
-        'L' => Ok(Self::Low),
-        'H' => Ok(Self::High),
-        _ => Err(CVEError::InvalidCVSS {
-          value: c.to_string(),
-        }),
-      }
-    }
-  }
-  // PR
-  #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
-  #[serde(rename_all = "UPPERCASE")]
-  pub enum PrivilegesRequiredType {
-    // PR:H
-    High,
-    // PR:L
-    Low,
-    // PR:N
-    None,
-  }
-  impl FromStr for PrivilegesRequiredType {
-    type Err = CVEError;
-
-    fn from_str(s: &str) -> Result<Self> {
-      let c = {
-        let c = s.to_uppercase().chars().next();
-        c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
-        })?
-      };
-      match c {
-        'N' => Ok(Self::None),
-        'L' => Ok(Self::Low),
-        'H' => Ok(Self::High),
-        _ => Err(CVEError::InvalidCVSS {
-          value: c.to_string(),
-        }),
-      }
-    }
-  }
-  // UI
-  #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
-  #[serde(rename_all = "UPPERCASE")]
-  pub enum UserInteractionType {
-    // UI:R
-    Required,
-    // UI:N
-    None,
-  }
-  impl FromStr for UserInteractionType {
-    type Err = CVEError;
-
-    fn from_str(s: &str) -> Result<Self> {
-      let c = {
-        let c = s.to_uppercase().chars().next();
-        c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
-        })?
-      };
-      match c {
-        'N' => Ok(Self::None),
-        'R' => Ok(Self::Required),
-        _ => Err(CVEError::InvalidCVSS {
-          value: c.to_string(),
-        }),
-      }
-    }
-  }
   // CIA 影响指标 原json schema为ciaType
   #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
   #[serde(rename_all = "UPPERCASE")]
@@ -141,10 +24,21 @@ pub mod v3 {
     type Err = CVEError;
 
     fn from_str(s: &str) -> Result<Self> {
+      let mut s = s.to_uppercase();
+      if let Some((p, v)) = s.split_once(':') {
+        if !matches!(p, "C" | "I" | "A") {
+          return Err(CVEError::InvalidCVSS {
+            value: p.to_string(),
+            scope: "ImpactMetricsType prefix".to_string(),
+          });
+        }
+        s = v.to_string();
+      }
       let c = {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
+          value: s,
+          scope: "ImpactMetricsType".to_string(),
         })?
       };
       match c {
@@ -153,6 +47,7 @@ pub mod v3 {
         'H' => Ok(Self::High),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "ImpactMetricsType".to_string(),
         }),
       }
     }
@@ -170,10 +65,15 @@ pub mod v3 {
     type Err = CVEError;
 
     fn from_str(s: &str) -> Result<Self> {
+      let mut s = s.to_uppercase();
+      if s.starts_with("S:") {
+        s = s.strip_prefix("S:").unwrap_or_default().to_string();
+      }
       let c = {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
-          value: s.to_string(),
+          value: s,
+          scope: "ScopeType from_str".to_string(),
         })?
       };
       match c {
@@ -181,6 +81,7 @@ pub mod v3 {
         'C' => Ok(Self::Changed),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "ScopeType".to_string(),
         }),
       }
     }
@@ -208,6 +109,7 @@ pub mod v3 {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
           value: s.to_string(),
+          scope: "SeverityType from_str".to_string(),
         })?
       };
       match c {
@@ -218,13 +120,14 @@ pub mod v3 {
         'C' => Ok(Self::Critical),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "SeverityType".to_string(),
         }),
       }
     }
   }
   #[derive(Debug, Serialize, Deserialize, Clone)]
-  enum Version {
-    NONE,
+  pub enum Version {
+    None,
     #[serde(rename = "2.0")]
     V2_0,
     #[serde(rename = "3.0")]
@@ -232,6 +135,38 @@ pub mod v3 {
     #[serde(rename = "3.1")]
     V3_1,
     // todo V4
+  }
+
+  impl Default for Version {
+    fn default() -> Self {
+      Version::None
+    }
+  }
+  impl FromStr for Version {
+    type Err = CVEError;
+
+    fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
+      let mut s = s.to_uppercase();
+      if s.starts_with("CVSS:") {
+        s = s.strip_prefix("CVSS:").unwrap_or_default().to_string();
+      }
+      match s.as_str() {
+        "2.0" => Ok(Self::V2_0),
+        "3.0" => Ok(Self::V3_0),
+        "3.1" => Ok(Self::V3_1),
+        _ => Ok(Self::None),
+      }
+    }
+  }
+  impl fmt::Display for Version {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+      match self {
+        Version::None => write!(f, "NONE"),
+        Version::V2_0 => write!(f, "2.0"),
+        Version::V3_0 => write!(f, "3.0"),
+        Version::V3_1 => write!(f, "3.1"),
+      }
+    }
   }
   #[derive(Debug, Serialize, Deserialize, Clone)]
   #[serde(rename_all = "camelCase")]
@@ -272,31 +207,31 @@ pub mod v3 {
   impl FromStr for CVSS {
     type Err = CVEError;
     fn from_str(vector_string: &str) -> Result<Self> {
-      let mut version = Version::NONE;
-      let vectors = match vector_string.split_once("/") {
+      let (version, vectors) = match vector_string.split_once('/') {
         None => {
           return Err(CVEError::InvalidPrefix {
             value: vector_string.to_string(),
           })
         }
-        Some((version, vector)) => {
-          // version = Vers:ion;
-          vector
+        Some((v, vector)) => {
+          let version = Version::from_str(v).unwrap_or_default();
+          (version, vector)
         }
       };
-      if version.is_none() {
+      if matches!(version, Version::None) {
         return Err(CVEError::InvalidCVSSVersion {
-          value: version.unwrap_or_default(),
-          expected: "3.0 or 3.1".to_string(),
+          value: version.to_string(),
+          expected: "2.0, 3.0 or 3.1".to_string(),
         });
       }
       let mut vector = vectors.split('/');
       // "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
       let error = CVEError::InvalidCVSS {
         value: vector_string.to_string(),
+        scope: "CVSS parser".to_string(),
       };
       let mut cvss = CVSS {
-        version: version.unwrap_or_default(),
+        version,
         vector_string: vector_string.to_string(),
         attack_vector: AttackVectorType::from_str(vector.next().ok_or(&error)?)?,
         attack_complexity: AttackComplexityType::from_str(vector.next().ok_or(&error)?)?,
@@ -341,6 +276,7 @@ pub mod v2 {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
           value: s.to_string(),
+          scope: "AccessVectorType from_str".to_string(),
         })?
       };
       match c {
@@ -349,6 +285,7 @@ pub mod v2 {
         'L' => Ok(Self::Local),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "AccessVectorType".to_string(),
         }),
       }
     }
@@ -372,6 +309,7 @@ pub mod v2 {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
           value: s.to_string(),
+          scope: "AccessComplexityType from_str".to_string(),
         })?
       };
       match c {
@@ -380,6 +318,7 @@ pub mod v2 {
         'L' => Ok(Self::Low),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "AccessComplexityType".to_string(),
         }),
       }
     }
@@ -403,6 +342,7 @@ pub mod v2 {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
           value: s.to_string(),
+          scope: "AuthenticationType from_str".to_string(),
         })?
       };
       match c {
@@ -411,6 +351,7 @@ pub mod v2 {
         'N' => Ok(Self::None),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "AuthenticationType".to_string(),
         }),
       }
     }
@@ -431,6 +372,7 @@ pub mod v2 {
         let c = s.to_uppercase().chars().next();
         c.ok_or(CVEError::InvalidCVSS {
           value: s.to_string(),
+          scope: "ImpactMetricsType from_str".to_string(),
         })?
       };
       match c {
@@ -439,6 +381,7 @@ pub mod v2 {
         'L' => Ok(Self::Complete),
         _ => Err(CVEError::InvalidCVSS {
           value: c.to_string(),
+          scope: "ImpactMetricsType".to_string(),
         }),
       }
     }

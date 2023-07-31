@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, CVEError>;
+pub type Result<T> = std::result::Result<T, CVSSError>;
 
 #[derive(Error, Debug, Clone)]
-pub enum CVEError {
+pub enum CVSSError {
   #[error("error decoding value `{value}`, not well formed UTF-8")]
   Utf8Error {
     #[source]
@@ -20,8 +20,8 @@ pub enum CVEError {
   InvalidCVSSVersion { value: String, expected: String },
 }
 
-impl From<&CVEError> for CVEError {
-  fn from(value: &CVEError) -> Self {
+impl From<&CVSSError> for CVSSError {
+  fn from(value: &CVSSError) -> Self {
     value.clone()
   }
 }
