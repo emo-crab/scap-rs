@@ -1,5 +1,4 @@
 pub mod cve;
-pub mod cvss;
 pub mod error;
 pub mod node;
 

@@ -1,4 +1,4 @@
-use crate::{cvss, node};
+use crate::node;
 use serde::{Deserialize, Serialize};
 
 // 单个CVE信息

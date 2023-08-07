@@ -8,4 +8,5 @@ edition = "2021"
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 cpe = { path = "../cpe" }
+cvss = { path = "../cvss" }
 thiserror = "1.0"

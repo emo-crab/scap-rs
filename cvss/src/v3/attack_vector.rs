@@ -1,6 +1,8 @@
+use std::fmt::{Display, Formatter};
 use crate::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use crate::metric::Metric;
 
 // AV
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
@@ -16,17 +18,33 @@ pub enum AttackVectorType {
   Physical,
 }
 
-impl From<AttackVectorType> for f32 {
-  fn from(val: AttackVectorType) -> Self {
-    match val {
+impl Display for AttackVectorType {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}:{}", Self::NAME, self.as_str())
+  }
+}
+
+impl Metric for AttackVectorType {
+  const NAME: &'static str = "AV";
+
+  fn score(&self) -> f32 {
+    match self {
       AttackVectorType::Network => 0.85,
       AttackVectorType::AdjacentNetwork => 0.62,
       AttackVectorType::Local => 0.55,
       AttackVectorType::Physical => 0.2,
     }
   }
-}
 
+  fn as_str(&self) -> &'static str {
+    match self {
+      AttackVectorType::Physical => "P",
+      AttackVectorType::Local => "L",
+      AttackVectorType::AdjacentNetwork => "A",
+      AttackVectorType::Network => "N",
+    }
+  }
+}
 impl FromStr for AttackVectorType {
   type Err = CVSSError;
 
@@ -38,7 +56,7 @@ impl FromStr for AttackVectorType {
     let c = {
       let c = s.chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
-        value: s.to_string(),
+        value: s,
         scope: "AttackVectorType from_str".to_string(),
       })?
     };

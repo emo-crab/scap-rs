@@ -10,6 +10,7 @@ pub enum CVSSError {
     source: std::str::Utf8Error,
     value: String,
   },
+
   #[error("invalid prefix for `{value}`")]
   InvalidPrefix { value: String },
   #[error("Invalid CVE type `{value}`")]
