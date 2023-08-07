@@ -1,5 +1,5 @@
 [package]
-name = "cve"
+name = "cvss"
 version = "0.1.0"
 edition = "2021"
 
@@ -7,6 +7,4 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-cpe = { path = "../cpe" }
-cvss = { path = "../cvss" }
 thiserror = "1.0"

@@ -1,5 +1,7 @@
-use crate::{cvss, node};
+use crate::node;
+use cvss::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 
 // 单个CVE信息
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -55,6 +57,24 @@ pub struct ImpactMetricV3 {
   pub impact_score: f32,
 }
 
+impl FromStr for ImpactMetricV3 {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    match cvss::v3::CVSS::from_str(s) {
+      Ok(c) => {
+        let exploitability_score = c.exploit_ability_score();
+        let impact_score = c.impact_score();
+        Ok(Self {
+          cvss_v3: c,
+          exploitability_score,
+          impact_score,
+        })
+      }
+      Err(err) => Err(err),
+    }
+  }
+}
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Configurations {
   // 版本

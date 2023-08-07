@@ -1,9 +1,9 @@
 use thiserror::Error;
 
-pub type Result<T> = std::result::Result<T, CpeError>;
+pub type Result<T> = std::result::Result<T, CPEError>;
 
 #[derive(Error, Debug)]
-pub enum CpeError {
+pub enum CPEError {
   #[error("invalid wfn `{value}`")]
   InvalidWfn { value: String },
   #[error("invalid uri `{value}`")]

@@ -1,6 +1,7 @@
 pub mod cve;
-pub mod cvss;
+pub mod error;
 pub mod node;
+
 use serde::{Deserialize, Serialize};
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
 // https://github.com/CVEProject/cve-schema
