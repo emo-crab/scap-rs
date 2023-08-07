@@ -1,8 +1,8 @@
-use std::fmt::{Display, Formatter};
 use crate::error::{CVSSError, Result};
-use serde::{Deserialize, Serialize};
-use std::str::FromStr;
 use crate::metric::Metric;
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 // UI
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]

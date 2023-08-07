@@ -23,8 +23,8 @@ impl Metric for AttackComplexityType {
 
   fn score(&self) -> f32 {
     match self {
-      AttackComplexityType::High => 0.72,
-      AttackComplexityType::Low => 0.44,
+      AttackComplexityType::High => 0.44,
+      AttackComplexityType::Low => 0.77,
     }
   }
 

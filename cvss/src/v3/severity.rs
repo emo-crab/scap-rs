@@ -1,5 +1,6 @@
 use crate::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 // 严重性
@@ -18,26 +19,52 @@ pub enum SeverityType {
   Critical,
 }
 
+impl Display for SeverityType {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "S:{}", self.as_str())
+  }
+}
+
+impl SeverityType {
+  fn as_str(&self) -> &'static str {
+    match self {
+      SeverityType::None => "None",
+      SeverityType::Low => "Low",
+      SeverityType::Medium => "Medium",
+      SeverityType::High => "High",
+      SeverityType::Critical => "Critical",
+    }
+  }
+}
+
+impl From<f32> for SeverityType {
+  fn from(value: f32) -> Self {
+    if value < 0.1 {
+      SeverityType::None
+    } else if value < 4.0 {
+      SeverityType::Low
+    } else if value < 7.0 {
+      SeverityType::Medium
+    } else if value < 9.0 {
+      SeverityType::High
+    } else {
+      SeverityType::Critical
+    }
+  }
+}
 
 impl FromStr for SeverityType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s.to_string(),
-        scope: "SeverityType from_str".to_string(),
-      })?
-    };
-    match c {
-      'N' => Ok(Self::None),
-      'L' => Ok(Self::Low),
-      'M' => Ok(Self::Medium),
-      'H' => Ok(Self::High),
-      'C' => Ok(Self::Critical),
+    match s {
+      "None" => Ok(Self::None),
+      "Low" => Ok(Self::Low),
+      "Medium" => Ok(Self::Medium),
+      "High" => Ok(Self::High),
+      "Critical" => Ok(Self::Critical),
       _ => Err(CVSSError::InvalidCVSS {
-        value: c.to_string(),
+        value: s.to_string(),
         scope: "SeverityType".to_string(),
       }),
     }

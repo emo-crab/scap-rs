@@ -65,23 +65,19 @@ impl FromStr for PrivilegesRequiredType {
 }
 
 impl PrivilegesRequiredType {
-  fn scoped_score(&self, scope_change: bool) -> f32 {
-    match self {
-      PrivilegesRequiredType::High => {
-        if scope_change {
-          0.50
-        } else {
-          0.27
-        }
+  pub fn scoped_score(&self, scope_change: bool) -> f32 {
+    if scope_change {
+      match self {
+        PrivilegesRequiredType::High => 0.5,
+        PrivilegesRequiredType::Low => 0.68,
+        PrivilegesRequiredType::None => 0.85,
       }
-      PrivilegesRequiredType::Low => {
-        if scope_change {
-          0.68
-        } else {
-          0.62
-        }
+    } else {
+      match self {
+        PrivilegesRequiredType::High => 0.27,
+        PrivilegesRequiredType::Low => 0.62,
+        PrivilegesRequiredType::None => 0.85,
       }
-      PrivilegesRequiredType::None => 0.85,
     }
   }
 }

@@ -1,4 +1,5 @@
 use crate::error::{CVSSError, Result};
+use crate::metric::Metric;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -27,7 +28,25 @@ impl ScopeType {
 }
 impl Display for ScopeType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "S:{}", self.as_str())
+    write!(f, "{}:{}", Self::NAME, self.as_str())
+  }
+}
+
+impl Metric for ScopeType {
+  const NAME: &'static str = "S";
+
+  fn score(&self) -> f32 {
+    match self {
+      ScopeType::Unchanged => 6.42,
+      ScopeType::Changed => 7.52,
+    }
+  }
+
+  fn as_str(&self) -> &'static str {
+    match self {
+      ScopeType::Unchanged => "U",
+      ScopeType::Changed => "C",
+    }
   }
 }
 impl FromStr for ScopeType {

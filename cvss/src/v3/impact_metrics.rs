@@ -1,10 +1,9 @@
-use std::fmt::{Display, Formatter};
 use crate::error::{CVSSError, Result};
-use serde::{Deserialize, Serialize};
-use std::str::FromStr;
 use crate::metric::Metric;
-
-// CIA 影响指标 原json schema为ciaType
+use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
+// 机密性影响
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum ConfidentialityImpactType {
@@ -12,6 +11,7 @@ pub enum ConfidentialityImpactType {
   Low,
   None,
 }
+// 完整性影响
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum IntegrityImpactType {
@@ -19,6 +19,7 @@ pub enum IntegrityImpactType {
   Low,
   None,
 }
+// 可用性影响
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum AvailabilityImpactType {
@@ -123,7 +124,6 @@ impl FromStr for AvailabilityImpactType {
     }
   }
 }
-
 
 impl Display for ConfidentialityImpactType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {

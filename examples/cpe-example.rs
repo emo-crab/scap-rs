@@ -8,8 +8,7 @@ fn main() {
   let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
   let file = BufReader::new(gz_decoder);
   let c: CPEList = quick_xml::de::from_reader(file).unwrap();
-  for cpe_item in c.cpe_item {
+  if let Some(cpe_item) = c.cpe_item.into_iter().next() {
     println!("{:#?}", &cpe_item);
-    break;
   }
 }
