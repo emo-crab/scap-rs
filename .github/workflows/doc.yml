@@ -12,7 +12,7 @@ env:
 
 jobs:
   rustdoc:
-    if: github.repository == 'rust-lang/rust-analyzer'
+    if: github.repository == 'emo-cat/nvd-rs'
     runs-on: ubuntu-latest
 
     steps:
