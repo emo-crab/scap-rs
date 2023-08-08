@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod tests {
   use std::str::FromStr;
-
   #[test]
   fn it_works() {
     let result = 2 + 2;

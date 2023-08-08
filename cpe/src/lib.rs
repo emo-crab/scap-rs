@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/nvd-rs/0.0.1")]
+#![doc(html_root_url = "https://emo-car.github.io/nvd-rs/cpe")]
 // Package wfn provides a representation, bindings and matching of the Well-Formed CPE names as per
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7695.pdf and
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7696.pdf

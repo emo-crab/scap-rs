@@ -1,4 +1,4 @@
-#![doc(html_root_url = "https://docs.rs/nvd-rs/0.0.1")]
+#![doc(html_root_url = "https://emo-car.github.io/nvd-rs/cve")]
 pub mod cve;
 pub mod error;
 pub mod node;
