@@ -1,3 +1,18 @@
+//!
+//! Common Vulnerability Scoring System version 3.1: Specification Document
+//! =======================================================================
+//!
+//!
+//! CVSS Version 3.1 Release
+//! ------------------------
+//!
+//! This page updates with each release of the CVSS standard. It is currently CVSS version 3.1, released in June 2019. If you wish to use a specific version of the Specification Document, use:
+//!
+//! *   [https://www.first.org/cvss/v3.1/specification-document](https://www.first.org/cvss/v3.1/specification-document) for CVSS version 3.1
+//! *   [https://www.first.org/cvss/v3.0/specification-document](https://www.first.org/cvss/v3.0/specification-document) for CVSS version 3.0
+//!
+//! * * *
+//!
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
 use crate::v3::attack_complexity::AttackComplexityType;
@@ -20,33 +35,41 @@ pub mod privileges_required;
 pub mod scope;
 pub mod severity;
 pub mod user_interaction;
-
+///
+/// The Common Vulnerability Scoring System (CVSS) captures the principal technical characteristics of software, hardware and firmware vulnerabilities. Its outputs include numerical scores indicating the severity of a vulnerability relative to other vulnerabilities.
+///
+/// CVSS is composed of three metric groups: Base, Temporal, and Environmental. The Base Score reflects the severity of a vulnerability according to its intrinsic characteristics which are constant over time and assumes the reasonable worst case impact across different deployed environments. The Temporal Metrics adjust the Base severity of a vulnerability based on factors that change over time, such as the availability of exploit code. The Environmental Metrics adjust the Base and Temporal severities to a specific computing environment. They consider factors such as the presence of mitigations in that environment.
+///
+/// Base Scores are usually produced by the organization maintaining the vulnerable product, or a third party scoring on their behalf. It is typical for only the Base Metrics to be published as these do not change over time and are common to all environments. Consumers of CVSS should supplement the Base Score with Temporal and Environmental Scores specific to their use of the vulnerable product to produce a severity more accurate for their organizational environment. Consumers may use CVSS information as input to an organizational vulnerability management process that also considers factors that are not part of CVSS in order to rank the threats to their technology infrastructure and make informed remediation decisions. Such factors may include: number of customers on a product line, monetary losses due to a breach, life or property threatened, or public sentiment on highly publicized vulnerabilities. These are outside the scope of CVSS.
+///
+/// The benefits of CVSS include the provision of a standardized vendor and platform agnostic vulnerability scoring methodology. It is an open framework, providing transparency to the individual characteristics and methodology used to derive a score.
+///
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CVSS {
-  // 版本： 3.0 和 3.1
+  /// Version 版本： 3.0 和 3.1
   pub version: Version,
-  // 向量: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
+  /// 向量: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
   pub vector_string: String,
-  // 访问途径（AV）
+  /// [`AttackVectorType`] 访问途径（AV）
   pub attack_vector: AttackVectorType,
-  // 攻击复杂度（AC）
+  /// [`AttackComplexityType`] 攻击复杂度（AC）
   pub attack_complexity: AttackComplexityType,
-  // 所需权限（PR）
+  /// [`PrivilegesRequiredType`] 所需权限（PR）
   pub privileges_required: PrivilegesRequiredType,
-  // 用户交互（UI）
+  /// [`UserInteractionType`] 用户交互（UI）
   pub user_interaction: UserInteractionType,
-  // 影响范围（S）
+  /// [`ScopeType`] 影响范围（S）
   pub scope: ScopeType,
-  // 机密性影响（C）
+  /// [`ConfidentialityImpactType`] 机密性影响（C）
   pub confidentiality_impact: ConfidentialityImpactType,
-  // 完整性影响（I）
+  /// [`IntegrityImpactType`] 完整性影响（I）
   pub integrity_impact: IntegrityImpactType,
-  // 可用性影响（A）
+  /// [`AvailabilityImpactType`] 可用性影响（A）
   pub availability_impact: AvailabilityImpactType,
-  // 基础评分
+  /// 基础评分
   pub base_score: f32,
-  // 基础评级
+  /// [`SeverityType`] 基础评级
   pub base_severity: SeverityType,
 }
 
@@ -55,7 +78,22 @@ impl CVSS {
   fn update_severity(&mut self) {
     self.base_severity = SeverityType::from(self.base_score)
   }
-  // https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator
+  /// https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator
+  /// 7.1. Base Metrics Equations
+  /// The Base Score formula depends on sub-formulas for Impact Sub-Score (ISS), Impact, and Exploitability, all of which are defined below:
+  ///
+  /// | ISS = | 1 - \[ (1 - Confidentiality) × (1 - Integrity) × (1 - Availability) \] |
+  /// | --- | --- |
+  /// | Impact = |  |
+  /// | If Scope is Unchanged | 6.42 × ISS |
+  /// | If Scope is Changed | 7.52 × (ISS - 0.029) - 3.25 × (ISS - 0.02)15 |
+  /// | Exploitability = | 8.22 × AttackVector × AttackComplexity × |
+  /// |  | PrivilegesRequired × UserInteraction |
+  /// | BaseScore = |  |
+  /// | If Impact \\<= 0 | 0, _else_ |
+  /// | If Scope is Unchanged | Roundup (Minimum \[(Impact + Exploitability), 10\]) |
+  /// | If Scope is Changed | Roundup (Minimum \[1.08 × (Impact + Exploitability), 10\]) |[](#body)
+  ///
   fn update_score(&mut self) {
     let exploit_ability_score = self.exploit_ability_score();
     let impact_score_scope = self.impact_score();
@@ -72,10 +110,18 @@ impl CVSS {
     };
     self.base_score = base_score;
   }
-  // Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
+  /// Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
+  ///
   /// Where “Round up” is defined as the smallest number,
   /// specified to one decimal place, that is equal to or higher than its input. For example,
   /// Round up (4.02) is 4.1; and Round up (4.00) is 4.0.
+  ///
+  /// 1.  `function Roundup (input):`
+  /// 2.  `    int_input = round_to_nearest_integer (input * 100000)`
+  /// 3.  `    if (int_input % 10000) == 0:`
+  /// 4.  `        return int_input / 100000.0`
+  /// 5.  `    else:`
+  /// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
   fn roundup(&self, base_score: f32) -> f32 {
     let score_int = (base_score * 100_000.0) as u32;
     if score_int % 10000 == 0 {

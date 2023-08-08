@@ -1,21 +1,37 @@
+//! 5\. Qualitative Severity Rating Scale
+//!
+//! For some purposes it is useful to have a textual representation of the numeric Base, Temporal and Environmental scores. All scores can be mapped to the qualitative ratings defined in Table 14.\[^3\]
+//!
+//! **Table 14: Qualitative severity rating scale**
+//!
+//! | Rating | CVSS Score |
+//! | --- | --- |
+//! | None | 0.0 |
+//! | Low | 0.1 - 3.9 |
+//! | Medium | 4.0 - 6.9 |
+//! | High | 7.0 - 8.9 |
+//! | Critical | 9.0 - 10.0 |
+//!
+//! As an example, a CVSS Base Score of 4.0 has an associated severity rating of Medium. The use of these qualitative severity ratings is optional, and there is no requirement to include them when publishing CVSS scores. They are intended to help organizations properly assess and prioritize their vulnerability management processes.
+//!
 use crate::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-// 严重性
+/// 定性严重程度
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum SeverityType {
-  // 未校正
+  /// 未校正 | None | 0.0 |
   None,
-  // 低危
+  /// 低危 | Low | 0.1 - 3.9 |
   Low,
-  // 中危
+  /// 中危 | Medium | 4.0 - 6.9 |
   Medium,
-  // 高危
+  /// 高危 | High | 7.0 - 8.9 |
   High,
-  // 严重
+  /// 严重 | Critical | 9.0 - 10.0 |
   Critical,
 }
 

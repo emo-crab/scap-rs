@@ -1,3 +1,4 @@
+#![doc(html_root_url = "https://docs.rs/nvd-rs/0.0.1")]
 pub mod cve;
 pub mod error;
 pub mod node;
