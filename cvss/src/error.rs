@@ -1,7 +1,9 @@
+//! cvss error
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, CVSSError>;
 
+/// CVSSError
 #[derive(Error, Debug, Clone)]
 pub enum CVSSError {
   #[error("error decoding value `{value}`, not well formed UTF-8")]

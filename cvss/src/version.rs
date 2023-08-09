@@ -1,3 +1,4 @@
+//! cvss version
 use crate::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;

@@ -1,6 +1,6 @@
 //!
-//! Common Vulnerability Scoring System version 3.1: Specification Document
-//! =======================================================================
+//! Common Vulnerability Scoring System version 3.1
+//! ===============================================
 //!
 //!
 //! CVSS Version 3.1 Release

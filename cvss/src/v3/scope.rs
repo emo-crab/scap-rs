@@ -22,13 +22,22 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-// S
+/// Scope 影响范围
+///
+/// CVSS3.0版计算的一个重要属性，反映软件组件中的漏洞会否影响其以外的资源或获得其以外的权限。这一结果由度量值 授权域 或 简单域表示。
+///
+/// An important property captured by CVSS v3.0 is the ability for a vulnerability in one software component to impact resources beyond its means, or privileges. This consequence is represented by the metric Authorization Scope, or simply Scope.
+///
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum ScopeType {
-  // S:U
+  /// unchanged(U) 固定
+  ///
+  /// 被利用的漏洞只能影响由同一当局管理的资源。在这种情况下，脆弱组件 和 受影响组件是同一个。
   Unchanged,
-  // S:C
+  /// changed(C) 变化
+  ///
+  /// 被利用的漏洞可能会影响超出脆弱组件预期授权权限的资源。在这种情况下，脆弱组件和受影响组件并非同一个。
   Changed,
 }
 
