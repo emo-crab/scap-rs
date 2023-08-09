@@ -65,8 +65,11 @@ impl FromStr for AttackComplexityType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with("AC:") {
-      s = s.strip_prefix("AC:").unwrap_or_default().to_string();
+    if s.starts_with(Self::NAME) {
+      s = s
+        .strip_prefix(&format!("{}:", Self::NAME))
+        .unwrap_or_default()
+        .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();

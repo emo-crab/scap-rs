@@ -47,6 +47,7 @@ pub struct ImpactMetricV2 {
   // 用户交互
   pub user_interaction_required: Option<bool>,
 }
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ImpactMetricV3 {

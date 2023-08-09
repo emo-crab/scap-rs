@@ -81,8 +81,11 @@ impl FromStr for AttackVectorType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with("AV:") {
-      s = s.strip_prefix("AV:").unwrap_or_default().to_string();
+    if s.starts_with(Self::NAME) {
+      s = s
+        .strip_prefix(&format!("{}:", Self::NAME))
+        .unwrap_or_default()
+        .to_string();
     }
     let c = {
       let c = s.chars().next();

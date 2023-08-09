@@ -92,14 +92,11 @@ impl FromStr for ConfidentialityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if let Some((p, v)) = s.split_once(':') {
-      if !matches!(p, "C" | "I" | "A") {
-        return Err(CVSSError::InvalidCVSS {
-          value: p.to_string(),
-          scope: "ImpactMetricsType prefix".to_string(),
-        });
-      }
-      s = v.to_string();
+    if s.starts_with(Self::NAME) {
+      s = s
+        .strip_prefix(&format!("{}:", Self::NAME))
+        .unwrap_or_default()
+        .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
@@ -124,14 +121,11 @@ impl FromStr for IntegrityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if let Some((p, v)) = s.split_once(':') {
-      if !matches!(p, "C" | "I" | "A") {
-        return Err(CVSSError::InvalidCVSS {
-          value: p.to_string(),
-          scope: "ImpactMetricsType prefix".to_string(),
-        });
-      }
-      s = v.to_string();
+    if s.starts_with(Self::NAME) {
+      s = s
+        .strip_prefix(&format!("{}:", Self::NAME))
+        .unwrap_or_default()
+        .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
@@ -156,14 +150,11 @@ impl FromStr for AvailabilityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if let Some((p, v)) = s.split_once(':') {
-      if !matches!(p, "C" | "I" | "A") {
-        return Err(CVSSError::InvalidCVSS {
-          value: p.to_string(),
-          scope: "ImpactMetricsType prefix".to_string(),
-        });
-      }
-      s = v.to_string();
+    if s.starts_with(Self::NAME) {
+      s = s
+        .strip_prefix(&format!("{}:", Self::NAME))
+        .unwrap_or_default()
+        .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();

@@ -109,6 +109,7 @@ impl CVSS {
       self.roundup((1.08 * (impact_score_scope + exploit_ability_score)).min(10.0))
     };
     self.base_score = base_score;
+    self.update_severity();
   }
   /// Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
   ///
@@ -122,8 +123,8 @@ impl CVSS {
   /// 4.  `        return int_input / 100000.0`
   /// 5.  `    else:`
   /// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
-  fn roundup(&self, base_score: f32) -> f32 {
-    let score_int = (base_score * 100_000.0) as u32;
+  fn roundup(&self, score: f32) -> f32 {
+    let score_int = (score * 100_000.0) as u32;
     if score_int % 10000 == 0 {
       (score_int as f32) / 100_000.0
     } else {
@@ -180,7 +181,7 @@ impl FromStr for CVSS {
     if matches!(version, Version::None) {
       return Err(CVSSError::InvalidCVSSVersion {
         value: version.to_string(),
-        expected: "2.0, 3.0 or 3.1".to_string(),
+        expected: "3.0 or 3.1".to_string(),
       });
     }
     let mut vector = vectors.split('/');
@@ -204,7 +205,6 @@ impl FromStr for CVSS {
       base_severity: SeverityType::None,
     };
     cvss.update_score();
-    cvss.update_severity();
     Ok(cvss)
   }
 }
