@@ -35,6 +35,62 @@ pub mod privileges_required;
 pub mod scope;
 pub mod severity;
 pub mod user_interaction;
+
+/// 2.1. Exploitability Metrics
+///
+/// As mentioned, the Exploitability metrics reflect the characteristics of the thing that is vulnerable, which we refer to formally as the vulnerable component. Therefore, each of the Exploitability metrics listed below should be scored relative to the vulnerable component, and reflect the properties of the vulnerability that lead to a successful attack.
+///
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ExploitAbility {
+  /// [`AttackVectorType`] 访问途径（AV）
+  pub attack_vector: AttackVectorType,
+  /// [`AttackComplexityType`] 攻击复杂度（AC）
+  pub attack_complexity: AttackComplexityType,
+  /// [`PrivilegesRequiredType`] 所需权限（PR）
+  pub privileges_required: PrivilegesRequiredType,
+  /// [`UserInteractionType`] 用户交互（UI）
+  pub user_interaction: UserInteractionType,
+}
+
+impl ExploitAbility {
+  /// 8.22 × 𝐴𝑡𝑡𝑎𝑐𝑘𝑉𝑒𝑐𝑡𝑜𝑟 × 𝐴𝑡𝑡𝑎𝑐𝑘𝐶𝑜𝑚𝑝𝑙𝑒𝑥𝑖𝑡𝑦 × 𝑃𝑟𝑖𝑣𝑖𝑙𝑒𝑔𝑒𝑅𝑒𝑞𝑢𝑖𝑟𝑒𝑑 × 𝑈𝑠𝑒𝑟𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛
+  pub fn score(&self, scope_is_changed: bool) -> f32 {
+    roundup(
+      8.22
+        * self.attack_vector.score()
+        * self.attack_complexity.score()
+        * self.user_interaction.score()
+        * self.privileges_required.scoped_score(scope_is_changed),
+    )
+  }
+}
+/// 2.3. Impact Metrics
+///
+/// The Impact metrics refer to the properties of the impacted component. Whether a successfully exploited vulnerability affects one or more components, the impact metrics are scored according to the component that suffers the worst outcome that is most directly and predictably associated with a successful attack. That is, analysts should constrain impacts to a reasonable, final outcome which they are confident an attacker is able to achieve.
+///
+/// If a scope change has not occurred, the Impact metrics should reflect the confidentiality, integrity, and availability (CIA) impact to the vulnerable component. However, if a scope change has occurred, then the Impact metrics should reflect the CIA impact to either the vulnerable component, or the impacted component, whichever suffers the most severe outcome.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct Impact {
+  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  pub confidentiality_impact: ConfidentialityImpactType,
+  /// [`IntegrityImpactType`] 完整性影响（I）
+  pub integrity_impact: IntegrityImpactType,
+  /// [`AvailabilityImpactType`] 可用性影响（A）
+  pub availability_impact: AvailabilityImpactType,
+}
+
+impl Impact {
+  /// 𝐼𝑆𝐶𝐵𝑎𝑠𝑒 = 1 − [(1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐶𝑜𝑛𝑓) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐼𝑛𝑡𝑒𝑔) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐴𝑣𝑎𝑖𝑙)]
+  fn score(&self) -> f32 {
+    let c_score = self.confidentiality_impact.score();
+    let i_score = self.confidentiality_impact.score();
+    let a_score = self.availability_impact.score();
+    1.0 - ((1.0 - c_score) * (1.0 - i_score) * (1.0 - a_score)).abs()
+  }
+}
+
 ///
 /// The Common Vulnerability Scoring System (CVSS) captures the principal technical characteristics of software, hardware and firmware vulnerabilities. Its outputs include numerical scores indicating the severity of a vulnerability relative to other vulnerabilities.
 ///
@@ -51,22 +107,12 @@ pub struct CVSS {
   pub version: Version,
   /// 向量: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
   pub vector_string: String,
-  /// [`AttackVectorType`] 访问途径（AV）
-  pub attack_vector: AttackVectorType,
-  /// [`AttackComplexityType`] 攻击复杂度（AC）
-  pub attack_complexity: AttackComplexityType,
-  /// [`PrivilegesRequiredType`] 所需权限（PR）
-  pub privileges_required: PrivilegesRequiredType,
-  /// [`UserInteractionType`] 用户交互（UI）
-  pub user_interaction: UserInteractionType,
+  #[serde(flatten)]
+  pub exploit_ability: ExploitAbility,
   /// [`ScopeType`] 影响范围（S）
   pub scope: ScopeType,
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
-  pub confidentiality_impact: ConfidentialityImpactType,
-  /// [`IntegrityImpactType`] 完整性影响（I）
-  pub integrity_impact: IntegrityImpactType,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
-  pub availability_impact: AvailabilityImpactType,
+  #[serde(flatten)]
+  pub impact: Impact,
   /// 基础评分
   pub base_score: f32,
   /// [`SeverityType`] 基础评级
@@ -94,8 +140,8 @@ impl CVSS {
   /// | If Scope is Unchanged | Roundup (Minimum \[(Impact + Exploitability), 10\]) |
   /// | If Scope is Changed | Roundup (Minimum \[1.08 × (Impact + Exploitability), 10\]) |[](#body)
   ///
-  fn update_score(&mut self) {
-    let exploit_ability_score = self.exploit_ability_score();
+  fn base_score(&mut self) {
+    let exploit_ability_score = self.exploitability_score();
     let impact_score_scope = self.impact_score();
 
     // > BaseScore
@@ -104,64 +150,27 @@ impl CVSS {
     let base_score = if impact_score_scope < 0.0 {
       0.0
     } else if !self.scope.is_changed() {
-      self.roundup((impact_score_scope + exploit_ability_score).min(10.0))
+      roundup((impact_score_scope + exploit_ability_score).min(10.0))
     } else {
-      self.roundup((1.08 * (impact_score_scope + exploit_ability_score)).min(10.0))
+      roundup((1.08 * (impact_score_scope + exploit_ability_score)).min(10.0))
     };
     self.base_score = base_score;
     self.update_severity();
   }
-  /// Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
-  ///
-  /// Where “Round up” is defined as the smallest number,
-  /// specified to one decimal place, that is equal to or higher than its input. For example,
-  /// Round up (4.02) is 4.1; and Round up (4.00) is 4.0.
-  ///
-  /// 1.  `function Roundup (input):`
-  /// 2.  `    int_input = round_to_nearest_integer (input * 100000)`
-  /// 3.  `    if (int_input % 10000) == 0:`
-  /// 4.  `        return int_input / 100000.0`
-  /// 5.  `    else:`
-  /// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
-  fn roundup(&self, score: f32) -> f32 {
-    let score_int = (score * 100_000.0) as u32;
-    if score_int % 10000 == 0 {
-      (score_int as f32) / 100_000.0
-    } else {
-      let score_floor = ((score_int as f32) / 10_000.0).floor();
-      (score_floor + 1.0) / 10.0
-    }
-  }
-  /// 8.22 × 𝐴𝑡𝑡𝑎𝑐𝑘𝑉𝑒𝑐𝑡𝑜𝑟 × 𝐴𝑡𝑡𝑎𝑐𝑘𝐶𝑜𝑚𝑝𝑙𝑒𝑥𝑖𝑡𝑦 × 𝑃𝑟𝑖𝑣𝑖𝑙𝑒𝑔𝑒𝑅𝑒𝑞𝑢𝑖𝑟𝑒𝑑 × 𝑈𝑠𝑒𝑟𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛
-  pub fn exploit_ability_score(&self) -> f32 {
-    self.roundup(
-      8.22
-        * self.attack_vector.score()
-        * self.attack_complexity.score()
-        * self.user_interaction.score()
-        * self
-          .privileges_required
-          .scoped_score(self.scope.is_changed()),
-    )
-  }
-  /// 𝐼𝑆𝐶𝐵𝑎𝑠𝑒 = 1 − [(1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐶𝑜𝑛𝑓) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐼𝑛𝑡𝑒𝑔) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐴𝑣𝑎𝑖𝑙)]
-  fn impact_sub_score(&self) -> f32 {
-    let c_score = self.confidentiality_impact.score();
-    let i_score = self.confidentiality_impact.score();
-    let a_score = self.availability_impact.score();
-    1.0 - ((1.0 - c_score) * (1.0 - i_score) * (1.0 - a_score)).abs()
+  pub fn exploitability_score(&self) -> f32 {
+    self.exploit_ability.score(self.scope.is_changed())
   }
   /// Scope Unchanged 6.42 × 𝐼𝑆𝐶Base
   /// Scope Changed 7.52 × [𝐼𝑆𝐶𝐵𝑎𝑠𝑒 − 0.029] − 3.25 × [𝐼𝑆𝐶𝐵𝑎𝑠𝑒 − 0.02]15
   pub fn impact_score(&self) -> f32 {
-    let impact_sub_score = self.impact_sub_score();
+    let impact_sub_score = self.impact.score();
     let impact_score = if !self.scope.is_changed() {
       self.scope.score() * impact_sub_score
     } else {
       (self.scope.score() * (impact_sub_score - 0.029).abs())
         - (3.25 * (impact_sub_score - 0.02).abs().powf(15.0))
     };
-    self.roundup(impact_score)
+    roundup(impact_score)
   }
 }
 impl FromStr for CVSS {
@@ -190,21 +199,49 @@ impl FromStr for CVSS {
       value: vector_string.to_string(),
       scope: "CVSS parser".to_string(),
     };
-    let mut cvss = CVSS {
-      version,
-      vector_string: vector_string.to_string(),
+    let exploit_ability = ExploitAbility {
       attack_vector: AttackVectorType::from_str(vector.next().ok_or(&error)?)?,
       attack_complexity: AttackComplexityType::from_str(vector.next().ok_or(&error)?)?,
       privileges_required: PrivilegesRequiredType::from_str(vector.next().ok_or(&error)?)?,
       user_interaction: UserInteractionType::from_str(vector.next().ok_or(&error)?)?,
-      scope: ScopeType::from_str(vector.next().ok_or(&error)?)?,
+    };
+    let scope = ScopeType::from_str(vector.next().ok_or(&error)?)?;
+    let impact = Impact {
       confidentiality_impact: ConfidentialityImpactType::from_str(vector.next().ok_or(&error)?)?,
       integrity_impact: IntegrityImpactType::from_str(vector.next().ok_or(&error)?)?,
       availability_impact: AvailabilityImpactType::from_str(vector.next().ok_or(&error)?)?,
+    };
+    let mut cvss = CVSS {
+      version,
+      vector_string: vector_string.to_string(),
+      exploit_ability,
+      scope,
+      impact,
       base_score: 0.0,
       base_severity: SeverityType::None,
     };
-    cvss.update_score();
+    cvss.base_score();
     Ok(cvss)
+  }
+}
+/// Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
+///
+/// Where “Round up” is defined as the smallest number,
+/// specified to one decimal place, that is equal to or higher than its input. For example,
+/// Round up (4.02) is 4.1; and Round up (4.00) is 4.0.
+///
+/// 1.  `function Roundup (input):`
+/// 2.  `    int_input = round_to_nearest_integer (input * 100000)`
+/// 3.  `    if (int_input % 10000) == 0:`
+/// 4.  `        return int_input / 100000.0`
+/// 5.  `    else:`
+/// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
+fn roundup(score: f32) -> f32 {
+  let score_int = (score * 100_000.0) as u32;
+  if score_int % 10000 == 0 {
+    (score_int as f32) / 100_000.0
+  } else {
+    let score_floor = ((score_int as f32) / 10_000.0).floor();
+    (score_floor + 1.0) / 10.0
   }
 }

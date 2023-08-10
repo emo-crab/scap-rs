@@ -7,7 +7,6 @@ pub mod node;
 use serde::{Deserialize, Serialize};
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
 // https://github.com/CVEProject/cve-schema
-// https://cveproject.github.io/cve-schema/schema/v5.0/docs/mindmap.html
 // https://raw.gitmirror.com/CVEProject/cve-schema/master/schema/v4.0/DRAFT-JSON-file-format-v4.md
 // https://www.cve.org/Downloads
 // https://github.com/CVEProject/cvelist
@@ -22,10 +21,10 @@ pub struct CVEContainer {
   pub CVE_data_format: String,
   /// This identifies which version of the data format is in use. This is mandatory and designed to prevent problems with attempting to detect what format of data is used.
   pub CVE_data_version: String,
-  // CVE 数量
+  /// numberOfCVEs
   pub CVE_data_numberOfCVEs: String,
-  /// Timestamps
+  /// last update time for this entry
   pub CVE_data_timestamp: String,
-  // CVE列表
+  /// There are several special string values that can exist at the root level of the CVE ID JSON data, and one special one, the CVE_data_version, which can exist in the root or within any container.
   pub CVE_Items: Vec<cve::CVEItem>,
 }
