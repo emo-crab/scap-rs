@@ -86,3 +86,23 @@ impl FromStr for SeverityType {
     }
   }
 }
+#[cfg(test)]
+mod tests {
+  use crate::v3::severity::SeverityType;
+
+  #[test]
+  fn severity_type_test() {
+    assert_eq!(SeverityType::from(0.0), SeverityType::None);
+    assert_eq!(SeverityType::from(0.1), SeverityType::Low);
+    assert_eq!(SeverityType::from(0.3), SeverityType::Low);
+    assert_eq!(SeverityType::from(1.0), SeverityType::Low);
+    assert_eq!(SeverityType::from(1.6), SeverityType::Low);
+    assert_eq!(SeverityType::from(4.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(5.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(6.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(6.9), SeverityType::Medium);
+    assert_eq!(SeverityType::from(7.0), SeverityType::High);
+    assert_eq!(SeverityType::from(9.0), SeverityType::Critical);
+    assert_eq!(SeverityType::from(10.0), SeverityType::Critical);
+  }
+}

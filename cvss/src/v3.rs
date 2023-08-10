@@ -13,7 +13,7 @@
 //!
 //! * * *
 //!
-use std::fmt::{Display, Formatter};
+
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
 use crate::v3::attack_complexity::AttackComplexityType;
@@ -27,6 +27,7 @@ use crate::v3::severity::SeverityType;
 use crate::v3::user_interaction::UserInteractionType;
 use crate::version::Version;
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
 pub mod attack_complexity;
@@ -57,13 +58,11 @@ pub struct ExploitAbility {
 impl ExploitAbility {
   /// 8.22 × 𝐴𝑡𝑡𝑎𝑐𝑘𝑉𝑒𝑐𝑡𝑜𝑟 × 𝐴𝑡𝑡𝑎𝑐𝑘𝐶𝑜𝑚𝑝𝑙𝑒𝑥𝑖𝑡𝑦 × 𝑃𝑟𝑖𝑣𝑖𝑙𝑒𝑔𝑒𝑅𝑒𝑞𝑢𝑖𝑟𝑒𝑑 × 𝑈𝑠𝑒𝑟𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛
   pub fn score(&self, scope_is_changed: bool) -> f32 {
-    roundup(
-      8.22
-        * self.attack_vector.score()
-        * self.attack_complexity.score()
-        * self.user_interaction.score()
-        * self.privileges_required.scoped_score(scope_is_changed),
-    )
+    8.22
+      * self.attack_vector.score()
+      * self.attack_complexity.score()
+      * self.user_interaction.score()
+      * self.privileges_required.scoped_score(scope_is_changed)
   }
 }
 /// 2.3. Impact Metrics
@@ -84,9 +83,9 @@ pub struct Impact {
 
 impl Impact {
   /// 𝐼𝑆𝐶𝐵𝑎𝑠𝑒 = 1 − [(1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐶𝑜𝑛𝑓) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐼𝑛𝑡𝑒𝑔) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐴𝑣𝑎𝑖𝑙)]
-  fn score(&self) -> f32 {
+  fn impact_sub_score_base(&self) -> f32 {
     let c_score = self.confidentiality_impact.score();
-    let i_score = self.confidentiality_impact.score();
+    let i_score = self.integrity_impact.score();
     let a_score = self.availability_impact.score();
     1.0 - ((1.0 - c_score) * (1.0 - i_score) * (1.0 - a_score)).abs()
   }
@@ -121,10 +120,6 @@ pub struct CVSS {
 }
 
 impl CVSS {
-  // https://nvd.nist.gov/vuln-metrics/cvss
-  fn update_severity(&mut self) {
-    self.base_severity = SeverityType::from(self.base_score)
-  }
   /// https://nvd.nist.gov/vuln-metrics/cvss/v3-calculator
   /// 7.1. Base Metrics Equations
   /// The Base Score formula depends on sub-formulas for Impact Sub-Score (ISS), Impact, and Exploitability, all of which are defined below:
@@ -141,22 +136,19 @@ impl CVSS {
   /// | If Scope is Unchanged | Roundup (Minimum \[(Impact + Exploitability), 10\]) |
   /// | If Scope is Changed | Roundup (Minimum \[1.08 × (Impact + Exploitability), 10\]) |[](#body)
   ///
-  fn base_score(&mut self) {
+  fn base_score(&self) -> f32 {
     let exploit_ability_score = self.exploitability_score();
     let impact_score_scope = self.impact_score();
-
     // > BaseScore
     // If (Impact sub score <= 0)     0 else,
     // Scope Unchanged                 𝑅𝑜𝑢𝑛𝑑𝑢𝑝(𝑀𝑖𝑛𝑖𝑚𝑢𝑚[(𝐼𝑚𝑝𝑎𝑐𝑡 + 𝐸𝑥𝑝𝑙𝑜𝑖𝑡𝑎𝑏𝑖𝑙𝑖𝑡𝑦), 10])
-    let base_score = if impact_score_scope < 0.0 {
+    if impact_score_scope < 0.0 {
       0.0
     } else if !self.scope.is_changed() {
       roundup((impact_score_scope + exploit_ability_score).min(10.0))
     } else {
       roundup((1.08 * (impact_score_scope + exploit_ability_score)).min(10.0))
-    };
-    self.base_score = base_score;
-    self.update_severity();
+    }
   }
   pub fn exploitability_score(&self) -> f32 {
     self.exploit_ability.score(self.scope.is_changed())
@@ -164,20 +156,40 @@ impl CVSS {
   /// Scope Unchanged 6.42 × 𝐼𝑆𝐶Base
   /// Scope Changed 7.52 × [𝐼𝑆𝐶𝐵𝑎𝑠𝑒 − 0.029] − 3.25 × [𝐼𝑆𝐶𝐵𝑎𝑠𝑒 − 0.02]15
   pub fn impact_score(&self) -> f32 {
-    let impact_sub_score = self.impact.score();
-    let impact_score = if !self.scope.is_changed() {
-      self.scope.score() * impact_sub_score
+    let impact_sub_score_base = self.impact.impact_sub_score_base();
+
+    if !self.scope.is_changed() {
+      self.scope.score() * impact_sub_score_base
     } else {
-      (self.scope.score() * (impact_sub_score - 0.029).abs())
-        - (3.25 * (impact_sub_score - 0.02).abs().powf(15.0))
-    };
-    roundup(impact_score)
+      (self.scope.score() * (impact_sub_score_base - 0.029).abs())
+        - (3.25 * (impact_sub_score_base - 0.02).abs().powf(15.0))
+    }
+  }
+  pub fn builder(
+    version: Version,
+    exploit_ability: ExploitAbility,
+    scope: ScopeType,
+    impact: Impact,
+  ) -> CVSSBuilder {
+    CVSSBuilder::new(version, exploit_ability, scope, impact)
   }
 }
 
 impl Display for CVSS {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-
+    write!(
+      f,
+      "CVSS:{}/{}/{}/{}/{}/{}/{}/{}/{}",
+      self.version,
+      self.exploit_ability.attack_vector,
+      self.exploit_ability.attack_complexity,
+      self.exploit_ability.privileges_required,
+      self.exploit_ability.user_interaction,
+      self.scope,
+      self.impact.confidentiality_impact,
+      self.impact.integrity_impact,
+      self.impact.availability_impact
+    )
   }
 }
 impl FromStr for CVSS {
@@ -227,7 +239,9 @@ impl FromStr for CVSS {
       base_score: 0.0,
       base_severity: SeverityType::None,
     };
-    cvss.base_score();
+    cvss.base_score = cvss.base_score();
+    cvss.base_severity = SeverityType::from(cvss.base_score);
+    cvss.vector_string = cvss.to_string();
     Ok(cvss)
   }
 }
@@ -243,12 +257,71 @@ impl FromStr for CVSS {
 /// 4.  `        return int_input / 100000.0`
 /// 5.  `    else:`
 /// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
-fn roundup(score: f32) -> f32 {
-  let score_int = (score * 100_000.0) as u32;
-  if score_int % 10000 == 0 {
-    (score_int as f32) / 100_000.0
+fn roundup(input: f32) -> f32 {
+  let int_input = (input * 100_000.0) as u32;
+  if int_input % 10000 == 0 {
+    (int_input as f32) / 100_000.0
   } else {
-    let score_floor = ((score_int as f32) / 10_000.0).floor();
+    let score_floor = ((int_input as f32) / 10_000.0).floor();
     (score_floor + 1.0) / 10.0
+  }
+}
+
+pub struct CVSSBuilder {
+  /// Version 版本： 3.0 和 3.1
+  pub version: Version,
+  pub exploit_ability: ExploitAbility,
+  /// [`ScopeType`] 影响范围（S）
+  pub scope: ScopeType,
+  pub impact: Impact,
+}
+/// CVSS Builder
+impl CVSSBuilder {
+  pub fn new(
+    version: Version,
+    exploit_ability: ExploitAbility,
+    scope: ScopeType,
+    impact: Impact,
+  ) -> Self {
+    Self {
+      version,
+      exploit_ability,
+      scope,
+      impact,
+    }
+  }
+  pub fn build(self) -> CVSS {
+    let Self {
+      version,
+      exploit_ability,
+      scope,
+      impact,
+    } = self;
+    let mut cvss = CVSS {
+      version,
+      vector_string: "".to_string(),
+      exploit_ability,
+      scope,
+      impact,
+      base_score: 0.0,
+      base_severity: SeverityType::None,
+    };
+    cvss.vector_string = cvss.to_string();
+    cvss.base_score = cvss.base_score();
+    cvss.base_severity = SeverityType::from(cvss.base_score);
+    cvss
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::v3::roundup;
+
+  #[test]
+  fn roundup_test() {
+    assert_eq!(roundup(4.00), 4.0);
+    assert_eq!(roundup(4.02), 4.1);
+    assert_eq!(roundup(0.8619848), 0.9);
+    assert_eq!(roundup(0.9006104), 1.0)
   }
 }
