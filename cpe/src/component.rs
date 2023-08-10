@@ -1,3 +1,4 @@
+//! component
 use language_tags::LanguageTag;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{convert::TryFrom, fmt, str::FromStr};

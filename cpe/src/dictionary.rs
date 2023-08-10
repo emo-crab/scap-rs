@@ -1,16 +1,34 @@
+//! ### Common Platform Enumeration (CPE): Dictionary
+//! The Dictionary specification defines the concept of a CPE dictionary, which is a repository of CPE names and metadata, with each name identifying a single class of IT product. The Dictionary specification defines processes for using the dictionary, such as how to search for a particular CPE name or look for dictionary entries that belong to a broader product class. Also, the Dictionary specification outlines all the rules that dictionary maintainers must follow when creating new dictionary entries and updating existing entries.
+//!
 use crate::{parse_uri_attribute, CPEAttributes};
 use chrono::{DateTime, Utc};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
 use std::marker::PhantomData;
-
+use std::str::FromStr;
+/// The cpe-list element acts as a top-level container for CPE Name items. Each individual item must be unique. Please refer to the description of ListType for additional information about the structure of this element.
+///
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(rename_all = "kebab-case")]
 pub struct CPEList {
   pub generator: Generator,
   pub cpe_item: Vec<CPEItem>,
 }
-
+/**
+The ItemType complex type defines an element that represents a single CPE
+Name. The required name attribute is a URI which must be a unique key and should follow the URI
+structure outlined in the CPE Specification. The optional title element is used to provide a
+human-readable title for the platform. To support uses intended for multiple languages, this element
+supports the ‘xml:lang’ attribute. At most one title element can appear for each language. The notes
+element holds optional descriptive material. Multiple notes elements are allowed, but only one per
+language should be used. Note that the language associated with the notes element applies to all child
+note elements. The optional references element holds external info references. The optional check
+element is used to call out an OVAL Definition that can confirm or reject an IT system as an instance of
+the named platform. Additional elements not part of the CPE namespace are allowed and are just skipped
+by validation. In essence, a dictionary file can contain additional information that a user can choose
+to use or not, but this information is not required to be used or understood.
+ */
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct CPEItem {
   #[serde(
@@ -50,7 +68,10 @@ pub struct Title {
   )]
   pub desc: String,
 }
-
+/**
+The NotesType complex type defines an element that consists of one or more
+child note elements. It is assumed that each of these note elements is representative of the same
+language as defined by their parent.*/
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Notes {
   #[serde(rename(serialize = "lang", deserialize = "@lang"))]
@@ -58,7 +79,13 @@ pub struct Notes {
   #[serde(rename(serialize = "value", deserialize = "$value"))]
   pub desc: String,
 }
-
+/**
+The CheckType complex type is used to define an element to hold information
+about an individual check. It includes a checking system specification URI, string content, and an
+optional external file reference. The checking system specification should be the URI for a particular
+version of OVAL or a related system testing language, and the content will be an identifier of a test
+written in that language. The external file reference could be used to point to the file in which the
+content test identifier is defined.*/
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct Check {
   #[serde(rename = "system")]
@@ -73,7 +100,13 @@ pub struct Check {
 pub struct References {
   reference: Vec<Reference>,
 }
-
+/**
+The ReferencesType complex type defines an element used to hold a
+collection of individual references. Each reference consists of a piece of text (intended to be
+human-readable) and a URI (intended to be a URL, and point to a real resource) and is used to point to
+extra descriptive material, for example a supplier's web site or platform
+documentation.
+ */
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Reference {
   #[serde(rename(serialize = "href", deserialize = "@href"))]
@@ -113,12 +146,27 @@ pub struct DeprecatedInfo {
   #[serde(rename(serialize = "type", deserialize = "@type"))]
   pub d_type: String,
 }
-
+/** The GeneratorType complex type defines an element that is used to hold
+information about when a particular document was compiled, what version of the schema was used, what
+tool compiled the document, and what version of that tool was used. Additional generator information is
+also allowed although it is not part of the official schema. Individual organizations can place
+generator information that they feel is important and it will be skipped during the validation. All that
+this schema really cares about is that the stated generator information is there.*/
 #[derive(Deserialize, Serialize, Debug, Clone)]
 pub struct Generator {
+  /// The optional product_name element specifies the name of the application used to generate the file.
   pub product_name: String,
+  /// The optional product_version element specifies the version of the application used to generate the file.
   pub product_version: String,
+  /// The required schema_version element specifies the version of the schema that the document has been written against and that should be used for validation.
   pub schema_version: String,
+  /** The required timestamp element specifies when the particular
+  document was compiled. The format for the timestamp is yyyy-mm-ddThh:mm:ss. Note that the
+  timestamp element does not specify when an item in the document was created or modified but
+  rather when the actual XML document that contains the items was created. For example, a document
+  might pull a bunch of existing items together, each of which was created at some point in the
+  past. The timestamp in this case would be when this combined document was
+  created.*/
   pub timestamp: DateTime<Utc>,
 }
 
@@ -169,7 +217,7 @@ where
       // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
       // https://cpe.mitre.org/specification/#downloads
       let value = parse_uri_attribute(value).unwrap_or_default();
-      match CPEAttributes::try_from(value.as_str()) {
+      match CPEAttributes::from_str(value.as_str()) {
         Ok(p) => Ok(p),
         Err(e) => Err(de::Error::custom(e)),
       }

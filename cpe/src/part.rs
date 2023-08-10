@@ -1,6 +1,7 @@
-use crate::error::CPEError;
+//! part
+use crate::error::{CPEError, Result};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
-use std::{convert::TryFrom, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum CPEPart {
@@ -15,7 +16,7 @@ pub enum CPEPart {
 }
 
 impl Serialize for CPEPart {
-  fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+  fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
   where
     S: Serializer,
   {
@@ -29,7 +30,7 @@ impl Serialize for CPEPart {
 }
 
 impl<'de> Deserialize<'de> for CPEPart {
-  fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+  fn deserialize<D>(deserializer: D) -> std::result::Result<Self, D::Error>
   where
     D: Deserializer<'de>,
   {
@@ -49,17 +50,10 @@ impl Default for CPEPart {
   }
 }
 
-impl TryFrom<&str> for CPEPart {
-  type Error = CPEError;
-  fn try_from(val: &str) -> Result<Self, Self::Error> {
-    Self::from_str(val)
-  }
-}
-
 impl FromStr for CPEPart {
   type Err = CPEError;
 
-  fn from_str(val: &str) -> Result<Self, Self::Err> {
+  fn from_str(val: &str) -> Result<Self> {
     let c = {
       let c = val.chars().next();
       c.ok_or(CPEError::InvalidPart {

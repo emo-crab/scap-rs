@@ -1,8 +1,9 @@
+//! cpe error
 use thiserror::Error;
 
 pub type Result<T> = std::result::Result<T, CPEError>;
 
-#[derive(Error, Debug)]
+#[derive(Error, Debug, Clone)]
 pub enum CPEError {
   #[error("invalid wfn `{value}`")]
   InvalidWfn { value: String },
@@ -20,4 +21,9 @@ pub enum CPEError {
   InvalidPrefix { value: String },
   #[error("Invalid CPE type \"{value}\"")]
   InvalidCpeType { value: String },
+}
+impl From<&CPEError> for CPEError {
+  fn from(value: &CPEError) -> Self {
+    value.clone()
+  }
 }

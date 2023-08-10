@@ -1,10 +1,20 @@
+//! Official Common Platform Enumeration (CPE) Dictionary
+//!
+//!  CPE is a structured naming scheme for information technology systems, software, and packages. Based upon the generic syntax for Uniform Resource Identifiers (URI), CPE includes a formal name format, a method for checking names against a system, and a description format for binding text and tests to a name.
+//!  Below is the current official version of the CPE Product Dictionary. The dictionary provides an agreed upon list of official CPE names. The dictionary is provided in XML format and is available to the general public. Please check back frequently as the CPE Product Dictionary will continue to grow to include all past, present and future product releases. The CPE Dictionary is updated nightly when modifications or new names are added.
+//!
+//! As of December 2009, The National Vulnerability Database is now accepting contributions to the Official CPE Dictionary. Organizations interested in submitting CPE Names should contact the NVD CPE team at cpe_dictionary@nist.gov for help with the processing of their submission.
+//!
+//! The CPE Dictionary hosted and maintained at NIST may be used by nongovernmental organizations on a voluntary basis and is not subject to copyright in the United States. Attribution would, however, be appreciated by NIST.
+//!
+
 #![doc(html_root_url = "https://emo-car.github.io/nvd-rs/cpe")]
 // Package wfn provides a representation, bindings and matching of the Well-Formed CPE names as per
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7695.pdf and
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7696.pdf
 use serde::{Deserialize, Serialize};
 use std::collections::HashSet;
-use std::{convert::TryFrom, fmt, str::FromStr};
+use std::{fmt, str::FromStr};
 
 pub mod component;
 pub mod dictionary;
@@ -13,9 +23,9 @@ pub mod part;
 
 use crate::component::Language;
 use crate::error::{CPEError, Result};
-pub use component::Component;
-pub use part::CPEPart;
-
+use component::Component;
+use part::CPEPart;
+// https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe
 // view-source:https://csrc.nist.gov/schema/cpe/2.3/cpe-dictionary_2.3.xsd
 // https://scap.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
 // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
@@ -59,84 +69,20 @@ impl CPEAttributes {
     };
 
     let mut components = uri.split(':');
-
-    let part = if let Some(part) = components.next() {
-      CPEPart::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidPart {
-        value: uri.to_string(),
-      });
+    let error = CPEError::InvalidPart {
+      value: uri.to_string(),
     };
-    let vendor = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let product = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let version = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let update = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let edition = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let language = if let Some(part) = components.next() {
-      Language::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let sw_edition = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let target_sw = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let target_hw = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
-    let other = if let Some(part) = components.next() {
-      Component::try_from(part)?
-    } else {
-      return Err(CPEError::InvalidUri {
-        value: uri.to_string(),
-      });
-    };
+    let part = CPEPart::from_str(components.next().ok_or(&error)?)?;
+    let vendor = Component::from_str(components.next().ok_or(&error)?)?;
+    let product = Component::from_str(components.next().ok_or(&error)?)?;
+    let version = Component::from_str(components.next().ok_or(&error)?)?;
+    let update = Component::from_str(components.next().ok_or(&error)?)?;
+    let edition = Component::from_str(components.next().ok_or(&error)?)?;
+    let language = Language::from_str(components.next().ok_or(&error)?)?;
+    let sw_edition = Component::from_str(components.next().ok_or(&error)?)?;
+    let target_sw = Component::from_str(components.next().ok_or(&error)?)?;
+    let target_hw = Component::from_str(components.next().ok_or(&error)?)?;
+    let other = Component::from_str(components.next().ok_or(&error)?)?;
 
     Ok(Self {
       part,
@@ -205,17 +151,17 @@ impl CPEAttributes {
         }
         Some((k, v)) => {
           match k {
-            "part" => att.part = CPEPart::try_from(v)?,
-            "vendor" => att.vendor = Component::try_from(v)?,
-            "product" => att.product = Component::try_from(v)?,
-            "version" => att.version = Component::try_from(v)?,
-            "update" => att.update = Component::try_from(v)?,
-            "edition" => att.edition = Component::try_from(v)?,
-            "language" => att.language = Language::try_from(v)?,
-            "sw_edition" => att.sw_edition = Component::try_from(v)?,
-            "target_sw" => att.target_sw = Component::try_from(v)?,
-            "target_hw" => att.target_hw = Component::try_from(v)?,
-            "other" => att.other = Component::try_from(v)?,
+            "part" => att.part = CPEPart::from_str(v)?,
+            "vendor" => att.vendor = Component::from_str(v)?,
+            "product" => att.product = Component::from_str(v)?,
+            "version" => att.version = Component::from_str(v)?,
+            "update" => att.update = Component::from_str(v)?,
+            "edition" => att.edition = Component::from_str(v)?,
+            "language" => att.language = Language::from_str(v)?,
+            "sw_edition" => att.sw_edition = Component::from_str(v)?,
+            "target_sw" => att.target_sw = Component::from_str(v)?,
+            "target_hw" => att.target_hw = Component::from_str(v)?,
+            "other" => att.other = Component::from_str(v)?,
             _ => {
               return Err(CPEError::InvalidPart {
                 value: k.to_string(),
@@ -237,13 +183,6 @@ impl CPEAttributes {
       });
     }
     Ok(att)
-  }
-}
-
-impl TryFrom<&str> for CPEAttributes {
-  type Error = CPEError;
-  fn try_from(val: &str) -> Result<Self> {
-    CPEAttributes::from_str(val)
   }
 }
 
