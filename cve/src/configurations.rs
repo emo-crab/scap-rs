@@ -1,4 +1,17 @@
+//! configurations
+//!
 use serde::{Deserialize, Serialize};
+///  A configuration is a container that holds a set of nodes which then contain CPE Name Match Criteria. Configurations consist of three different types.
+///
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct Configurations {
+  // 版本
+  #[serde(rename = "CVE_data_version")]
+  pub data_version: String,
+  // 漏洞节点
+  pub nodes: Vec<Node>,
+}
+
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Node {
   // 逻辑操作符
@@ -8,13 +21,14 @@ pub struct Node {
   // CPE 匹配列表
   pub cpe_match: Vec<Match>,
 }
-
+/// Applicability statements are made to withstand changes to the Official CPE Dictionary without requiring consistent maintenance. CPE Match criteria comes in two forms CPE Match Strings and CPE Match String Ranges. Each of these are abstract concepts that are then correlated to CPE Names in the Official CPE Dictionary. Match criteria are displayed in bold text within a configuration node.
+///
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Match {
   // 是否存在漏洞
   pub vulnerable: bool,
-  // CPE
+  ///  A CPE Match string is a single CPE Names string that correlates to one or many CPE Names in the Official CPE Dictionary. When a match string has the bug icon next to it, all matching CPE Names are considered vulnerable. You can click the caret below a CPE Match String to see the CPE Names in the dictionary that match.
   #[serde(
     serialize_with = "cpe::dictionary::attribute_to_uri",
     deserialize_with = "cpe::dictionary::uri_to_attribute"
