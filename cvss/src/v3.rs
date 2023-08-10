@@ -13,6 +13,7 @@
 //!
 //! * * *
 //!
+use std::fmt::{Display, Formatter};
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
 use crate::v3::attack_complexity::AttackComplexityType;
@@ -171,6 +172,12 @@ impl CVSS {
         - (3.25 * (impact_sub_score - 0.02).abs().powf(15.0))
     };
     roundup(impact_score)
+  }
+}
+
+impl Display for CVSS {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+
   }
 }
 impl FromStr for CVSS {
