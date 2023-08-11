@@ -31,7 +31,8 @@ use part::CPEPart;
 // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
 // CPE属性
 #[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
-pub struct CPEAttributes {
+#[serde(deny_unknown_fields)]
+pub struct CPEName {
   // 分类：a，o，h
   pub part: CPEPart,
   // 创建产品个人或者组织/厂商
@@ -56,7 +57,7 @@ pub struct CPEAttributes {
   pub other: Component,
 }
 
-impl CPEAttributes {
+impl CPEName {
   // 从uri转CPE属性
   pub fn from_uri(uri: &str) -> Result<Self> {
     let uri = match uri.strip_prefix("cpe:2.3:") {
@@ -116,7 +117,7 @@ impl CPEAttributes {
         });
       }
     };
-    let mut att = CPEAttributes {
+    let mut att = CPEName {
       part: CPEPart::default(),
       vendor: Default::default(),
       product: Default::default(),
@@ -186,14 +187,14 @@ impl CPEAttributes {
   }
 }
 
-impl FromStr for CPEAttributes {
+impl FromStr for CPEName {
   type Err = CPEError;
   fn from_str(uri: &str) -> Result<Self> {
-    CPEAttributes::from_uri(uri)
+    CPEName::from_uri(uri)
   }
 }
 
-impl fmt::Display for CPEAttributes {
+impl fmt::Display for CPEName {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let Self {
       part,
@@ -270,7 +271,7 @@ pub fn version_cmp(a: &str, b: &str, operator: &str) -> bool {
   false
 }
 
-impl CPEAttributes {
+impl CPEName {
   // 匹配指定版本是否存在漏洞
   pub fn match_version(&self, version: &str) -> bool {
     if self.version.is_any() {

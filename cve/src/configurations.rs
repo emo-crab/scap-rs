@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 ///  A configuration is a container that holds a set of nodes which then contain CPE Name Match Criteria. Configurations consist of three different types.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Configurations {
   // 版本
   #[serde(rename = "CVE_data_version")]
@@ -13,6 +14,7 @@ pub struct Configurations {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Node {
   // 逻辑操作符
   pub operator: Operator,
@@ -24,28 +26,39 @@ pub struct Node {
 /// Applicability statements are made to withstand changes to the Official CPE Dictionary without requiring consistent maintenance. CPE Match criteria comes in two forms CPE Match Strings and CPE Match String Ranges. Each of these are abstract concepts that are then correlated to CPE Names in the Official CPE Dictionary. Match criteria are displayed in bold text within a configuration node.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Match {
   // 是否存在漏洞
   pub vulnerable: bool,
+  #[serde(flatten)]
+  pub cpe_uri: CPEUri,
+  // 包括 从版本开始
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub version_start_including: Option<String>,
+  // 排除 从版本开始
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub version_start_excluding: Option<String>,
+  // 包括 到版本结束
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub version_end_including: Option<String>,
+  // 排除 到版本结束
+  #[serde(skip_serializing_if = "Option::is_none")]
+  pub version_end_excluding: Option<String>,
+  #[serde(rename = "cpe_name")]
+  pub cpe_name: Vec<CPEUri>,
+}
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CPEUri {
   ///  A CPE Match string is a single CPE Names string that correlates to one or many CPE Names in the Official CPE Dictionary. When a match string has the bug icon next to it, all matching CPE Names are considered vulnerable. You can click the caret below a CPE Match String to see the CPE Names in the dictionary that match.
   #[serde(
     serialize_with = "cpe::dictionary::attribute_to_uri",
     deserialize_with = "cpe::dictionary::uri_to_attribute"
   )]
-  pub cpe23_uri: cpe::CPEAttributes,
-  // 包括 从版本开始
-  pub version_start_including: Option<String>,
-  // 排除 从版本开始
-  pub version_start_excluding: Option<String>,
-  // 包括 到版本结束
-  pub version_end_including: Option<String>,
-  // 排除 到版本结束
-  pub version_end_excluding: Option<String>,
+  pub cpe23_uri: cpe::CPEName,
 }
-
 #[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "UPPERCASE")]
+#[serde(rename_all = "UPPERCASE", deny_unknown_fields)]
 pub enum Operator {
   And,
   Or,
@@ -87,11 +100,11 @@ impl Match {
   }
 
   pub fn is_match(&self, product: &str, version: &str) -> bool {
-    if self.cpe23_uri.match_product(product) {
+    if self.cpe_uri.cpe23_uri.match_product(product) {
       if self.has_version_range() {
         return self.match_version_range(version);
       }
-      return self.cpe23_uri.match_version(version);
+      return self.cpe_uri.cpe23_uri.match_version(version);
     }
     false
   }

@@ -1,7 +1,7 @@
 //! ### Common Platform Enumeration (CPE): Dictionary
 //! The Dictionary specification defines the concept of a CPE dictionary, which is a repository of CPE names and metadata, with each name identifying a single class of IT product. The Dictionary specification defines processes for using the dictionary, such as how to search for a particular CPE name or look for dictionary entries that belong to a broader product class. Also, the Dictionary specification outlines all the rules that dictionary maintainers must follow when creating new dictionary entries and updating existing entries.
 //!
-use crate::{parse_uri_attribute, CPEAttributes};
+use crate::{parse_uri_attribute, CPEName};
 use chrono::{DateTime, Utc};
 use serde::{de, Deserialize, Deserializer, Serialize, Serializer};
 use std::fmt;
@@ -30,6 +30,7 @@ by validation. In essence, a dictionary file can contain additional information 
 to use or not, but this information is not required to be used or understood.
  */
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct CPEItem {
   #[serde(
     rename(serialize = "name", deserialize = "@name"),
@@ -59,6 +60,7 @@ pub struct CPEItem {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Title {
   #[serde(rename(serialize = "lang", deserialize = "@lang"))]
   pub lang: String,
@@ -73,6 +75,7 @@ The NotesType complex type defines an element that consists of one or more
 child note elements. It is assumed that each of these note elements is representative of the same
 language as defined by their parent.*/
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Notes {
   #[serde(rename(serialize = "lang", deserialize = "@lang"))]
   pub lang: String,
@@ -87,6 +90,7 @@ version of OVAL or a related system testing language, and the content will be an
 written in that language. The external file reference could be used to point to the file in which the
 content test identifier is defined.*/
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Check {
   #[serde(rename = "system")]
   pub system: String,
@@ -97,6 +101,7 @@ pub struct Check {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct References {
   reference: Vec<Reference>,
 }
@@ -108,6 +113,7 @@ extra descriptive material, for example a supplier's web site or platform
 documentation.
  */
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Reference {
   #[serde(rename(serialize = "href", deserialize = "@href"))]
   pub href: String,
@@ -116,18 +122,20 @@ pub struct Reference {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct CPE23Item {
   #[serde(
     rename(serialize = "name", deserialize = "@name"),
     deserialize_with = "uri_to_attribute",
     serialize_with = "attribute_to_uri"
   )]
-  pub name: CPEAttributes,
+  pub name: CPEName,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub deprecation: Option<Deprecation>,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
+#[serde(deny_unknown_fields)]
 pub struct Deprecation {
   #[serde(rename(serialize = "date", deserialize = "@date"))]
   pub date: DateTime<Utc>,
@@ -136,13 +144,14 @@ pub struct Deprecation {
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct DeprecatedInfo {
   #[serde(
     rename(serialize = "name", deserialize = "@name"),
     deserialize_with = "uri_to_attribute",
     serialize_with = "attribute_to_uri"
   )]
-  pub name: CPEAttributes,
+  pub name: CPEName,
   #[serde(rename(serialize = "type", deserialize = "@type"))]
   pub d_type: String,
 }
@@ -153,6 +162,7 @@ also allowed although it is not part of the official schema. Individual organiza
 generator information that they feel is important and it will be skipped during the validation. All that
 this schema really cares about is that the stated generator information is there.*/
 #[derive(Deserialize, Serialize, Debug, Clone)]
+#[serde(deny_unknown_fields)]
 pub struct Generator {
   /// The optional product_name element specifies the name of the application used to generate the file.
   pub product_name: String,
@@ -174,7 +184,7 @@ fn parse_name<'de, D>(deserializer: D) -> Result<String, D::Error>
 where
   D: Deserializer<'de>,
 {
-  struct ParseString(PhantomData<CPEAttributes>);
+  struct ParseString(PhantomData<CPEName>);
   impl<'de> de::Visitor<'de> for ParseString {
     type Value = String;
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -200,13 +210,13 @@ where
   deserializer.deserialize_any(ParseString(PhantomData))
 }
 
-pub fn uri_to_attribute<'de, D>(deserializer: D) -> Result<CPEAttributes, D::Error>
+pub fn uri_to_attribute<'de, D>(deserializer: D) -> Result<CPEName, D::Error>
 where
   D: Deserializer<'de>,
 {
-  struct UriToAttribute(PhantomData<CPEAttributes>);
+  struct UriToAttribute(PhantomData<CPEName>);
   impl<'de> de::Visitor<'de> for UriToAttribute {
-    type Value = CPEAttributes;
+    type Value = CPEName;
     fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
       formatter.write_str("uri_to_attribute")
     }
@@ -217,7 +227,7 @@ where
       // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
       // https://cpe.mitre.org/specification/#downloads
       let value = parse_uri_attribute(value).unwrap_or_default();
-      match CPEAttributes::from_str(value.as_str()) {
+      match CPEName::from_str(value.as_str()) {
         Ok(p) => Ok(p),
         Err(e) => Err(de::Error::custom(e)),
       }
@@ -232,7 +242,7 @@ where
   deserializer.deserialize_any(UriToAttribute(PhantomData))
 }
 
-pub fn attribute_to_uri<S>(cpe: &CPEAttributes, s: S) -> Result<S::Ok, S::Error>
+pub fn attribute_to_uri<S>(cpe: &CPEName, s: S) -> Result<S::Ok, S::Error>
 where
   S: Serializer,
 {
