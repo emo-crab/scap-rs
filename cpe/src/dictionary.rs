@@ -153,7 +153,7 @@ pub struct DeprecatedInfo {
   )]
   pub name: CPEName,
   #[serde(rename(serialize = "type", deserialize = "@type"))]
-  pub d_type: String,
+  pub r#type: String,
 }
 /** The GeneratorType complex type defines an element that is used to hold
 information about when a particular document was compiled, what version of the schema was used, what

@@ -36,6 +36,10 @@ pub struct Submission {
     pub submission_date: String,
     #[serde(rename = "Submission_Comment")]
     pub submission_comment: Option<String>,
+    #[serde(rename = "Submission_Version")]
+    pub submission_version: String,
+    #[serde(rename = "Submission_ReleaseDate")]
+    pub submission_release_date: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -51,6 +55,10 @@ pub struct Modification {
     pub modification_importance: Option<String>,
     #[serde(rename = "Modification_Comment")]
     pub modification_comment: Option<String>,
+    #[serde(rename = "Modification_Version")]
+    pub modification_version: Option<String>,
+    #[serde(rename = "Modification_ReleaseDate")]
+    pub modification_release_date: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -66,4 +74,8 @@ pub struct Contribution {
     pub contribution_date: String,
     #[serde(rename = "Contribution_Comment")]
     pub contribution_comment: Option<String>,
+    #[serde(rename = "Contribution_Version")]
+    pub contribution_version: Option<String>,
+    #[serde(rename = "Contribution_ReleaseDate")]
+    pub contribution_release_date: Option<String>,
 }

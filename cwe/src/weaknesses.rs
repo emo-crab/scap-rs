@@ -1,5 +1,28 @@
+//! A weakness is a mistake or condition that, if left unaddressed, could under the proper
+//! conditions contribute to a cyber-enabled capability being vulnerable to attack, allowing an
+//! adversary to make items function in unintended ways. This complexType is used to describe a
+//! specific type of weakness and provide a variety of information related to it.
+//!
+//! The required Description should be short and limited to the key points that define this
+//! weakness. The optional Extended_Description element provides a place for additional details
+//! important to this weakness, but that are not necessary to convey the fundamental concept behind
+//! the weakness. A number of other optional elements are available, each of which is described in
+//! more detail within the corresponding complexType that it references.
+//!
+//! The required ID attribute provides a unique identifier for the entry. It is considered static
+//! for the lifetime of the entry. If this entry becomes deprecated, the identifier will not be
+//! reused. The required Name attribute is a string that identifies the entry. The name should
+//! focus on the weakness being described and should avoid mentioning the attack that exploits the
+//! weakness or the consequences of exploiting the weakness. All words in the entry name should be
+//! capitalized except for articles and prepositions, unless they begin or end the name. Subsequent
+//! words in a hyphenated chain are also not capitalized. The required Abstraction attribute defines
+//! the abstraction level for this weakness. The required Structure attribute defines the structural
+//! nature of the weakness. The required Status attribute defines the maturity of the information
+//! for this weakness.
+//!
 use serde::{Deserialize, Serialize};
 use crate::content_history::ContentHistory;
+use crate::mapping_notes::MappingNotes;
 use crate::notes::Notes;
 use crate::structured_text::{StructuredCode, StructuredText};
 
@@ -67,6 +90,8 @@ pub struct Weakness {
     pub taxonomy_mappings: Option<TaxonomyMappings>,
     #[serde(rename = "Notes")]
     pub notes: Option<Notes>,
+    #[serde(rename = "Mapping_Notes")]
+    pub mapping_notes :MappingNotes,
 }
 #[derive(Debug, Deserialize, PartialEq)]
 #[serde(deny_unknown_fields)]
