@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-chrono = { version = "0.4", features = ["serde"] }
+chrono = { version = "0.4", default-features = false, features = ["serde"] }
 percent-encoding = "2.1"
 version-compare = "0.1"
 language-tags = {version="0.3",features=["serde"]}
