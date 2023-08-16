@@ -7,7 +7,7 @@ include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["cpe", "cve", "cvss","cwe"]
+members = ["cpe", "cve", "cvss","cwe","nvd-db"]
 
 #https://github.com/johnthagen/min-sized-rust
 [profile.release]
@@ -34,6 +34,7 @@ cpe = { path = "cpe" }
 cve = { path = "cve" }
 cvss = { path = "cvss" }
 cwe = { path = "cwe" }
+nvd-db = { path = "nvd-db" }
 
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }
