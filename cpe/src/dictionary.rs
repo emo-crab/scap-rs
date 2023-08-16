@@ -32,10 +32,7 @@ to use or not, but this information is not required to be used or understood.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct CPEItem {
-  #[serde(
-    rename(serialize = "name", deserialize = "@name"),
-    deserialize_with = "parse_name"
-  )]
+  #[serde(rename(deserialize = "@name"), deserialize_with = "parse_name")]
   pub name: String,
   #[serde(
     default,
@@ -62,13 +59,10 @@ pub struct CPEItem {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Title {
-  #[serde(rename(serialize = "lang", deserialize = "@lang"))]
+  #[serde(rename(deserialize = "@lang"))]
   pub lang: String,
-  #[serde(
-    rename(serialize = "value", deserialize = "$value"),
-    deserialize_with = "parse_name"
-  )]
-  pub desc: String,
+  #[serde(rename(deserialize = "$value"), deserialize_with = "parse_name")]
+  pub value: String,
 }
 /**
 The NotesType complex type defines an element that consists of one or more
@@ -77,10 +71,10 @@ language as defined by their parent.*/
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Notes {
-  #[serde(rename(serialize = "lang", deserialize = "@lang"))]
+  #[serde(rename(deserialize = "@lang"))]
   pub lang: String,
-  #[serde(rename(serialize = "value", deserialize = "$value"))]
-  pub desc: String,
+  #[serde(rename(deserialize = "$value"))]
+  pub value: String,
 }
 /**
 The CheckType complex type is used to define an element to hold information
@@ -92,11 +86,9 @@ content test identifier is defined.*/
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Check {
-  #[serde(rename = "system")]
   pub system: String,
-  #[serde(rename = "href")]
   pub href: Option<String>,
-  #[serde(rename(serialize = "value", deserialize = "$value"))]
+  #[serde(rename(deserialize = "$value"))]
   pub value: String,
 }
 
@@ -115,17 +107,17 @@ documentation.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Reference {
-  #[serde(rename(serialize = "href", deserialize = "@href"))]
+  #[serde(rename(deserialize = "@href"))]
   pub href: String,
-  #[serde(rename(serialize = "value", deserialize = "$value"))]
-  pub desc: String,
+  #[serde(rename(deserialize = "$value"))]
+  pub value: String,
 }
 
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct CPE23Item {
   #[serde(
-    rename(serialize = "name", deserialize = "@name"),
+    rename(deserialize = "@name"),
     deserialize_with = "uri_to_attribute",
     serialize_with = "attribute_to_uri"
   )]
@@ -137,9 +129,9 @@ pub struct CPE23Item {
 #[derive(Deserialize, Serialize, Debug, Clone, Default)]
 #[serde(deny_unknown_fields)]
 pub struct Deprecation {
-  #[serde(rename(serialize = "date", deserialize = "@date"))]
+  #[serde(rename(deserialize = "@date"))]
   pub date: DateTime<Utc>,
-  #[serde(rename = "deprecated-by")]
+  #[serde(rename(deserialize = "deprecated-by"))]
   pub deprecated_by: Vec<DeprecatedInfo>,
 }
 
@@ -147,13 +139,13 @@ pub struct Deprecation {
 #[serde(deny_unknown_fields)]
 pub struct DeprecatedInfo {
   #[serde(
-    rename(serialize = "name", deserialize = "@name"),
+    rename(deserialize = "@name"),
     deserialize_with = "uri_to_attribute",
     serialize_with = "attribute_to_uri"
   )]
   pub name: CPEName,
-  #[serde(rename(serialize = "type", deserialize = "@type"))]
-  pub d_type: String,
+  #[serde(rename(deserialize = "@type"))]
+  pub r#type: String,
 }
 /** The GeneratorType complex type defines an element that is used to hold
 information about when a particular document was compiled, what version of the schema was used, what

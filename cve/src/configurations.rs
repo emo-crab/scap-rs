@@ -33,16 +33,12 @@ pub struct Match {
   #[serde(flatten)]
   pub cpe_uri: CPEUri,
   // 包括 从版本开始
-  #[serde(skip_serializing_if = "Option::is_none")]
   pub version_start_including: Option<String>,
   // 排除 从版本开始
-  #[serde(skip_serializing_if = "Option::is_none")]
   pub version_start_excluding: Option<String>,
   // 包括 到版本结束
-  #[serde(skip_serializing_if = "Option::is_none")]
   pub version_end_including: Option<String>,
   // 排除 到版本结束
-  #[serde(skip_serializing_if = "Option::is_none")]
   pub version_end_excluding: Option<String>,
   #[serde(rename = "cpe_name")]
   pub cpe_name: Vec<CPEUri>,

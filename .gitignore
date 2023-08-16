@@ -12,4 +12,5 @@ Cargo.lock
 .idea/
 *.xml.gz
 *.json.gz
+*.xml.zip
 /examples/nvdcve/data-feeds.html
