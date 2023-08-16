@@ -24,7 +24,7 @@ pub mod part;
 use crate::component::Language;
 use crate::error::{CPEError, Result};
 use component::Component;
-use part::CPEPart;
+use part::Part;
 // https://csrc.nist.gov/projects/security-content-automation-protocol/specifications/cpe
 // view-source:https://csrc.nist.gov/schema/cpe/2.3/cpe-dictionary_2.3.xsd
 // https://scap.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
@@ -34,7 +34,7 @@ use part::CPEPart;
 #[serde(deny_unknown_fields)]
 pub struct CPEName {
   // 分类：a，o，h
-  pub part: CPEPart,
+  pub part: Part,
   // 创建产品个人或者组织/厂商
   pub vendor: Component,
   // 产品标题或者名称
@@ -73,7 +73,7 @@ impl CPEName {
     let error = CPEError::InvalidPart {
       value: uri.to_string(),
     };
-    let part = CPEPart::from_str(components.next().ok_or(&error)?)?;
+    let part = Part::from_str(components.next().ok_or(&error)?)?;
     let vendor = Component::from_str(components.next().ok_or(&error)?)?;
     let product = Component::from_str(components.next().ok_or(&error)?)?;
     let version = Component::from_str(components.next().ok_or(&error)?)?;
@@ -118,7 +118,7 @@ impl CPEName {
       }
     };
     let mut att = CPEName {
-      part: CPEPart::default(),
+      part: Part::default(),
       vendor: Default::default(),
       product: Default::default(),
       version: Default::default(),
@@ -152,7 +152,7 @@ impl CPEName {
         }
         Some((k, v)) => {
           match k {
-            "part" => att.part = CPEPart::from_str(v)?,
+            "part" => att.part = Part::from_str(v)?,
             "vendor" => att.vendor = Component::from_str(v)?,
             "product" => att.product = Component::from_str(v)?,
             "version" => att.version = Component::from_str(v)?,
