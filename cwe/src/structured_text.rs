@@ -1,97 +1,97 @@
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct StructuredCode {
-    #[serde(rename = "@Nature")]
+    #[serde(rename(deserialize = "@Nature"))]
     pub nature: String,
-    #[serde(rename = "@Language")]
+    #[serde(rename(deserialize = "@Language"))]
     pub language: Option<String>,
-    #[serde(rename = "$value", default)]
+    #[serde(rename(deserialize = "$value"), default)]
     pub children: Option<Vec<StructuredTextType>>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct StructuredText {
-    #[serde(rename = "$value")]
+    #[serde(rename(deserialize = "$value"))]
     pub descriptions: Vec<StructuredTextType>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub enum StructuredTextType {
-    #[serde(rename = "p")]
+    #[serde(rename(deserialize = "p"))]
     P {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "b")]
+    #[serde(rename(deserialize = "b"))]
     XhtmlB {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "ol")]
+    #[serde(rename(deserialize = "ol"))]
     XhtmlOl {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "li")]
+    #[serde(rename(deserialize = "li"))]
     XhtmlLi {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "ul")]
+    #[serde(rename(deserialize = "ul"))]
     XhtmlUl {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "tbody")]
+    #[serde(rename(deserialize = "tbody"))]
     XhtmlTBody {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "table")]
+    #[serde(rename(deserialize = "table"))]
     XhtmlTable {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "tr")]
+    #[serde(rename(deserialize = "tr"))]
     XhtmlTr {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "th")]
+    #[serde(rename(deserialize = "th"))]
     XhtmlTh {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "td")]
+    #[serde(rename(deserialize = "td"))]
     XhtmlTd {
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "img")]
+    #[serde(rename(deserialize = "img"))]
     XhtmlImg {
-        #[serde(rename = "@src")]
+        #[serde(rename(deserialize = "@src"))]
         src: String,
-        #[serde(rename = "@alt")]
+        #[serde(rename(deserialize = "@alt"))]
         alt: Option<String>,
     },
-    #[serde(rename = "div")]
+    #[serde(rename(deserialize = "div"))]
     XhtmlDiv {
-        #[serde(rename = "@style")]
+        #[serde(rename(deserialize = "@style"))]
         style: Option<String>,
-        #[serde(rename = "$value", default)]
+        #[serde(rename(deserialize = "$value"), default)]
         children: Vec<Box<StructuredTextType>>,
     },
-    #[serde(rename = "br")]
+    #[serde(rename(deserialize = "br"))]
     XhtmlBr,
-    #[serde(rename = "i")]
+    #[serde(rename(deserialize = "i"))]
     XhtmlI {
-        #[serde(rename = "$value")]
+        #[serde(rename(deserialize = "$value"))]
         text: String,
     },
-    #[serde(rename = "$text")]
+    #[serde(rename(deserialize = "$text"))]
     Text(String),
 }

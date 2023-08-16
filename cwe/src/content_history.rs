@@ -1,81 +1,81 @@
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ContentHistory {
-    #[serde(rename = "$value")]
+    #[serde(rename(deserialize = "$value"))]
     pub references: Vec<ContentHistoryChild>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub enum ContentHistoryChild {
-    #[serde(rename = "Submission")]
+    #[serde(rename(deserialize = "Submission"))]
     Submission(Submission),
-    #[serde(rename = "Modification")]
+    #[serde(rename(deserialize = "Modification"))]
     Modification(Modification),
-    #[serde(rename = "Contribution")]
+    #[serde(rename(deserialize = "Contribution"))]
     Contribution(Contribution),
-    #[serde(rename = "Previous_Entry_Name")]
+    #[serde(rename(deserialize = "Previous_Entry_Name"))]
     PreviousEntryName {
-        #[serde(rename = "@Date")]
+        #[serde(rename(deserialize = "@Date"))]
         date: String,
-        #[serde(rename = "$value")]
+        #[serde(rename(deserialize = "$value"))]
         previous_entry_name: String,
     },
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Submission {
-    #[serde(rename = "Submission_Name")]
+    #[serde(rename(deserialize = "Submission_Name"))]
     pub submission_name: Option<String>,
-    #[serde(rename = "Submission_Organization")]
+    #[serde(rename(deserialize = "Submission_Organization"))]
     pub submission_organization: Option<String>,
-    #[serde(rename = "Submission_Date")]
+    #[serde(rename(deserialize = "Submission_Date"))]
     pub submission_date: String,
-    #[serde(rename = "Submission_Comment")]
+    #[serde(rename(deserialize = "Submission_Comment"))]
     pub submission_comment: Option<String>,
-    #[serde(rename = "Submission_Version")]
+    #[serde(rename(deserialize = "Submission_Version"))]
     pub submission_version: String,
-    #[serde(rename = "Submission_ReleaseDate")]
+    #[serde(rename(deserialize = "Submission_ReleaseDate"))]
     pub submission_release_date: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Modification {
-    #[serde(rename = "Modification_Name")]
+    #[serde(rename(deserialize = "Modification_Name"))]
     pub modification_name: Option<String>,
-    #[serde(rename = "Modification_Organization")]
+    #[serde(rename(deserialize = "Modification_Organization"))]
     pub modification_organization: Option<String>,
-    #[serde(rename = "Modification_Date")]
+    #[serde(rename(deserialize = "Modification_Date"))]
     pub modification_date: String,
-    #[serde(rename = "Modification_Importance")]
+    #[serde(rename(deserialize = "Modification_Importance"))]
     pub modification_importance: Option<String>,
-    #[serde(rename = "Modification_Comment")]
+    #[serde(rename(deserialize = "Modification_Comment"))]
     pub modification_comment: Option<String>,
-    #[serde(rename = "Modification_Version")]
+    #[serde(rename(deserialize = "Modification_Version"))]
     pub modification_version: Option<String>,
-    #[serde(rename = "Modification_ReleaseDate")]
+    #[serde(rename(deserialize = "Modification_ReleaseDate"))]
     pub modification_release_date: Option<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Contribution {
-    #[serde(rename = "@Type")]
+    #[serde(rename(deserialize = "@Type"))]
     pub r#type: Option<String>,
-    #[serde(rename = "Contribution_Name")]
+    #[serde(rename(deserialize = "Contribution_Name"))]
     pub contribution_name: Option<String>,
-    #[serde(rename = "Contribution_Organization")]
+    #[serde(rename(deserialize = "Contribution_Organization"))]
     pub contribution_organization: Option<String>,
-    #[serde(rename = "Contribution_Date")]
+    #[serde(rename(deserialize = "Contribution_Date"))]
     pub contribution_date: String,
-    #[serde(rename = "Contribution_Comment")]
+    #[serde(rename(deserialize = "Contribution_Comment"))]
     pub contribution_comment: Option<String>,
-    #[serde(rename = "Contribution_Version")]
+    #[serde(rename(deserialize = "Contribution_Version"))]
     pub contribution_version: Option<String>,
-    #[serde(rename = "Contribution_ReleaseDate")]
+    #[serde(rename(deserialize = "Contribution_ReleaseDate"))]
     pub contribution_release_date: Option<String>,
 }

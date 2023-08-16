@@ -25,40 +25,40 @@
 //! attribute defines the maturity of the information for this category. Please refer to the
 //! StatusEnumeration simple type for a list of valid values and their meanings.
 //!
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 use crate::content_history::ContentHistory;
 use crate::mapping_notes::MappingNotes;
 use crate::notes::Notes;
 use crate::relationships::Relationships;
 use crate::weaknesses::{References, TaxonomyMappings};
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 pub struct Categories {
-    #[serde(rename = "Category", default)]
+    #[serde(rename(deserialize = "Category"), default)]
     pub categories: Vec<Category>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields,rename = "Category")]
 pub struct Category {
-    #[serde(rename = "@ID")]
+    #[serde(rename(deserialize = "@ID"))]
     pub id: i64,
-    #[serde(rename = "@Name")]
+    #[serde(rename(deserialize = "@Name"))]
     pub name: String,
-    #[serde(rename = "@Status")]
+    #[serde(rename(deserialize = "@Status"))]
     pub status: String,
-    #[serde(rename = "Summary")]
+    #[serde(rename(deserialize = "Summary"))]
     pub summary: String,
-    #[serde(rename = "Relationships")]
+    #[serde(rename(deserialize = "Relationships"))]
     pub relationships: Relationships,
-    #[serde(rename = "References")]
+    #[serde(rename(deserialize = "References"))]
     pub references: Option<References>,
-    #[serde(rename = "Mapping_Notes")]
+    #[serde(rename (deserialize= "Mapping_Notes"))]
     pub mapping_notes :MappingNotes,
-    #[serde(rename = "Notes")]
+    #[serde(rename (deserialize= "Notes"))]
     pub notes: Option<Notes>,
-    #[serde(rename = "Content_History")]
+    #[serde(rename (deserialize= "Content_History"))]
     pub content_history: ContentHistory,
-    #[serde(rename = "Taxonomy_Mappings")]
+    #[serde(rename  (deserialize="Taxonomy_Mappings"))]
     pub taxonomy_mappings: Option<TaxonomyMappings>,
 }

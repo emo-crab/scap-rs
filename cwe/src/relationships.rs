@@ -1,17 +1,17 @@
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 
-#[derive(Debug, Deserialize)]
-#[serde(rename = "Relationships")]
+#[derive(Debug, Deserialize,Serialize)]
+#[serde(rename(deserialize = "Relationships"))]
 pub struct Relationships {
-    #[serde(rename = "Has_Member", default)]
+    #[serde(rename(deserialize = "Has_Member"), default)]
     pub has_members: Vec<HasMember>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename = "Has_Member")]
+#[derive(Debug, Deserialize,Serialize)]
+#[serde(rename(deserialize = "Has_Member"))]
 pub struct HasMember {
-    #[serde(rename = "@CWE_ID")]
+    #[serde(rename(deserialize = "@CWE_ID"))]
     pub cwe_id: i64,
-    #[serde(rename = "@View_ID")]
+    #[serde(rename(deserialize = "@View_ID"))]
     pub view_id: i64,
 }

@@ -10,21 +10,21 @@ use crate::external_references::ExternalReferences;
 use crate::views::Views;
 use crate::weaknesses::Weaknesses;
 /// Weakness_Catalog
-#[derive(Debug, Deserialize)]
-#[serde(rename = "Weakness_Catalog")]
+#[derive(Debug, Deserialize,Serialize)]
+#[serde(rename(deserialize = "Weakness_Catalog"))]
 pub struct WeaknessCatalog {
-    #[serde(rename = "@Name")]
+    #[serde(rename(deserialize = "@Name"))]
     pub name: String,
-    #[serde(rename = "@Version")]
+    #[serde(rename(deserialize = "@Version"))]
     pub version: String,
-    #[serde(rename = "@Date")]
+    #[serde(rename(deserialize = "@Date"))]
     pub date: String,
-    #[serde(rename = "Weaknesses")]
+    #[serde(rename(deserialize = "Weaknesses"))]
     pub weaknesses: Weaknesses,
-    #[serde(rename = "Categories")]
+    #[serde(rename(deserialize = "Categories"))]
     pub categories: Option<Categories>,
-    #[serde(rename = "Views")]
+    #[serde(rename(deserialize = "Views"))]
     pub views: Views,
-    #[serde(rename = "External_References")]
+    #[serde(rename(deserialize = "External_References"))]
     pub external_references: ExternalReferences,
 }

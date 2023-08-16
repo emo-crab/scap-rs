@@ -1,18 +1,18 @@
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 use crate::structured_text::StructuredTextType;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Notes {
-    #[serde(rename = "$value")]
+    #[serde(rename(deserialize = "$value"))]
     pub notes: Vec<Note>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Note {
-    #[serde(rename = "@Type")]
+    #[serde(rename(deserialize = "@Type"))]
     pub r#type: Option<String>,
-    #[serde(rename = "$value")]
+    #[serde(rename(deserialize = "$value"))]
     pub content: Vec<StructuredTextType>,
 }

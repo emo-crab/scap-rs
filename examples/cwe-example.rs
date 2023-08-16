@@ -10,5 +10,7 @@ fn main() {
   let mut zip_archive = zip::ZipArchive::new(zip_open_file).unwrap();
   let file = BufReader::new(zip_archive.by_index(0).unwrap());
   let c: WeaknessCatalog = quick_xml::de::from_reader(file).unwrap();
-    println!("{:#?}", &c.external_references);
+  println!("{:#?}", &c.external_references);
+  let data = serde_json::to_string_pretty(&c).unwrap();
+  println!("{}",data);
 }

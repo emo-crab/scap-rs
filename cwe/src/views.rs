@@ -27,7 +27,7 @@
 //! their meanings. The required Status attribute defines the maturity of the information for this
 //! view. Please refer to the StatusEnumeration simple type for a list of valid values and their meanings.
 //!
-use serde::Deserialize;
+use serde::{Deserialize,Serialize};
 use crate::content_history::ContentHistory;
 use crate::mapping_notes::MappingNotes;
 use crate::notes::Notes;
@@ -35,54 +35,54 @@ use crate::relationships::Relationships;
 use crate::structured_text::StructuredText;
 use crate::weaknesses::References;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Views {
-    #[serde(rename = "$value", default)]
+    #[serde(rename(deserialize = "$value"), default)]
     pub views: Vec<View>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct View {
-    #[serde(rename = "@ID")]
+    #[serde(rename(deserialize = "@ID"))]
     pub id: i64,
-    #[serde(rename = "@Name")]
+    #[serde(rename(deserialize = "@Name"))]
     pub name: String,
-    #[serde(rename = "@Type")]
+    #[serde(rename(deserialize = "@Type"))]
     pub r#type: String,
-    #[serde(rename = "@Status")]
+    #[serde(rename(deserialize = "@Status"))]
     pub status: String,
-    #[serde(rename = "References")]
+    #[serde(rename(deserialize = "References"))]
     pub references: Option<References>,
-    #[serde(rename = "Objective")]
+    #[serde(rename(deserialize = "Objective"))]
     pub objective: StructuredText,
-    #[serde(rename = "Audience")]
+    #[serde(rename(deserialize = "Audience"))]
     pub audience: Option<Audience>,
-    #[serde(rename = "Members")]
+    #[serde(rename(deserialize = "Members"))]
     pub members: Option<Relationships>,
-    #[serde(rename = "Notes")]
+    #[serde(rename(deserialize = "Notes"))]
     pub notes: Option<Notes>,
-    #[serde(rename = "Filter")]
+    #[serde(rename(deserialize = "Filter"))]
     pub filter: Option<String>,
-    #[serde(rename = "Content_History")]
+    #[serde(rename(deserialize = "Content_History"))]
     pub content_history: ContentHistory,
-    #[serde(rename = "Mapping_Notes")]
+    #[serde(rename(deserialize = "Mapping_Notes"))]
     pub mapping_notes :MappingNotes,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Audience {
-    #[serde(rename = "$value", default)]
+    #[serde(rename(deserialize = "$value"), default)]
     pub stake_holders: Vec<StakeHolder>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct StakeHolder {
-    #[serde(rename = "Type")]
+    #[serde(rename(deserialize = "Type"))]
     pub r#type: String,
-    #[serde(rename = "Description")]
+    #[serde(rename(deserialize = "Description"))]
     pub description: Option<String>,
 }
