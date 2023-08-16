@@ -4,27 +4,27 @@
 //! individual weaknesses. The required Name and Version attributes are used to uniquely identify
 //! the catalog. The required Date attribute identifies the date when this catalog was created or last updated.
 // https://github.com/serde-rs/serde/pull/1043/files
-use serde::{Deserialize, Serialize};
 use crate::categories::Categories;
 use crate::external_references::ExternalReferences;
 use crate::views::Views;
 use crate::weaknesses::Weaknesses;
+use serde::{Deserialize, Serialize};
 /// Weakness_Catalog
-#[derive(Debug, Deserialize,Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename(deserialize = "Weakness_Catalog"))]
 pub struct WeaknessCatalog {
-    #[serde(rename(deserialize = "@Name"))]
-    pub name: String,
-    #[serde(rename(deserialize = "@Version"))]
-    pub version: String,
-    #[serde(rename(deserialize = "@Date"))]
-    pub date: String,
-    #[serde(rename(deserialize = "Weaknesses"))]
-    pub weaknesses: Weaknesses,
-    #[serde(rename(deserialize = "Categories"))]
-    pub categories: Option<Categories>,
-    #[serde(rename(deserialize = "Views"))]
-    pub views: Views,
-    #[serde(rename(deserialize = "External_References"))]
-    pub external_references: ExternalReferences,
+  #[serde(rename(deserialize = "@Name"))]
+  pub name: String,
+  #[serde(rename(deserialize = "@Version"))]
+  pub version: String,
+  #[serde(rename(deserialize = "@Date"))]
+  pub date: String,
+  #[serde(rename(deserialize = "Weaknesses"))]
+  pub weaknesses: Weaknesses,
+  #[serde(rename(deserialize = "Categories"))]
+  pub categories: Option<Categories>,
+  #[serde(rename(deserialize = "Views"))]
+  pub views: Views,
+  #[serde(rename(deserialize = "External_References"))]
+  pub external_references: ExternalReferences,
 }

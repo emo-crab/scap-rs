@@ -1,6 +1,6 @@
+use cwe::weakness_catalog::WeaknessCatalog;
 use std::fs::File;
 use std::io::BufReader;
-use cwe::weakness_catalog::WeaknessCatalog;
 
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
@@ -12,5 +12,5 @@ fn main() {
   let c: WeaknessCatalog = quick_xml::de::from_reader(file).unwrap();
   println!("{:#?}", &c.external_references);
   let data = serde_json::to_string_pretty(&c).unwrap();
-  println!("{}",data);
+  println!("{data}");
 }

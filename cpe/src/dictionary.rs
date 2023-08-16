@@ -32,10 +32,7 @@ to use or not, but this information is not required to be used or understood.
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct CPEItem {
-  #[serde(
-    rename(deserialize = "@name"),
-    deserialize_with = "parse_name"
-  )]
+  #[serde(rename(deserialize = "@name"), deserialize_with = "parse_name")]
   pub name: String,
   #[serde(
     default,
@@ -64,10 +61,7 @@ pub struct CPEItem {
 pub struct Title {
   #[serde(rename(deserialize = "@lang"))]
   pub lang: String,
-  #[serde(
-    rename(deserialize = "$value"),
-    deserialize_with = "parse_name"
-  )]
+  #[serde(rename(deserialize = "$value"), deserialize_with = "parse_name")]
   pub value: String,
 }
 /**
