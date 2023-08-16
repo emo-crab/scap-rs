@@ -26,7 +26,7 @@ pub struct Node {
 /// Applicability statements are made to withstand changes to the Official CPE Dictionary without requiring consistent maintenance. CPE Match criteria comes in two forms CPE Match Strings and CPE Match String Ranges. Each of these are abstract concepts that are then correlated to CPE Names in the Official CPE Dictionary. Match criteria are displayed in bold text within a configuration node.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct Match {
   // 是否存在漏洞
   pub vulnerable: bool,
@@ -44,7 +44,7 @@ pub struct Match {
   pub cpe_name: Vec<CPEUri>,
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct CPEUri {
   ///  A CPE Match string is a single CPE Names string that correlates to one or many CPE Names in the Official CPE Dictionary. When a match string has the bug icon next to it, all matching CPE Names are considered vulnerable. You can click the caret below a CPE Match String to see the CPE Names in the dictionary that match.
   #[serde(

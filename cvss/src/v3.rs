@@ -43,7 +43,7 @@ pub mod user_interaction;
 /// As mentioned, the Exploitability metrics reflect the characteristics of the thing that is vulnerable, which we refer to formally as the vulnerable component. Therefore, each of the Exploitability metrics listed below should be scored relative to the vulnerable component, and reflect the properties of the vulnerability that lead to a successful attack.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all(deserialize = "camelCase"))]
 pub struct ExploitAbility {
   /// [`AttackVectorType`] 访问途径（AV）
   pub attack_vector: AttackVectorType,
@@ -71,7 +71,7 @@ impl ExploitAbility {
 ///
 /// If a scope change has not occurred, the Impact metrics should reflect the confidentiality, integrity, and availability (CIA) impact to the vulnerable component. However, if a scope change has occurred, then the Impact metrics should reflect the CIA impact to either the vulnerable component, or the impacted component, whichever suffers the most severe outcome.
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all(deserialize = "camelCase"))]
 pub struct Impact {
   /// [`ConfidentialityImpactType`] 机密性影响（C）
   pub confidentiality_impact: ConfidentialityImpactType,
@@ -101,7 +101,7 @@ impl Impact {
 /// The benefits of CVSS include the provision of a standardized vendor and platform agnostic vulnerability scoring methodology. It is an open framework, providing transparency to the individual characteristics and methodology used to derive a score.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all(deserialize = "camelCase"))]
 pub struct CVSS {
   /// Version 版本： 3.0 和 3.1
   pub version: Version,

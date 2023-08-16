@@ -3,7 +3,7 @@
 //! The three impact metrics measure how a vulnerability, if exploited, will directly affect an IT asset, where the impacts are independently defined as the degree of loss of confidentiality, integrity, and availability. For example, a vulnerability could cause a partial loss of integrity and availability, but no loss of confidentiality.
 //!
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricType, MetricTypeV2};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -75,9 +75,9 @@ impl FromStr for ConfidentialityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -85,7 +85,7 @@ impl FromStr for ConfidentialityImpactType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -94,7 +94,7 @@ impl FromStr for ConfidentialityImpactType {
       'C' => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       }),
     }
   }
@@ -104,9 +104,9 @@ impl FromStr for IntegrityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -114,7 +114,7 @@ impl FromStr for IntegrityImpactType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -123,7 +123,7 @@ impl FromStr for IntegrityImpactType {
       'C' => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       }),
     }
   }
@@ -133,9 +133,9 @@ impl FromStr for AvailabilityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -143,7 +143,7 @@ impl FromStr for AvailabilityImpactType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -152,7 +152,7 @@ impl FromStr for AvailabilityImpactType {
       'C' => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "ImpactMetricsType".to_string(),
+        scope: Self::description(),
       }),
     }
   }
@@ -160,12 +160,12 @@ impl FromStr for AvailabilityImpactType {
 
 impl Display for ConfidentialityImpactType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for ConfidentialityImpactType {
-  const NAME: &'static str = "C";
+  const TYPE: MetricType = MetricType::V2(MetricTypeV2::C);
 
   fn score(&self) -> f32 {
     match self {
@@ -186,12 +186,12 @@ impl Metric for ConfidentialityImpactType {
 
 impl Display for IntegrityImpactType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for IntegrityImpactType {
-  const NAME: &'static str = "I";
+  const TYPE: MetricType = MetricType::V2(MetricTypeV2::I);
 
   fn score(&self) -> f32 {
     match self {
@@ -212,12 +212,12 @@ impl Metric for IntegrityImpactType {
 
 impl Display for AvailabilityImpactType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for AvailabilityImpactType {
-  const NAME: &'static str = "A";
+  const TYPE: MetricType = MetricType::V2(MetricTypeV2::A);
 
   fn score(&self) -> f32 {
     match self {

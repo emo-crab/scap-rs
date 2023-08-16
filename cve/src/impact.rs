@@ -8,7 +8,7 @@ use std::str::FromStr;
 /// Must contain: At least one entry, can be text, CVSSv2, CVSSv3, others may be added
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct Impact {
   // TODO: Implement V1?
   // cvssV2 过期
@@ -24,7 +24,7 @@ pub struct Impact {
 /// The CVSSv2 <https://www.first.org/cvss/v2/guide> scoring data, split up into Base Metrics Group (BM), Temporal Metrics Group (TM) and Environmental Metrics Group (EM).
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV2 {
   pub cvss_v2: cvss::v2::CVSS,
   // 漏洞的可利用 评分
@@ -44,7 +44,7 @@ pub struct ImpactMetricV2 {
 ///
 /// The CVSSv3 <https://www.first.org/cvss/specification-document> scoring data.
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV3 {
   pub cvss_v3: cvss::v3::CVSS,
   // 漏洞的可利用 评分

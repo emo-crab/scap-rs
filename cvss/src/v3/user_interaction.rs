@@ -11,7 +11,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricType, MetricTypeV3};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -39,12 +39,12 @@ pub enum UserInteractionType {
 
 impl Display for UserInteractionType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for UserInteractionType {
-  const NAME: &'static str = "UI";
+  const TYPE: MetricType = MetricType::V3(MetricTypeV3::UI);
 
   fn score(&self) -> f32 {
     match self {
@@ -66,9 +66,9 @@ impl FromStr for UserInteractionType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -76,7 +76,7 @@ impl FromStr for UserInteractionType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "UserInteractionType from_str".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -84,7 +84,7 @@ impl FromStr for UserInteractionType {
       'R' => Ok(Self::Required),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "UserInteractionType".to_string(),
+        scope: Self::description(),
       }),
     }
   }

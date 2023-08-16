@@ -13,7 +13,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricType, MetricTypeV2};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -32,12 +32,12 @@ pub enum AccessVectorType {
 
 impl Display for AccessVectorType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for AccessVectorType {
-  const NAME: &'static str = "AV";
+  const TYPE: MetricType = MetricType::V2(MetricTypeV2::AV);
 
   fn score(&self) -> f32 {
     match self {
@@ -60,9 +60,9 @@ impl FromStr for AccessVectorType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -70,7 +70,7 @@ impl FromStr for AccessVectorType {
       let c = s.chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "AccessVectorType from_str".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {

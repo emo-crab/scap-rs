@@ -37,7 +37,7 @@ use crate::version::Version;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all(deserialize = "camelCase"))]
 pub struct CVSS {
   // 版本
   pub version: Version,

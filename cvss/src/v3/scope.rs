@@ -17,7 +17,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricType, MetricTypeV3};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -55,12 +55,12 @@ impl ScopeType {
 }
 impl Display for ScopeType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 
 impl Metric for ScopeType {
-  const NAME: &'static str = "S";
+  const TYPE: MetricType = MetricType::V3(MetricTypeV3::S);
 
   fn score(&self) -> f32 {
     match self {
@@ -81,9 +81,9 @@ impl FromStr for ScopeType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -91,7 +91,7 @@ impl FromStr for ScopeType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "ScopeType from_str".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -99,7 +99,7 @@ impl FromStr for ScopeType {
       'C' => Ok(Self::Changed),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "ScopeType".to_string(),
+        scope: Self::description(),
       }),
     }
   }

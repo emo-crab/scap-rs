@@ -43,7 +43,7 @@ pub struct CVEContainer {
 
 // 单个CVE信息
 #[derive(Debug, Serialize, Deserialize, Clone)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 #[allow(clippy::upper_case_acronyms)]
 pub struct CVEItem {
   // CVE 信息

@@ -19,6 +19,8 @@ pub enum CVSSError {
   InvalidCVSS { value: String, scope: String },
   #[error("invalid cvss version `{value}` ({expected})")]
   InvalidCVSSVersion { value: String, expected: String },
+  #[error("unknown CVSS metric name: `{name}`")]
+  UnknownMetric { name: String },
 }
 
 impl From<&CVSSError> for CVSSError {

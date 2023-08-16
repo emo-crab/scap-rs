@@ -12,7 +12,7 @@
 //! _Scoring Guidance_: When deciding between Network and Adjacent, if an attack can be launched over a wide area network or from outside the logically adjacent administrative network domain, use Network. Network should be used even if the attacker is required to be on the same intranet to exploit the vulnerable system (e.g., the attacker can only exploit the vulnerability from inside a corporate network).
 //!
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricType, MetricTypeV3};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -40,11 +40,11 @@ pub enum AttackComplexityType {
 }
 impl Display for AttackComplexityType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "{}:{}", Self::NAME, self.as_str())
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }
 impl Metric for AttackComplexityType {
-  const NAME: &'static str = "AC";
+  const TYPE: MetricType = MetricType::V3(MetricTypeV3::AC);
 
   fn score(&self) -> f32 {
     match self {
@@ -65,9 +65,9 @@ impl FromStr for AttackComplexityType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::NAME) {
+    if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::NAME))
+        .strip_prefix(&format!("{}:", Self::name()))
         .unwrap_or_default()
         .to_string();
     }
@@ -75,7 +75,7 @@ impl FromStr for AttackComplexityType {
       let c = s.to_uppercase().chars().next();
       c.ok_or(CVSSError::InvalidCVSS {
         value: s,
-        scope: "AttackComplexityType from_str".to_string(),
+        scope: Self::description(),
       })?
     };
     match c {
@@ -83,7 +83,7 @@ impl FromStr for AttackComplexityType {
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "AttackComplexityType".to_string(),
+        scope: Self::description(),
       }),
     }
   }
