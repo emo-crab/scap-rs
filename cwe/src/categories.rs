@@ -30,6 +30,7 @@ use crate::content_history::ContentHistory;
 use crate::mapping_notes::MappingNotes;
 use crate::notes::Notes;
 use crate::relationships::Relationships;
+use crate::structured_text::StructuredText;
 use crate::weaknesses::{References, TaxonomyMappings};
 
 #[derive(Debug, Deserialize,Serialize)]
@@ -48,7 +49,7 @@ pub struct Category {
     #[serde(rename(deserialize = "@Status"))]
     pub status: String,
     #[serde(rename(deserialize = "Summary"))]
-    pub summary: String,
+    pub summary: StructuredText,
     #[serde(rename(deserialize = "Relationships"))]
     pub relationships: Relationships,
     #[serde(rename(deserialize = "References"))]

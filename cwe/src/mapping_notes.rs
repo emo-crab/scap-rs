@@ -1,10 +1,12 @@
 use serde::{Deserialize,Serialize};
+use crate::structured_text::StructuredText;
+
 #[derive(Debug, Deserialize,Serialize)]
 #[serde(deny_unknown_fields, rename_all="PascalCase")]
 pub struct MappingNotes {
     pub usage: Usage,
-    pub rationale:String,
-    pub comments:String,
+    pub rationale:StructuredText,
+    pub comments:StructuredText,
     pub reasons:Reasons,
     pub suggestions:Option<Suggestions>,
 }
