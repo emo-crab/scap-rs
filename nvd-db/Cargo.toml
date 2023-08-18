@@ -6,5 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-diesel = { version = "2.1.0", features = ["r2d2","postgres"] }
+cpe = {path = "../cpe"}
+diesel = { version = "2.1.0", features = ["r2d2","mysql","chrono", "uuid"] }
 dotenvy = "0.15"
+chrono = { version = "0.4", default-features = false, features = ["serde"] }
