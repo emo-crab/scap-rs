@@ -1,6 +1,6 @@
 use crate::schema::{products, vendors};
 use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
+
 
 #[derive(Insertable)]
 #[table_name = "vendors"]

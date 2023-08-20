@@ -1,4 +1,4 @@
-use crate::schema::vendors;
+
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 #[derive(Queryable, Debug, Clone)]

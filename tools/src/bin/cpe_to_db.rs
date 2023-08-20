@@ -1,9 +1,9 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
-use cpe::dictionary::{CPEItem, CPEList};
+use cpe::dictionary::{CPEList};
 use diesel::mysql::MysqlConnection;
 use diesel::prelude::*;
-use diesel::result::Error;
+
 use nvd_db::cpe::{NewProducts, NewVendors};
 use nvd_db::models::{Product, Vendor};
 use nvd_db::schema::{products, vendors};
@@ -28,13 +28,13 @@ pub fn create_vendor(
     description,
   };
   // 插入到数据库
-  let v = diesel::insert_into(vendors::table)
+  let _v = diesel::insert_into(vendors::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
     .execute(conn);
-  println!("{}", name);
+  println!("{name}");
   vendors::dsl::vendors
-    .filter(vendors::name.eq(name.clone()))
+    .filter(vendors::name.eq(name))
     .first(conn)
     .unwrap()
 }
@@ -52,13 +52,13 @@ pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String)
     description: None,
   };
   // 插入到数据库
-  let p = diesel::insert_into(products::table)
+  let _p = diesel::insert_into(products::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
     .execute(conn);
-  println!("{}", name);
+  println!("{name}");
   products::dsl::products
-    .filter(products::name.eq(name.clone()))
+    .filter(products::name.eq(name))
     .first(conn)
     .unwrap()
 }
@@ -70,7 +70,7 @@ pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String)
   convert = r#"{ format!("{}:{}", vendor.to_owned(),product.to_owned()) }"#
 )]
 fn import_to_db(vendor: String, product: String) -> Product {
-  println!("import_to_db: {}:{}", vendor, product);
+  println!("import_to_db: {vendor}:{product}");
   let mut connection = init_db_pool().get().unwrap();
   let vendor = create_vendor(&mut connection, vendor, None);
   create_product(&mut connection, vendor.id, product)

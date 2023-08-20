@@ -8,8 +8,8 @@ pub type Pool = r2d2::Pool<ConnectionManager<Connection>>;
 pub fn init_db_pool() -> Pool {
     let database_url = dotenvy::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let manager = ConnectionManager::<Connection>::new(database_url);
-    let pool = r2d2::Pool::builder()
+    
+    r2d2::Pool::builder()
         .build(manager)
-        .expect("Failed to create pool.");
-    pool
+        .expect("Failed to create pool.")
 }
