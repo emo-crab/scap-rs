@@ -37,9 +37,8 @@ pub struct CPEItem {
   #[serde(
     default,
     rename(serialize = "deprecated", deserialize = "@deprecated"),
-    skip_serializing_if = "Option::is_none"
   )]
-  pub deprecated: Option<bool>,
+  pub deprecated: bool,
   #[serde(
     default,
     rename(serialize = "deprecation_date", deserialize = "@deprecation_date"),
@@ -48,6 +47,7 @@ pub struct CPEItem {
   pub deprecation_date: Option<DateTime<Utc>>,
   #[serde(rename(serialize = "cpe23", deserialize = "cpe23-item"))]
   pub cpe23_item: CPE23Item,
+  #[serde(default)]
   pub title: Vec<Title>,
   #[serde(skip_serializing_if = "Option::is_none")]
   pub notes: Option<Vec<Notes>>,

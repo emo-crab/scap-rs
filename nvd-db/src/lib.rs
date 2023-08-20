@@ -1,4 +1,5 @@
+pub mod schema;
 pub mod models;
-
-#[macro_use]
-extern crate diesel;
+pub mod cpe;
+pub mod cve;
+pub mod cvss;

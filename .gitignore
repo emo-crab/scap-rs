@@ -16,3 +16,5 @@ Cargo.lock
 /examples/nvdcve/data-feeds.html
 /.env
 /migrations/
+/nvd-db/migrations/
+/nvd-db/nvd-er.mwb.bak
