@@ -49,9 +49,9 @@ pub struct CVSS {
   pub access_complexity: AccessComplexityType,
   // 认证
   pub authentication: AuthenticationType,
-  // 完整性影响（I）
+  // 保密性影响 (C)
   pub confidentiality_impact: ConfidentialityImpactType,
-  // 完整性影响（I）
+  // 完整性影响 (I)
   pub integrity_impact: IntegrityImpactType,
   // 可用性影响（A）
   pub availability_impact: AvailabilityImpactType,

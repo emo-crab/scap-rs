@@ -27,7 +27,7 @@ pub struct Impact {
 #[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV2 {
   pub cvss_v2: cvss::v2::CVSS,
-  // 漏洞的可利用 评分
+  // 漏洞的可利用评分
   pub exploitability_score: f32,
   // 评分
   pub impact_score: f32,
@@ -47,9 +47,9 @@ pub struct ImpactMetricV2 {
 #[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV3 {
   pub cvss_v3: cvss::v3::CVSS,
-  // 漏洞的可利用 评分
+  /// 漏洞的可利用 评分
   pub exploitability_score: f32,
-  // cvss 评分
+  /// 影响评分
   pub impact_score: f32,
 }
 
