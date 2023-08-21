@@ -26,12 +26,13 @@ pub fn create_vendor(
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     name: name.clone(),
     description,
+    official: u8::from(true),
   };
   // 插入到数据库
   let _v = diesel::insert_into(vendors::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
-    .execute(conn);
+    .execute(conn).unwrap();
   println!("{name}");
   vendors::dsl::vendors
     .filter(vendors::name.eq(name))
@@ -50,12 +51,13 @@ pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String)
     vendor_id: vendor,
     name: name.clone(),
     description: None,
+    official: u8::from(true),
   };
   // 插入到数据库
   let _p = diesel::insert_into(products::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
-    .execute(conn);
+    .execute(conn).unwrap();
   println!("{name}");
   products::dsl::products
     .filter(products::name.eq(name))
