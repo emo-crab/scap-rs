@@ -34,10 +34,7 @@ to use or not, but this information is not required to be used or understood.
 pub struct CPEItem {
   #[serde(rename(deserialize = "@name"), deserialize_with = "parse_name")]
   pub name: String,
-  #[serde(
-    default,
-    rename(serialize = "deprecated", deserialize = "@deprecated"),
-  )]
+  #[serde(default, rename(serialize = "deprecated", deserialize = "@deprecated"))]
   pub deprecated: bool,
   #[serde(
     default,

@@ -50,13 +50,13 @@ impl Default for Part {
   }
 }
 
-impl Into<char> for Part {
-  fn into(self) -> char {
-    match self {
+impl From<Part> for char {
+  fn from(val: Part) -> Self {
+    match val {
       Part::Any => '*',
       Part::Hardware => 'h',
       Part::OperatingSystem => 'o',
-      Part::Application => 'a'
+      Part::Application => 'a',
     }
   }
 }
