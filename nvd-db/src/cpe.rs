@@ -18,4 +18,5 @@ pub struct NewProducts {
   pub name: String,
   pub description: Option<String>,
   pub official: u8,
+  pub part: String,
 }

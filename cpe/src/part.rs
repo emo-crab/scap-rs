@@ -50,6 +50,16 @@ impl Default for Part {
   }
 }
 
+impl Into<char> for Part {
+  fn into(self) -> char {
+    match self {
+      Part::Any => '*',
+      Part::Hardware => 'h',
+      Part::OperatingSystem => 'o',
+      Part::Application => 'a'
+    }
+  }
+}
 impl FromStr for Part {
   type Err = CPEError;
 

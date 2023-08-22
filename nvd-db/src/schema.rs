@@ -19,7 +19,6 @@ diesel::table! {
         #[max_length = 16]
         product_id -> Binary,
         configurations -> Json,
-        score -> Float,
     }
 }
 
@@ -97,12 +96,14 @@ diesel::table! {
         vendor_id -> Binary,
         #[max_length = 128]
         name -> Varchar,
-        description -> Nullable<Longtext>,
+        description -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         #[max_length = 256]
         homepage -> Nullable<Varchar>,
         official -> Unsigned<Tinyint>,
+        #[max_length = 1]
+        part -> Char,
     }
 }
 
@@ -112,7 +113,7 @@ diesel::table! {
         id -> Binary,
         #[max_length = 128]
         name -> Varchar,
-        description -> Nullable<Longtext>,
+        description -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         #[max_length = 256]

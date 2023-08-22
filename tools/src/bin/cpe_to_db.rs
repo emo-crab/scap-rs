@@ -29,10 +29,13 @@ pub fn create_vendor(
     official: u8::from(true),
   };
   // 插入到数据库
-  let _v = diesel::insert_into(vendors::table)
+  let v = diesel::insert_into(vendors::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
-    .execute(conn).unwrap();
+    .execute(conn);
+  if let Err(err) = v{
+    println!("{}",err);
+  }
   println!("{name}");
   vendors::dsl::vendors
     .filter(vendors::name.eq(name))
@@ -44,7 +47,7 @@ pub fn create_vendor(
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{}:{:?}", name.to_owned(),vendor.to_owned()) }"#
 )]
-pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String) -> Product {
+pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String,part:String) -> Product {
   // 构建待插入对象
   let new_post = NewProducts {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
@@ -52,12 +55,16 @@ pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String)
     name: name.clone(),
     description: None,
     official: u8::from(true),
+    part,
   };
   // 插入到数据库
-  let _p = diesel::insert_into(products::table)
+  let p = diesel::insert_into(products::table)
     .values(&new_post)
     // MySQL does not support RETURNING clauses
-    .execute(conn).unwrap();
+    .execute(conn);
+  if let Err(err) = p{
+    println!("{}",err);
+  }
   println!("{name}");
   products::dsl::products
     .filter(products::name.eq(name))
@@ -71,12 +78,13 @@ pub fn create_product(conn: &mut MysqlConnection, vendor: Vec<u8>, name: String)
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{}:{}", vendor.to_owned(),product.to_owned()) }"#
 )]
-fn import_to_db(vendor: String, product: String) -> Product {
+fn import_to_db(vendor: String, product: String,part:String) -> Product {
   println!("import_to_db: {vendor}:{product}");
   let mut connection = init_db_pool().get().unwrap();
   let vendor = create_vendor(&mut connection, vendor, None);
-  create_product(&mut connection, vendor.id, product)
+  create_product(&mut connection, vendor.id, product,part)
 }
+
 fn main() {
   let gz_open_file = File::open("examples/nvdcve/official-cpe-dictionary_v2.3.xml.gz").unwrap();
   let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
@@ -87,6 +95,8 @@ fn main() {
     import_to_db(
       cpe_item.cpe23_item.name.vendor.to_string(),
       cpe_item.cpe23_item.name.product.to_string(),
+      cpe_item.cpe23_item.name.part.to_string(),
     );
+    break;
   }
 }
