@@ -20,3 +20,8 @@ pub struct NewProducts {
   pub official: u8,
   pub part: String,
 }
+
+pub struct DeleteProducts {
+  pub name: String,
+  pub vendor_id: Vec<u8>,
+}

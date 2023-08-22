@@ -84,9 +84,14 @@ pub fn create_product(
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{}:{}", vendor.to_owned(),product.to_owned()) }"#
 )]
-fn import_to_db(connection: &mut MysqlConnection, vendor: String, product: String, part: String) -> Vec<u8> {
+fn import_to_db(
+  connection: &mut MysqlConnection,
+  vendor: String,
+  product: String,
+  part: String,
+) -> Vec<u8> {
   println!("import_to_db: {vendor}:{product}");
-  let vendor_id = create_vendor( connection, vendor, None);
+  let vendor_id = create_vendor(connection, vendor, None);
   create_product(connection, vendor_id, product, part)
 }
 
@@ -96,21 +101,31 @@ fn main() {
   let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
   let file = BufReader::new(gz_decoder);
   let c: CPEList = quick_xml::de::from_reader(file).unwrap();
+  let mut flag = false;
   for cpe_item in c.cpe_item.into_iter() {
     let vendor = cpe_item.cpe23_item.name.vendor.to_string();
-    if cpe_item.deprecated{
+    if cpe_item.deprecated {
       continue;
     }
-    if vendor.starts_with('f'){
+    if flag {
       import_to_db(
         connection_pool.get().unwrap().deref_mut(),
         cpe_item.cpe23_item.name.vendor.to_string(),
         cpe_item.cpe23_item.name.product.to_string(),
         cpe_item.cpe23_item.name.part.to_string(),
       );
-    }else if vendor.starts_with('g') {
-      break;
+      continue;
     }
+    if vendor.starts_with('g') {
+      flag = true;
+      import_to_db(
+        connection_pool.get().unwrap().deref_mut(),
+        cpe_item.cpe23_item.name.vendor.to_string(),
+        cpe_item.cpe23_item.name.product.to_string(),
+        cpe_item.cpe23_item.name.part.to_string(),
+      );
+    }
+
     // break;
   }
 }
