@@ -2,12 +2,12 @@ use cached::proc_macro::cached;
 use cached::SizedCache;
 use cpe::dictionary::CPEList;
 use diesel::mysql::MysqlConnection;
-
-use nvd_db::cpe::{NewProducts, NewVendors};
 use nvd_db::models::{Product, Vendor};
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
+use nvd_db::products::NewProducts;
+use nvd_db::vendor::NewVendors;
 use tools::init_db_pool;
 // 建立连接
 #[cached(
@@ -23,7 +23,7 @@ pub fn create_vendor(
   // 构建待插入对象
   let new_post = NewVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
-    name: name.clone(),
+    name,
     description,
     official: u8::from(true),
   };
@@ -46,7 +46,7 @@ pub fn create_product(
   let new_post = NewProducts {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     vendor_id: vendor,
-    name: name.clone(),
+    name,
     description: None,
     official: u8::from(true),
     part,

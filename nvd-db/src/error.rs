@@ -19,7 +19,7 @@ impl From<DieselError> for NVDDBError {
       DieselError::DatabaseError(kind, info) => {
         let message = info.details().unwrap_or_else(|| info.message()).to_string();
         NVDDBError::DatabaseErrorKind {
-          value: format!("{:?}:{}", kind, message),
+          value: format!("{kind:?}:{message}"),
         }
       }
       _ => NVDDBError::DieselError { source: err },
