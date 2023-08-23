@@ -1,5 +1,3 @@
-
-
 // #[derive(Queryable, Debug, Clone)]
 // pub struct NewCve {
 //     pub id: String,
