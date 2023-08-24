@@ -1,6 +1,15 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    cve_product (cve_id, product_id) {
+        #[max_length = 16]
+        cve_id -> Varchar,
+        #[max_length = 16]
+        product_id -> Binary,
+    }
+}
+
+diesel::table! {
     cves (id) {
         #[max_length = 16]
         id -> Varchar,
@@ -16,8 +25,6 @@ diesel::table! {
         raw -> Json,
         #[max_length = 64]
         assigner -> Varchar,
-        #[max_length = 16]
-        product_id -> Binary,
         configurations -> Json,
         official -> Unsigned<Tinyint>,
     }
@@ -134,12 +141,14 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(cve_product -> cves (cve_id));
+diesel::joinable!(cve_product -> products (product_id));
 diesel::joinable!(cves -> cvss2 (cvss2_id));
 diesel::joinable!(cves -> cvss3 (cvss3_id));
-diesel::joinable!(cves -> products (product_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    cve_product,
     cves,
     cvss2,
     cvss3,

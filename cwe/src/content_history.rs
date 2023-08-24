@@ -8,7 +8,7 @@ pub struct ContentHistory {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
+#[serde(deny_unknown_fields, rename_all(serialize = "snake_case"))]
 pub enum ContentHistoryChild {
   #[serde(rename(deserialize = "Submission"))]
   Submission(Submission),
@@ -19,7 +19,7 @@ pub enum ContentHistoryChild {
   #[serde(rename(deserialize = "Previous_Entry_Name"))]
   PreviousEntryName {
     #[serde(rename(deserialize = "@Version"))]
-    version:Option<String>,
+    version: Option<String>,
     #[serde(rename(deserialize = "@Date"))]
     date: String,
     #[serde(rename(deserialize = "$value"))]

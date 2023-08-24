@@ -33,12 +33,12 @@ pub struct Reasons {
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Reason {
-  #[serde(rename(deserialize  = "@Type"))]
+  #[serde(rename(deserialize = "@Type"))]
   pub r#type: String,
 }
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Usage {
-  #[serde(rename(deserialize  = "$text"))]
+  #[serde(rename(deserialize = "$text"))]
   pub usage: UsageEnum,
 }
 
@@ -48,6 +48,6 @@ pub enum UsageEnum {
   Discouraged,
   Prohibited,
   Allowed,
-  #[serde(rename(deserialize  = "Allowed-with-Review"))]
+  #[serde(rename(deserialize = "Allowed-with-Review"))]
   AllowedWithReview,
 }

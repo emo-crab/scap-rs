@@ -10,10 +10,10 @@ fn main() {
   let mut zip_archive = zip::ZipArchive::new(zip_open_file).unwrap();
   let file = BufReader::new(zip_archive.by_index(0).unwrap());
   let c: WeaknessCatalog = quick_xml::de::from_reader(file).unwrap();
-  for w in c.weaknesses.weaknesses{
+  for w in c.weaknesses.weaknesses {
     // let data = serde_json::to_string_pretty(&w).unwrap();
-    if w.name.len()>128{
-      println!("{}",w.name);
+    if w.name.len() > 128 {
+      println!("{}", w.name);
     }
   }
 }

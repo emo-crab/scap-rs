@@ -40,7 +40,7 @@ pub struct Categories {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields, rename(deserialize  = "Category"))]
+#[serde(deny_unknown_fields, rename(deserialize = "Category"))]
 pub struct Category {
   #[serde(rename(deserialize = "@ID"))]
   pub id: i64,

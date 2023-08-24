@@ -15,8 +15,8 @@ pub mod impact;
 
 use crate::configurations::Configurations;
 use crate::impact::Impact;
-use serde::{Deserialize, Serialize};
 use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
 // https://github.com/CVEProject/cve-schema
 // https://raw.gitmirror.com/CVEProject/cve-schema/master/schema/v4.0/DRAFT-JSON-file-format-v4.md
@@ -143,26 +143,21 @@ pub struct ProblemTypeDescription {
 
 mod date_format {
   use chrono::NaiveDateTime;
-  use serde::{self, Deserialize, Serializer, Deserializer};
+  use serde::{self, Deserialize, Deserializer, Serializer};
 
-  const FORMAT: &'static str = "%Y-%m-%dT%H:%MZ";
+  const FORMAT: &str = "%Y-%m-%dT%H:%MZ";
 
-  pub fn serialize<S>(
-    date: &NaiveDateTime,
-    serializer: S,
-  ) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
+  pub fn serialize<S>(date: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
   {
     let s = date.to_string();
     serializer.serialize_str(&s)
   }
 
-  pub fn deserialize<'de, D>(
-    deserializer: D,
-  ) -> Result<NaiveDateTime, D::Error>
-    where
-        D: Deserializer<'de>,
+  pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+  where
+    D: Deserializer<'de>,
   {
     let s = String::deserialize(deserializer)?;
     NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)

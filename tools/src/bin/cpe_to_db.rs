@@ -3,11 +3,11 @@ use cached::SizedCache;
 use cpe::dictionary::CPEList;
 use diesel::mysql::MysqlConnection;
 use nvd_db::models::{Product, Vendor};
+use nvd_db::products::NewProducts;
+use nvd_db::vendor::NewVendors;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
-use nvd_db::products::NewProducts;
-use nvd_db::vendor::NewVendors;
 use tools::init_db_pool;
 // 建立连接
 #[cached(
@@ -28,7 +28,7 @@ pub fn create_vendor(
     official: u8::from(true),
   };
   // 插入到数据库
-  let _v = Vendor::create(conn,&new_post);
+  let _v = Vendor::create(conn, &new_post);
   new_post.id
 }
 #[cached(
@@ -52,7 +52,7 @@ pub fn create_product(
     part,
   };
   // 插入到数据库
-  let _v = Product::create(conn,&new_post);
+  let _v = Product::create(conn, &new_post);
   new_post.id
 }
 // https://cwe.mitre.org/data/downloads.html

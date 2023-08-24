@@ -1,22 +1,31 @@
 use diesel::prelude::*;
-
+use crate::schema::*;
 use chrono::NaiveDateTime;
-use diesel::sql_types::Json;
+use serde_json::Value;
+
+#[derive(Identifiable, Selectable, Queryable, Associations, Debug)]
+#[diesel(belongs_to(Cve))]
+#[diesel(belongs_to(Product))]
+#[diesel(table_name = cve_product)]
+#[diesel(primary_key(cve_id, product_id))]
+pub struct CveProduct {
+  pub cve_id: String,
+  pub product_id: Vec<u8>,
+}
 
 #[derive(Queryable, Debug, Clone)]
 pub struct Cve {
   pub id: String,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
-  pub references: Json,
-  pub description: Json,
-  pub cwe: Json,
+  pub references: Value,
+  pub description: Value,
+  pub cwe: Value,
   pub cvss3_id: Option<Vec<u8>>,
   pub cvss2_id: Option<Vec<u8>>,
-  pub raw: Json,
+  pub raw: Value,
   pub assigner: String,
-  pub product_id: Vec<u8>,
-  pub configurations: Json,
+  pub configurations: Value,
   pub official: u8,
 }
 
@@ -62,6 +71,7 @@ pub struct Cvss3 {
 }
 
 #[derive(Queryable, Debug, Clone)]
+#[diesel(belongs_to(Vendor))]
 pub struct Product {
   pub id: Vec<u8>,
   pub vendor_id: Vec<u8>,
