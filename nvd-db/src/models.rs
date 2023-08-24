@@ -1,6 +1,6 @@
-use diesel::prelude::*;
 use crate::schema::*;
 use chrono::NaiveDateTime;
+use diesel::prelude::*;
 use serde_json::Value;
 
 #[derive(Identifiable, Selectable, Queryable, Associations, Debug)]
@@ -44,11 +44,11 @@ pub struct Cvss2 {
   pub exploitability_score: f32,
   pub impact_score: f32,
   pub severity: String,
-  pub ac_insuf_info: Option<String>,
-  pub obtain_all_privilege: i8,
-  pub obtain_user_privilege: i8,
-  pub obtain_other_privilege: i8,
-  pub user_interaction_required: Option<i8>,
+  pub ac_insuf_info: Option<u8>,
+  pub obtain_all_privilege: u8,
+  pub obtain_user_privilege: u8,
+  pub obtain_other_privilege: u8,
+  pub user_interaction_required: Option<u8>,
 }
 
 #[derive(Queryable, Debug, Clone)]

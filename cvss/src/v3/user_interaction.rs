@@ -74,17 +74,13 @@ impl FromStr for UserInteractionType {
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'N' => Ok(Self::None),
       'R' => Ok(Self::Required),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: Self::description(),
       }),
     }
   }

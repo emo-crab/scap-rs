@@ -68,10 +68,7 @@ impl FromStr for AccessVectorType {
     }
     let c = {
       let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'N' => Ok(Self::Network),
@@ -79,7 +76,6 @@ impl FromStr for AccessVectorType {
       'L' => Ok(Self::Local),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "AccessVectorType".to_string(),
       }),
     }
   }

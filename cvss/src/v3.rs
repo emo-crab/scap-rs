@@ -216,7 +216,6 @@ impl FromStr for CVSS {
     // "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
     let error = CVSSError::InvalidCVSS {
       value: vector_string.to_string(),
-      scope: "CVSS parser".to_string(),
     };
     let exploit_ability = ExploitAbility {
       attack_vector: AttackVectorType::from_str(vector.next().ok_or(&error)?)?,

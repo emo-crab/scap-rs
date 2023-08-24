@@ -81,7 +81,6 @@ impl FromStr for SeverityType {
       "Critical" => Ok(Self::Critical),
       _ => Err(CVSSError::InvalidCVSS {
         value: s.to_string(),
-        scope: "SeverityType".to_string(),
       }),
     }
   }

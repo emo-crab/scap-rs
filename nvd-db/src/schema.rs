@@ -55,12 +55,11 @@ diesel::table! {
         impact_score -> Float,
         #[max_length = 36]
         severity -> Varchar,
-        #[max_length = 36]
-        ac_insuf_info -> Nullable<Varchar>,
-        obtain_all_privilege -> Tinyint,
-        obtain_user_privilege -> Tinyint,
-        obtain_other_privilege -> Tinyint,
-        user_interaction_required -> Nullable<Tinyint>,
+        ac_insuf_info -> Nullable<Unsigned<Tinyint>>,
+        obtain_all_privilege -> Unsigned<Tinyint>,
+        obtain_user_privilege -> Unsigned<Tinyint>,
+        obtain_other_privilege -> Unsigned<Tinyint>,
+        user_interaction_required -> Nullable<Unsigned<Tinyint>>,
     }
 }
 
@@ -148,11 +147,11 @@ diesel::joinable!(cves -> cvss3 (cvss3_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    cve_product,
-    cves,
-    cvss2,
-    cvss3,
-    cwes,
-    products,
-    vendors,
+  cve_product,
+  cves,
+  cvss2,
+  cvss3,
+  cwes,
+  products,
+  vendors,
 );

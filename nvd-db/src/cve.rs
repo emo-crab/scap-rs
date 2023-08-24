@@ -20,7 +20,7 @@ pub struct NewCve {
   pub cvss2_id: Option<Vec<u8>>,
   pub raw: Value,
   pub assigner: String,
-  pub configurations:  Value,
+  pub configurations: Value,
   pub official: u8,
 }
 

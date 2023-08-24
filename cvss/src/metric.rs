@@ -107,7 +107,7 @@ impl MetricTypeV3 {
       Self::A => "A",
     }
   }
-  pub fn description(self) -> &'static str {
+  fn description(self) -> &'static str {
     match self {
       Self::AC => "Attack Complexity",
       Self::AV => "Attack Vector",
@@ -177,7 +177,7 @@ impl MetricTypeV2 {
       Self::Au => "Au",
     }
   }
-  pub fn description(self) -> &'static str {
+  fn description(self) -> &'static str {
     match self {
       Self::AC => "Attack Complexity",
       Self::AV => "Attack Vector",

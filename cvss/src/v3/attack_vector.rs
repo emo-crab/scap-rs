@@ -89,10 +89,7 @@ impl FromStr for AttackVectorType {
     }
     let c = {
       let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'N' => Ok(Self::Network),
@@ -101,7 +98,6 @@ impl FromStr for AttackVectorType {
       'P' => Ok(Self::Physical),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: Self::description(),
       }),
     }
   }

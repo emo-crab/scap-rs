@@ -89,17 +89,13 @@ impl FromStr for ScopeType {
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'U' => Ok(Self::Unchanged),
       'C' => Ok(Self::Changed),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: Self::description(),
       }),
     }
   }

@@ -67,10 +67,7 @@ impl FromStr for AuthenticationType {
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'M' => Ok(Self::Multiple),
@@ -78,7 +75,6 @@ impl FromStr for AuthenticationType {
       'N' => Ok(Self::None),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "AuthenticationType".to_string(),
       }),
     }
   }

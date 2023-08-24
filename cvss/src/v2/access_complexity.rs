@@ -78,10 +78,7 @@ impl FromStr for AccessComplexityType {
     }
     let c = {
       let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'H' => Ok(Self::High),
@@ -89,7 +86,6 @@ impl FromStr for AccessComplexityType {
       'L' => Ok(Self::Low),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: "AccessComplexityType".to_string(),
       }),
     }
   }

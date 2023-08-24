@@ -75,10 +75,7 @@ impl FromStr for PrivilegesRequiredType {
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        value: s,
-        scope: Self::description(),
-      })?
+      c.ok_or(CVSSError::InvalidCVSS { value: s })?
     };
     match c {
       'N' => Ok(Self::None),
@@ -86,7 +83,6 @@ impl FromStr for PrivilegesRequiredType {
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         value: c.to_string(),
-        scope: Self::description(),
       }),
     }
   }

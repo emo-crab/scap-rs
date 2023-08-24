@@ -4,7 +4,7 @@ use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 
 use nvd_db::cve::NewCve;
-use nvd_db::models::Cve;
+use nvd_db::models::{Cve, Cvss3};
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
@@ -17,16 +17,16 @@ use tools::init_db_pool;
   convert = r#"{ format!("{}", cve_item.cve.meta.id.to_owned()) }"#
 )]
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
-  println!("import_to_db: {}",cve_item.cve.meta.id);
+  println!("import_to_db: {}", cve_item.cve.meta.id);
   let raw = serde_json::json!(cve_item);
   let new_post = NewCve {
     id: cve_item.cve.meta.id,
     created_at: cve_item.published_date,
     updated_at: cve_item.last_modified_date,
-    references: serde_json::json!( cve_item.cve.references.reference_data),
+    references: serde_json::json!(cve_item.cve.references.reference_data),
     description: serde_json::json!(cve_item.cve.description.description_data),
     cwe: serde_json::json!(cve_item.cve.problem_type),
-    cvss3_id: None,
+    cvss3_id: Cvss3::create_from_impact(connection, cve_item.impact.base_metric_v3),
     cvss2_id: None,
     raw,
     assigner: cve_item.cve.meta.assigner,

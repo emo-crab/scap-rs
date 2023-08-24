@@ -15,8 +15,8 @@ pub enum CVSSError {
 
   #[error("invalid prefix for `{value}`")]
   InvalidPrefix { value: String },
-  #[error("Invalid CVSS `{value}` at {scope}")]
-  InvalidCVSS { value: String, scope: String },
+  #[error("Invalid CVSS `{value}`")]
+  InvalidCVSS { value: String },
   #[error("invalid cvss version `{value}` ({expected})")]
   InvalidCVSSVersion { value: String, expected: String },
   #[error("unknown CVSS metric name: `{name}`")]

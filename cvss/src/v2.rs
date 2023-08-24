@@ -82,7 +82,6 @@ impl FromStr for CVSS {
     // "CVSS:2.0/AV:L/AC:M/Au:N/C:C/I:C/A:C"
     let error = CVSSError::InvalidCVSS {
       value: vector_string.to_string(),
-      scope: "CVSS parser".to_string(),
     };
     let mut cvss = CVSS {
       version,
