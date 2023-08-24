@@ -40,7 +40,7 @@ pub struct Categories {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields, rename = "Category")]
+#[serde(deny_unknown_fields, rename(deserialize  = "Category"))]
 pub struct Category {
   #[serde(rename(deserialize = "@ID"))]
   pub id: i64,
@@ -51,7 +51,7 @@ pub struct Category {
   #[serde(rename(deserialize = "Summary"))]
   pub summary: StructuredText,
   #[serde(rename(deserialize = "Relationships"))]
-  pub relationships: Relationships,
+  pub relationships: Option<Relationships>,
   #[serde(rename(deserialize = "References"))]
   pub references: Option<References>,
   #[serde(rename(deserialize = "Mapping_Notes"))]

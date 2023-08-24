@@ -16,6 +16,7 @@ pub mod impact;
 use crate::configurations::Configurations;
 use crate::impact::Impact;
 use serde::{Deserialize, Serialize};
+use chrono::NaiveDateTime;
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
 // https://github.com/CVEProject/cve-schema
 // https://raw.gitmirror.com/CVEProject/cve-schema/master/schema/v4.0/DRAFT-JSON-file-format-v4.md
@@ -53,9 +54,11 @@ pub struct CVEItem {
   // 配置
   pub configurations: Configurations,
   // 公开时间
-  pub published_date: String,
+  #[serde(with = "date_format")]
+  pub published_date: NaiveDateTime,
   // 最后修改时间
-  pub last_modified_date: String,
+  #[serde(with = "date_format")]
+  pub last_modified_date: NaiveDateTime,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -112,14 +115,14 @@ pub struct DescriptionData {
 pub struct Meta {
   /// CVE-YEAR-NNNNNNN - the CVE ID in the format listed in <http://cve.mitre.org/cve/identifiers/syntaxchange.html#new>
   #[serde(rename = "ID")]
-  id: String,
+  pub id: String,
   /// Assigner ID - the assigner of the CVE (email address)
   #[serde(rename = "ASSIGNER")]
-  assigner: String,
+  pub assigner: String,
 }
 /// This is problem type information (e.g. CWE identifier).
 ///
-/// Must contain: At least one entry, can be text, OWASP, CWE, please note that while only one is required you can use more than one (or indeed all three) as long as they are correct).
+/// Must contain: At least one entry, can be text, OWASP, CWE, please note that while only one is required you can use more than one (or indeed all three) as long as they are correct.
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemType {
@@ -136,4 +139,32 @@ pub struct ProblemTypeDataItem {
 pub struct ProblemTypeDescription {
   pub lang: String,
   pub value: String,
+}
+
+mod date_format {
+  use chrono::NaiveDateTime;
+  use serde::{self, Deserialize, Serializer, Deserializer};
+
+  const FORMAT: &'static str = "%Y-%m-%dT%H:%MZ";
+
+  pub fn serialize<S>(
+    date: &NaiveDateTime,
+    serializer: S,
+  ) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+  {
+    let s = date.to_string();
+    serializer.serialize_str(&s)
+  }
+
+  pub fn deserialize<'de, D>(
+    deserializer: D,
+  ) -> Result<NaiveDateTime, D::Error>
+    where
+        D: Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+  }
 }

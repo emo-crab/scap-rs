@@ -37,7 +37,7 @@ pub struct Weaknesses {
 #[serde(deny_unknown_fields)]
 pub struct Weakness {
   #[serde(rename(deserialize = "@ID"))]
-  pub id: i64,
+  pub id: i32,
   #[serde(rename(deserialize = "@Name"))]
   pub name: String,
   #[serde(rename(deserialize = "@Abstraction"))]
@@ -242,7 +242,7 @@ pub struct DemonstrativeExample {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
 pub enum DemonstrativeExampleChild {
   #[serde(rename(deserialize = "Title_Text"))]
   TitleText(String),
@@ -275,7 +275,7 @@ pub struct PotentialMitigation {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
 pub enum PotentialMitigationChild {
   #[serde(rename(deserialize = "Phase"))]
   Phase(String),
@@ -306,7 +306,7 @@ pub struct DetectionMethod {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
 pub enum DetectionMethodChild {
   #[serde(rename(deserialize = "Method"))]
   Method(String),
@@ -333,7 +333,7 @@ pub struct Consequence {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields, rename_all(deserialize = "PascalCase"))]
 pub enum ConsequenceChild {
   #[serde(rename(deserialize = "Scope"))]
   Scope(String),
@@ -399,7 +399,7 @@ pub struct ApplicablePlatforms {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
 pub enum ApplicablePlatform {
   Language {
     #[serde(rename(deserialize = "@Class"))]

@@ -17,6 +17,7 @@ pub struct Cve {
   pub assigner: String,
   pub product_id: Vec<u8>,
   pub configurations: Json,
+  pub official: u8,
 }
 
 #[derive(Queryable, Debug, Clone)]
@@ -82,4 +83,13 @@ pub struct Vendor {
   pub updated_at: NaiveDateTime,
   pub homepage: Option<String>,
   pub official: u8,
+}
+
+#[derive(Queryable, Debug)]
+pub struct Cwe {
+  pub id: i32,
+  pub name: String,
+  pub description: String,
+  pub created_at: NaiveDateTime,
+  pub updated_at: NaiveDateTime,
 }

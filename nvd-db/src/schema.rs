@@ -19,6 +19,7 @@ diesel::table! {
         #[max_length = 16]
         product_id -> Binary,
         configurations -> Json,
+        official -> Unsigned<Tinyint>,
     }
 }
 
@@ -89,6 +90,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    cwes (id) {
+        id -> Integer,
+        #[max_length = 256]
+        name -> Varchar,
+        description -> Text,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
+diesel::table! {
     products (id) {
         #[max_length = 16]
         id -> Binary,
@@ -127,4 +139,11 @@ diesel::joinable!(cves -> cvss3 (cvss3_id));
 diesel::joinable!(cves -> products (product_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
-diesel::allow_tables_to_appear_in_same_query!(cves, cvss2, cvss3, products, vendors,);
+diesel::allow_tables_to_appear_in_same_query!(
+    cves,
+    cvss2,
+    cvss3,
+    cwes,
+    products,
+    vendors,
+);

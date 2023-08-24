@@ -19,7 +19,7 @@ pub struct StructuredText {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields)]
+#[serde(deny_unknown_fields,rename_all(serialize = "snake_case"))]
 pub enum StructuredTextType {
   #[serde(rename(deserialize = "p"))]
   P {

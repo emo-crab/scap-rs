@@ -2,7 +2,7 @@ use crate::structured_text::StructuredText;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields, rename_all = "PascalCase")]
+#[serde(deny_unknown_fields, rename_all(deserialize = "PascalCase"))]
 pub struct MappingNotes {
   pub usage: Usage,
   pub rationale: StructuredText,
@@ -25,19 +25,20 @@ pub struct Suggestion {
   pub comment: String,
 }
 #[derive(Debug, Deserialize, Serialize)]
-#[serde(deny_unknown_fields, rename_all = "PascalCase")]
+#[serde(deny_unknown_fields, rename_all(deserialize = "PascalCase"))]
 pub struct Reasons {
-  pub reason: Reason,
+  #[serde(default)]
+  pub reason: Vec<Reason>,
 }
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct Reason {
-  #[serde(rename = "@Type")]
+  #[serde(rename(deserialize  = "@Type"))]
   pub r#type: String,
 }
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Usage {
-  #[serde(rename = "$text")]
+  #[serde(rename(deserialize  = "$text"))]
   pub usage: UsageEnum,
 }
 
@@ -47,6 +48,6 @@ pub enum UsageEnum {
   Discouraged,
   Prohibited,
   Allowed,
-  #[serde(rename = "Allowed-with-Review")]
+  #[serde(rename(deserialize  = "Allowed-with-Review"))]
   AllowedWithReview,
 }
