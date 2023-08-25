@@ -4,7 +4,7 @@ use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 
 use nvd_db::cve::NewCve;
-use nvd_db::models::{Cve, Cvss3};
+use nvd_db::models::{Cve, Cvss2, Cvss3};
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
@@ -27,7 +27,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
     description: serde_json::json!(cve_item.cve.description.description_data),
     cwe: serde_json::json!(cve_item.cve.problem_type),
     cvss3_id: Cvss3::create_from_impact(connection, cve_item.impact.base_metric_v3),
-    cvss2_id: None,
+    cvss2_id: Cvss2::create_from_impact(connection,cve_item.impact.base_metric_v2),
     raw,
     assigner: cve_item.cve.meta.assigner,
     configurations: serde_json::json!(cve_item.configurations.nodes),
@@ -40,12 +40,16 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
 
 fn main() {
   let connection_pool = init_db_pool();
-  let gz_open_file = File::open("examples/nvdcve/nvdcve-1.1-2023.json.gz").unwrap();
-  let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
-  let file = BufReader::new(gz_decoder);
-  let c: CVEContainer = serde_json::from_reader(file).unwrap();
-  for w in c.CVE_Items {
-    import_to_db(connection_pool.get().unwrap().deref_mut(), w);
-    break;
+  for y in 2002..2022{
+    let p = format!( "examples/nvdcve/nvdcve-1.1-{}.json.gz",y);
+    println!("{}",p);
+    let gz_open_file = File::open(p).unwrap();
+    let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
+    let file = BufReader::new(gz_decoder);
+    let c: CVEContainer = serde_json::from_reader(file).unwrap();
+    for w in c.CVE_Items {
+      import_to_db(connection_pool.get().unwrap().deref_mut(), w);
+    }
   }
+
 }

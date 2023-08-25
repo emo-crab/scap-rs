@@ -52,12 +52,6 @@ pub trait Metric: Clone + Debug + FromStr + Display {
       MetricType::V3(v3) => v3.name(),
     }
   }
-  fn description() -> String {
-    match Self::TYPE {
-      MetricType::V2(v2) => v2.description().to_string(),
-      MetricType::V3(v3) => v3.description().to_string(),
-    }
-  }
   fn score(&self) -> f32;
   fn as_str(&self) -> &'static str;
 }
@@ -105,18 +99,6 @@ impl MetricTypeV3 {
       Self::C => "C",
       Self::I => "I",
       Self::A => "A",
-    }
-  }
-  fn description(self) -> &'static str {
-    match self {
-      Self::AC => "Attack Complexity",
-      Self::AV => "Attack Vector",
-      Self::PR => "Privileges Required",
-      Self::S => "Scope",
-      Self::UI => "User Interaction",
-      Self::C => "Confidentiality Impact",
-      Self::I => "Integrity Impact",
-      Self::A => "Availability Impact",
     }
   }
 }
@@ -175,16 +157,6 @@ impl MetricTypeV2 {
       Self::C => "C",
       Self::I => "I",
       Self::Au => "Au",
-    }
-  }
-  fn description(self) -> &'static str {
-    match self {
-      Self::AC => "Attack Complexity",
-      Self::AV => "Attack Vector",
-      Self::Au => "Authentication",
-      Self::C => "Confidentiality Impact",
-      Self::I => "Integrity Impact",
-      Self::A => "Availability Impact",
     }
   }
 }

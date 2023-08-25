@@ -91,7 +91,6 @@ impl Cvss3 {
           exploitability_score: imv3.exploitability_score,
           impact_score: imv3.impact_score,
         };
-        println!("{new:#?}");
         if let Ok(c) = Self::create(conn, &new) {
           return Some(c.id);
         }
