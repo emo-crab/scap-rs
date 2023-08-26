@@ -11,7 +11,7 @@ diesel::table! {
 
 diesel::table! {
     cves (id) {
-        #[max_length = 16]
+        #[max_length = 32]
         id -> Varchar,
         year -> Integer,
         official -> Unsigned<Tinyint>,
