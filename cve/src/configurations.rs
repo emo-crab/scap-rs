@@ -40,6 +40,7 @@ pub struct Match {
   pub version_end_including: Option<String>,
   // 排除 到版本结束
   pub version_end_excluding: Option<String>,
+  #[serde(rename(deserialize ="cpe_name"))]
   pub cpe_name: Vec<CPEUri>,
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]
