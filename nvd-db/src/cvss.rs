@@ -64,6 +64,7 @@ impl Cvss3 {
       // mysql 不支持 get_result，要再查一次得到插入结果
       cvss3::dsl::cvss3
         .filter(cvss3::vector_string.eq(&args.vector_string))
+        .limit(1)
         .first::<Cvss3>(conn)?,
     )
   }
@@ -116,6 +117,7 @@ impl Cvss2 {
       // mysql 不支持 get_result，要再查一次得到插入结果
       cvss2::dsl::cvss2
         .filter(cvss2::vector_string.eq(&args.vector_string))
+        .limit(1)
         .first::<Cvss2>(conn)?,
     )
   }

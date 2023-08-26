@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde_json::Value;
 
-#[derive(Identifiable, Selectable, Queryable, Associations, Debug)]
+#[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Cve))]
 #[diesel(belongs_to(Product))]
 #[diesel(table_name = cve_product)]
@@ -13,23 +13,28 @@ pub struct CveProduct {
   pub product_id: Vec<u8>,
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
+#[diesel(belongs_to(Cvss2))]
+#[diesel(belongs_to(Cvss3))]
+#[diesel(table_name = cves)]
 pub struct Cve {
   pub id: String,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
+  pub year: i32,
+  pub official: u8,
+  pub assigner: String,
   pub references: Value,
   pub description: Value,
   pub cwe: Value,
   pub cvss3_id: Option<Vec<u8>>,
   pub cvss2_id: Option<Vec<u8>>,
-  pub raw: Value,
-  pub assigner: String,
   pub configurations: Value,
-  pub official: u8,
+  pub raw: Value,
+  pub created_at: NaiveDateTime,
+  pub updated_at: NaiveDateTime,
 }
 
 #[derive(Queryable, Debug, Clone)]
+#[diesel(table_name = cvss2)]
 pub struct Cvss2 {
   pub id: Vec<u8>,
   pub version: String,
@@ -52,6 +57,7 @@ pub struct Cvss2 {
 }
 
 #[derive(Queryable, Debug, Clone)]
+#[diesel(table_name = cvss3)]
 pub struct Cvss3 {
   pub id: Vec<u8>,
   pub version: String,
@@ -70,29 +76,29 @@ pub struct Cvss3 {
   pub impact_score: f32,
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Vendor))]
 pub struct Product {
   pub id: Vec<u8>,
   pub vendor_id: Vec<u8>,
-  pub name: String,
-  pub description: Option<String>,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
-  pub homepage: Option<String>,
   pub official: u8,
   pub part: String,
+  pub name: String,
+  pub description: Option<String>,
+  pub homepage: Option<String>,
+  pub created_at: NaiveDateTime,
+  pub updated_at: NaiveDateTime,
 }
 
 #[derive(Queryable, Debug, Clone)]
 pub struct Vendor {
   pub id: Vec<u8>,
+  pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
   pub homepage: Option<String>,
-  pub official: u8,
+  pub updated_at: NaiveDateTime,
+  pub created_at: NaiveDateTime,
 }
 
 #[derive(Queryable, Debug)]

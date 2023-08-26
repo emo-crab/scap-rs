@@ -1,5 +1,5 @@
-use cached::proc_macro::cached;
-use cached::SizedCache;
+
+
 use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 
@@ -11,11 +11,6 @@ use std::ops::DerefMut;
 use tools::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
-#[cached(
-  type = "SizedCache<String, String>",
-  create = "{ SizedCache::with_size(100) }",
-  convert = r#"{ format!("{}", cve_item.cve.meta.id.to_owned()) }"#
-)]
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
   println!("import_to_db: {}", cve_item.cve.meta.id);
   let raw = serde_json::json!(cve_item);
@@ -32,6 +27,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
     assigner: cve_item.cve.meta.assigner,
     configurations: serde_json::json!(cve_item.configurations.nodes),
     official: u8::from(true),
+    year: 0,
   };
   // 插入到数据库
   let _v = Cve::create(connection, &new_post).unwrap();
@@ -40,9 +36,9 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
 
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2002..2022{
-    let p = format!( "examples/nvdcve/nvdcve-1.1-{}.json.gz",y);
-    println!("{}",p);
+  for y in 2022..2023{
+    let p = format!( "examples/nvdcve/nvdcve-1.1-{y}.json.gz");
+    println!("{p}");
     let gz_open_file = File::open(p).unwrap();
     let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
     let file = BufReader::new(gz_decoder);

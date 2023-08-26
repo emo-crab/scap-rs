@@ -26,6 +26,7 @@ pub fn create_vendor(
     name,
     description,
     official: u8::from(true),
+    homepage: None,
   };
   // 插入到数据库
   let _v = Vendor::create(conn, &new_post);
@@ -50,6 +51,7 @@ pub fn create_product(
     description: None,
     official: u8::from(true),
     part,
+    homepage: None,
   };
   // 插入到数据库
   let _v = Product::create(conn, &new_post);

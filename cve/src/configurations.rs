@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[serde(deny_unknown_fields)]
 pub struct Configurations {
   // 版本
-  #[serde(rename = "CVE_data_version")]
+  #[serde(rename(deserialize ="CVE_data_version"))]
   pub data_version: String,
   // 漏洞节点
   pub nodes: Vec<Node>,
@@ -40,7 +40,6 @@ pub struct Match {
   pub version_end_including: Option<String>,
   // 排除 到版本结束
   pub version_end_excluding: Option<String>,
-  #[serde(rename = "cpe_name")]
   pub cpe_name: Vec<CPEUri>,
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]

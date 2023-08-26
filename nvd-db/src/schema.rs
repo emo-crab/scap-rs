@@ -13,8 +13,10 @@ diesel::table! {
     cves (id) {
         #[max_length = 16]
         id -> Varchar,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
+        year -> Integer,
+        official -> Unsigned<Tinyint>,
+        #[max_length = 64]
+        assigner -> Varchar,
         references -> Json,
         description -> Json,
         cwe -> Json,
@@ -22,11 +24,10 @@ diesel::table! {
         cvss3_id -> Nullable<Binary>,
         #[max_length = 16]
         cvss2_id -> Nullable<Binary>,
-        raw -> Json,
-        #[max_length = 64]
-        assigner -> Varchar,
         configurations -> Json,
-        official -> Unsigned<Tinyint>,
+        raw -> Json,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -112,16 +113,16 @@ diesel::table! {
         id -> Binary,
         #[max_length = 16]
         vendor_id -> Binary,
-        #[max_length = 128]
-        name -> Varchar,
-        description -> Nullable<Text>,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
-        #[max_length = 256]
-        homepage -> Nullable<Varchar>,
         official -> Unsigned<Tinyint>,
         #[max_length = 1]
         part -> Char,
+        #[max_length = 128]
+        name -> Varchar,
+        description -> Nullable<Text>,
+        #[max_length = 256]
+        homepage -> Nullable<Varchar>,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
     }
 }
 
@@ -129,14 +130,14 @@ diesel::table! {
     vendors (id) {
         #[max_length = 16]
         id -> Binary,
+        official -> Unsigned<Tinyint>,
         #[max_length = 128]
         name -> Varchar,
         description -> Nullable<Text>,
-        created_at -> Timestamp,
-        updated_at -> Timestamp,
         #[max_length = 256]
         homepage -> Nullable<Varchar>,
-        official -> Unsigned<Tinyint>,
+        updated_at -> Timestamp,
+        created_at -> Timestamp,
     }
 }
 
@@ -147,11 +148,11 @@ diesel::joinable!(cves -> cvss3 (cvss3_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-  cve_product,
-  cves,
-  cvss2,
-  cvss3,
-  cwes,
-  products,
-  vendors,
+    cve_product,
+    cves,
+    cvss2,
+    cvss3,
+    cwes,
+    products,
+    vendors,
 );

@@ -1,5 +1,5 @@
-use cached::proc_macro::cached;
-use cached::SizedCache;
+
+
 use cwe::weakness_catalog::WeaknessCatalog;
 use diesel::mysql::MysqlConnection;
 use nvd_db::cwe::NewCwe;
@@ -10,11 +10,6 @@ use std::ops::DerefMut;
 use tools::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
-#[cached(
-  type = "SizedCache<String, i32>",
-  create = "{ SizedCache::with_size(100) }",
-  convert = r#"{ format!("{}:{}", id.to_owned(),name.to_owned()) }"#
-)]
 fn import_to_db(
   connection: &mut MysqlConnection,
   id: i32,

@@ -8,9 +8,10 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 #[diesel(table_name = vendors)]
 pub struct NewVendors {
   pub id: Vec<u8>,
+  pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub official: u8,
+  pub homepage: Option<String>,
 }
 
 impl Vendor {

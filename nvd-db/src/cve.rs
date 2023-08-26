@@ -11,17 +11,18 @@ use serde_json::Value;
 #[diesel(table_name = cves)]
 pub struct NewCve {
   pub id: String,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
+  pub year: i32,
+  pub official: u8,
+  pub assigner: String,
   pub references: Value,
   pub description: Value,
   pub cwe: Value,
   pub cvss3_id: Option<Vec<u8>>,
   pub cvss2_id: Option<Vec<u8>>,
-  pub raw: Value,
-  pub assigner: String,
   pub configurations: Value,
-  pub official: u8,
+  pub raw: Value,
+  pub created_at: NaiveDateTime,
+  pub updated_at: NaiveDateTime,
 }
 
 impl Cve {

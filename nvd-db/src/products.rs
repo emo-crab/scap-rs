@@ -9,10 +9,11 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 pub struct NewProducts {
   pub id: Vec<u8>,
   pub vendor_id: Vec<u8>,
-  pub name: String,
-  pub description: Option<String>,
   pub official: u8,
   pub part: String,
+  pub name: String,
+  pub description: Option<String>,
+  pub homepage: Option<String>,
 }
 
 pub struct DeleteProducts {
