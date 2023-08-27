@@ -14,7 +14,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
   let raw = serde_json::json!(cve_item);
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
-  println!("{}",id);
+  println!("{id}");
   let new_post = NewCve {
     id: id.clone(),
     created_at: cve_item.published_date,
@@ -37,7 +37,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
 
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2023..2024 {
+  for y in 2002..2024 {
     let p = format!("examples/nvdcve/nvdcve-1.1-{y}.json.gz");
     println!("{p}");
     let gz_open_file = File::open(p).unwrap();
