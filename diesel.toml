@@ -6,4 +6,4 @@ file = "nvd-db/src/schema.rs"
 custom_type_derives = ["diesel::query_builder::QueryId", "diesel::sql_types::SqlType"]
 
 [migrations_directory]
-dir = "migrations"
+dir = "nvd-db/migrations"
