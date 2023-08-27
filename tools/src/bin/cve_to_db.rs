@@ -37,7 +37,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
 
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2022..2024 {
+  for y in 2023..2024 {
     let p = format!("examples/nvdcve/nvdcve-1.1-{y}.json.gz");
     println!("{p}");
     let gz_open_file = File::open(p).unwrap();
