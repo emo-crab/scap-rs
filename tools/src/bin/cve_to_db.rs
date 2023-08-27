@@ -11,7 +11,6 @@ use tools::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
-  println!("import_to_db: {}", cve_item.cve.meta.id);
   let raw = serde_json::json!(cve_item);
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
@@ -37,7 +36,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> String {
 
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2002..2023 {
+  for y in 2022..2024 {
     let p = format!("examples/nvdcve/nvdcve-1.1-{y}.json.gz");
     println!("{p}");
     let gz_open_file = File::open(p).unwrap();
