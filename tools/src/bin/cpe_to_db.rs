@@ -10,11 +10,6 @@ use std::io::BufReader;
 use std::ops::DerefMut;
 use tools::init_db_pool;
 // 建立连接
-#[cached(
-  type = "SizedCache<String, Vec<u8>>",
-  create = "{ SizedCache::with_size(100) }",
-  convert = r#"{ format!("{}", name.to_owned()) }"#
-)]
 pub fn create_vendor(
   conn: &mut MysqlConnection,
   name: String,
@@ -32,11 +27,7 @@ pub fn create_vendor(
   let _v = Vendor::create(conn, &new_post);
   new_post.id
 }
-#[cached(
-  type = "SizedCache<String, Vec<u8>>",
-  create = "{ SizedCache::with_size(100) }",
-  convert = r#"{ format!("{}:{:?}", name.to_owned(),vendor.to_owned()) }"#
-)]
+
 pub fn create_product(
   conn: &mut MysqlConnection,
   vendor: Vec<u8>,
@@ -59,11 +50,7 @@ pub fn create_product(
 }
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
-#[cached(
-  type = "SizedCache<String, Vec<u8>>",
-  create = "{ SizedCache::with_size(100) }",
-  convert = r#"{ format!("{}:{}", vendor.to_owned(),product.to_owned()) }"#
-)]
+
 fn import_to_db(
   connection: &mut MysqlConnection,
   vendor: String,

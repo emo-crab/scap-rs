@@ -1,7 +1,5 @@
 use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
-use cached::proc_macro::cached;
-use cached::SizedCache;
 use nvd_db::cve::CreateCve;
 use nvd_db::models::{Cve, CveProduct, Cvss2, Cvss3};
 use std::fs::File;
@@ -35,18 +33,15 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<S
   let cve_id = Cve::create(connection, &new_post)?;
   // 插入cpe_match关系表
   for node in cve_item.configurations.nodes{
+    println!("{node:?}");
     for vendor_product in  node.vendor_product(){
+      println!("{vendor_product:?}");
       create_cve_product(connection,cve_id.id.clone(),vendor_product.vendor,vendor_product.product);
-
     }
   }
   Ok(new_post.id)
 }
-#[cached(
-type = "SizedCache<String, String>",
-create = "{ SizedCache::with_size(100) }",
-convert = r#"{ format!("{}:{}:{}", cve_id.to_owned(),vendor.to_owned(),product.to_owned()) }"#
-)]
+
 pub fn create_cve_product(
   conn: &mut MysqlConnection,
   cve_id: String,
