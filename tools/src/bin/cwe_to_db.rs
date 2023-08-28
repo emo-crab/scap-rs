@@ -2,7 +2,7 @@
 
 use cwe::weakness_catalog::WeaknessCatalog;
 use diesel::mysql::MysqlConnection;
-use nvd_db::cwe::NewCwe;
+use nvd_db::cwe::CreateCwe;
 use nvd_db::models::Cwe;
 use std::fs::File;
 use std::io::BufReader;
@@ -17,7 +17,7 @@ fn import_to_db(
   description: String,
 ) -> i32 {
   println!("import_to_db: {id}:{name}");
-  let new_post = NewCwe {
+  let new_post = CreateCwe {
     id,
     name,
     description,

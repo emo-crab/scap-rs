@@ -30,7 +30,7 @@ pub struct NewCvss2 {
 
 #[derive(Debug, Insertable)]
 #[diesel(table_name = cvss3)]
-pub struct NewCvss3 {
+pub struct CreateCvss3 {
   pub id: Vec<u8>,
   pub version: String,
   pub vector_string: String,
@@ -50,7 +50,7 @@ pub struct NewCvss3 {
 
 impl Cvss3 {
   // 创建弱点枚举
-  pub fn create(conn: &mut MysqlConnection, args: &NewCvss3) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateCvss3) -> Result<Self> {
     if let Err(err) = diesel::insert_into(cvss3::table).values(args).execute(conn) {
       // 重复了，说明已经存在CVSS3
       match err {
@@ -75,7 +75,7 @@ impl Cvss3 {
     match impact {
       None => return None,
       Some(imv3) => {
-        let new = NewCvss3 {
+        let new = CreateCvss3 {
           id: uuid::Uuid::new_v4().as_bytes().to_vec(),
           version: imv3.cvss_v3.version.to_string(),
           vector_string: imv3.cvss_v3.vector_string,

@@ -6,7 +6,7 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
-pub struct NewVendors {
+pub struct CreateVendors {
   pub id: Vec<u8>,
   pub official: u8,
   pub name: String,
@@ -16,7 +16,7 @@ pub struct NewVendors {
 
 impl Vendor {
   // 创建提供商
-  pub fn create(conn: &mut MysqlConnection, args: &NewVendors) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateVendors) -> Result<Self> {
     if let Err(err) = diesel::insert_into(vendors::table)
       .values(args)
       .execute(conn)

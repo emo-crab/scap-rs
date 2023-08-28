@@ -6,7 +6,7 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
-pub struct NewCwe {
+pub struct CreateCwe {
   pub id: i32,
   pub name: String,
   pub description: String,
@@ -14,7 +14,7 @@ pub struct NewCwe {
 
 impl Cwe {
   // 创建弱点枚举
-  pub fn create(conn: &mut MysqlConnection, args: &NewCwe) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateCwe) -> Result<Self> {
     if let Err(err) = diesel::insert_into(cwes::table).values(args).execute(conn) {
       // 重复了，说明已经存在弱点
       match err {

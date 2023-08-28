@@ -19,13 +19,12 @@ diesel::table! {
         assigner -> Varchar,
         references -> Json,
         description -> Json,
-        cwe -> Json,
+        problem_type -> Json,
         #[max_length = 16]
         cvss3_id -> Nullable<Binary>,
         #[max_length = 16]
         cvss2_id -> Nullable<Binary>,
         configurations -> Json,
-        raw -> Json,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }

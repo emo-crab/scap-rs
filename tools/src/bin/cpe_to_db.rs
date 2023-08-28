@@ -3,8 +3,8 @@ use cached::SizedCache;
 use cpe::dictionary::CPEList;
 use diesel::mysql::MysqlConnection;
 use nvd_db::models::{Product, Vendor};
-use nvd_db::products::NewProducts;
-use nvd_db::vendor::NewVendors;
+use nvd_db::products::CreateProducts;
+use nvd_db::vendor::CreateVendors;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
@@ -21,7 +21,7 @@ pub fn create_vendor(
   description: Option<String>,
 ) -> Vec<u8> {
   // 构建待插入对象
-  let new_post = NewVendors {
+  let new_post = CreateVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     name,
     description,
@@ -44,7 +44,7 @@ pub fn create_product(
   part: String,
 ) -> Vec<u8> {
   // 构建待插入对象
-  let new_post = NewProducts {
+  let new_post = CreateProducts {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     vendor_id: vendor,
     name,
