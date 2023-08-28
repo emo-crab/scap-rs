@@ -24,11 +24,10 @@ pub struct Cve {
   pub assigner: String,
   pub references: Value,
   pub description: Value,
-  pub cwe: Value,
+  pub problem_type: Value,
   pub cvss3_id: Option<Vec<u8>>,
   pub cvss2_id: Option<Vec<u8>>,
   pub configurations: Value,
-  pub raw: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }

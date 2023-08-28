@@ -6,3 +6,4 @@ pub mod models;
 pub mod products;
 pub mod schema;
 pub mod vendor;
+// PURGE BINARY LOGS BEFORE NOW();
