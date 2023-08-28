@@ -1,3 +1,5 @@
+use cached::proc_macro::cached;
+use cached::SizedCache;
 use cpe::dictionary::CPEList;
 use diesel::mysql::MysqlConnection;
 use nvd_db::models::{Product, Vendor};
@@ -8,6 +10,11 @@ use std::io::BufReader;
 use std::ops::DerefMut;
 use tools::init_db_pool;
 // 建立连接
+#[cached(
+  type = "SizedCache<String, Vec<u8>>",
+  create = "{ SizedCache::with_size(100) }",
+  convert = r#"{ format!("{}", name.to_owned()) }"#
+)]
 pub fn create_vendor(
   conn: &mut MysqlConnection,
   name: String,
@@ -22,10 +29,16 @@ pub fn create_vendor(
     homepage: None,
   };
   // 插入到数据库
-  let _v = Vendor::create(conn, &new_post);
+  if let Err(err) = Vendor::create(conn, &new_post){
+    println!("{}",err);
+  }
   new_post.id
 }
-
+#[cached(
+  type = "SizedCache<String, Vec<u8>>",
+  create = "{ SizedCache::with_size(100) }",
+  convert = r#"{ format!("{}:{:?}", name.to_owned(),vendor.to_owned()) }"#
+)]
 pub fn create_product(
   conn: &mut MysqlConnection,
   vendor: Vec<u8>,
@@ -43,19 +56,24 @@ pub fn create_product(
     homepage: None,
   };
   // 插入到数据库
-  let _v = Product::create(conn, &new_post);
+  if let Err(err) = Product::create(conn, &new_post){
+    println!("{}",err);
+  }
   new_post.id
 }
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
-
+#[cached(
+  type = "SizedCache<String, Vec<u8>>",
+  create = "{ SizedCache::with_size(100) }",
+  convert = r#"{ format!("{}:{}", vendor.to_owned(),product.to_owned()) }"#
+)]
 fn import_to_db(
   connection: &mut MysqlConnection,
   vendor: String,
   product: String,
   part: String,
 ) -> Vec<u8> {
-  println!("import_to_db: {vendor}:{product}");
   let vendor_id = create_vendor(connection, vendor, None);
   create_product(connection, vendor_id, product, part)
 }
