@@ -14,7 +14,6 @@ use nvd_db::error::Result;
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<String> {
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
-  println!("{id}");
   let new_post = CreateCve {
     id: id.clone(),
     created_at: cve_item.published_date,
@@ -30,13 +29,17 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<S
     year: i32::from_str(y).unwrap_or_default(),
   };
   // 插入到数据库
-  let cve_id = Cve::create(connection, &new_post)?;
-  // 插入cpe_match关系表
-  for node in cve_item.configurations.nodes{
-    println!("{node:?}");
-    for vendor_product in  node.vendor_product(){
-      println!("{vendor_product:?}");
-      create_cve_product(connection,cve_id.id.clone(),vendor_product.vendor,vendor_product.product);
+  match  Cve::create(connection, &new_post){
+    Ok(cve_id)=>{
+      // 插入cpe_match关系表
+      for node in cve_item.configurations.nodes{
+        for vendor_product in  node.vendor_product(){
+          create_cve_product(connection,cve_id.id.clone(),vendor_product.vendor,vendor_product.product);
+        }
+      }
+    }
+    Err(err)=>{
+      println!("{err}");
     }
   }
   Ok(new_post.id)
@@ -55,7 +58,14 @@ pub fn create_cve_product(
     product,
   };
   // 插入到数据库
-  let _v = CveProduct::create_by_name(conn,&cp);
+  match CveProduct::create_by_name(conn,&cp) {
+    Ok(_cp)=>{
+
+    }
+    Err(err)=>{
+      println!("{err}");
+    }
+  }
   String::new()
 }
 fn main() {

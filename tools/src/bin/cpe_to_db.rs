@@ -30,7 +30,7 @@ pub fn create_vendor(
   };
   // 插入到数据库
   if let Err(err) = Vendor::create(conn, &new_post){
-    println!("{}",err);
+    println!("{err}");
   }
   new_post.id
 }
@@ -57,7 +57,7 @@ pub fn create_product(
   };
   // 插入到数据库
   if let Err(err) = Product::create(conn, &new_post){
-    println!("{}",err);
+    println!("{err}");
   }
   new_post.id
 }

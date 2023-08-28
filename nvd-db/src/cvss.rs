@@ -92,8 +92,13 @@ impl Cvss3 {
           exploitability_score: imv3.exploitability_score,
           impact_score: imv3.impact_score,
         };
-        if let Ok(c) = Self::create(conn, &new) {
-          return Some(c.id);
+        match Self::create(conn, &new) {
+          Ok(c) => {
+            return Some(c.id);
+          }
+          Err(err) => {
+            println!("{err}");
+          }
         }
       }
     }
@@ -148,8 +153,13 @@ impl Cvss2 {
           obtain_other_privilege: u8::from(imv2.obtain_other_privilege),
           user_interaction_required: imv2.user_interaction_required.map(u8::from),
         };
-        if let Ok(c) = Self::create(conn, &new) {
+        match Self::create(conn, &new)  {
+          Ok(c) => {
           return Some(c.id);
+          }
+          Err(err)=>{
+            println!("{err}");
+          }
         }
       }
     }
