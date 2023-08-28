@@ -49,18 +49,19 @@ impl Product {
         }
       }
     }
-    Ok(
-      // mysql 不支持 get_result，要再查一次得到插入结果,name不是唯一的，还有添加vendor约束
-      products::dsl::products
-        .filter(products::name.eq(&args.name))
-        .filter(products::vendor_id.eq(&args.vendor_id))
-        .first::<Product>(conn)?,
+    Self::query(
+      conn,
+      &QueryProduct {
+        vendor_id: args.vendor_id.clone(),
+        name: args.name.clone(),
+      },
     )
   }
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<Self> {
     Ok(
       products::dsl::products
         .filter(products::vendor_id.eq(&args.vendor_id))
+        .filter(products::name.eq(&args.name))
         .first::<Product>(conn)?,
     )
   }
