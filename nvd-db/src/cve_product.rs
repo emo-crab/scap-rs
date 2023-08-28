@@ -11,6 +11,7 @@ pub struct CreateCveProduct {
     pub cve_id: String,
     pub product_id: Vec<u8>,
 }
+#[derive(Debug)]
 pub struct CreateCveProductByName {
     pub cve_id: String,
     pub vendor:String,

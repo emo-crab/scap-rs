@@ -63,7 +63,7 @@ pub fn create_cve_product(
 
     }
     Err(err)=>{
-      println!("create_cve_product: {:?}",err);
+      println!("create_cve_product: {:?}:{:?}",err,cp);
     }
   }
   String::new()
