@@ -5,7 +5,7 @@ pub type Result<T> = std::result::Result<T, NVDDBError>;
 
 #[derive(Error, Debug)]
 pub enum NVDDBError {
-  #[error("DieselError")]
+  #[error("DieselError `{source}`")]
   DieselError {
     #[source]
     source: DieselError,

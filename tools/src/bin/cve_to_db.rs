@@ -39,7 +39,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<S
       }
     }
     Err(err)=>{
-      println!("{err}");
+      println!("Cve::create: {:?}",err);
     }
   }
   Ok(new_post.id)
@@ -63,7 +63,7 @@ pub fn create_cve_product(
 
     }
     Err(err)=>{
-      println!("{err}");
+      println!("create_cve_product: {:?}",err);
     }
   }
   String::new()
