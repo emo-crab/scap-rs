@@ -13,7 +13,9 @@ pub struct CreateVendors {
   pub description: Option<String>,
   pub homepage: Option<String>,
 }
-
+pub struct QueryVendor {
+  pub name: String,
+}
 impl Vendor {
   // 创建提供商
   pub fn create(conn: &mut MysqlConnection, args: &CreateVendors) -> Result<Self> {
@@ -34,6 +36,13 @@ impl Vendor {
       vendors::dsl::vendors
         .filter(vendors::name.eq(&args.name))
         .first::<Vendor>(conn)?,
+    )
+  }
+  pub fn query(conn: &mut MysqlConnection, name: String) -> Result<Self> {
+    Ok(
+      vendors::dsl::vendors
+        .filter(vendors::name.eq(&name))
+        .first::<Self>(conn)?,
     )
   }
 }

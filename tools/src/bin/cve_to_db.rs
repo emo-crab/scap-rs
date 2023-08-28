@@ -6,7 +6,7 @@ use nvd_db::cve::CreateCve;
 use nvd_db::cve_product::CreateCveProductByName;
 use nvd_db::error::Result;
 use nvd_db::models::{Cve, CveProduct, Cvss2, Cvss3, Product, Vendor};
-use nvd_db::product::CreateProduct;
+use nvd_db::product::{CreateProduct, QueryProduct};
 use nvd_db::vendor::CreateVendors;
 use std::fs::File;
 use std::io::BufReader;
@@ -38,7 +38,7 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<S
       // 插入cpe_match关系表
       for node in cve_item.configurations.nodes {
         for vendor_product in node.vendor_product() {
-          import_vendor_product_to_db(connection,vendor_product.clone());
+          import_vendor_product_to_db(connection, vendor_product.clone());
           create_cve_product(
             connection,
             cve_id.id.clone(),
@@ -95,6 +95,9 @@ pub fn create_vendor(
   name: String,
   description: Option<String>,
 ) -> Vec<u8> {
+  if let Ok(v) = Vendor::query(conn, name.clone()) {
+    return v.id;
+  }
   // 构建待插入对象
   let new_post = CreateVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
@@ -120,6 +123,13 @@ pub fn create_product(
   name: String,
   part: String,
 ) -> Vec<u8> {
+  let q = QueryProduct {
+    vendor_id: vendor.clone(),
+    name: name.clone(),
+  };
+  if let Ok(v) = Product::query(conn, &q) {
+    return v.id;
+  }
   // 构建待插入对象
   let new_post = CreateProduct {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
