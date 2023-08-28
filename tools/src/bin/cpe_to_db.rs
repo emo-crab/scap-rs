@@ -1,5 +1,3 @@
-use cached::proc_macro::cached;
-use cached::SizedCache;
 use cpe::dictionary::CPEList;
 use diesel::mysql::MysqlConnection;
 use nvd_db::models::{Product, Vendor};
