@@ -71,14 +71,14 @@ pub struct CVE {
   /// This identifies which version of the data format is in use. This is mandatory and designed to prevent problems with attempting to detect what format of data is used.
   pub data_version: String,
   /// CVE_data_meta
-  #[serde(rename(deserialize ="CVE_data_meta"))]
+  #[serde(rename(deserialize = "CVE_data_meta"))]
   pub meta: Meta,
   // 参考
   pub references: References,
   // 描述
   pub description: Description,
   // 问题类型 关联：CWE
-  #[serde(rename(deserialize ="problemtype"))]
+  #[serde(rename(deserialize = "problemtype"))]
   pub problem_type: ProblemType,
 }
 /// These URLs are supplemental information relevant to the vulnerability, which include details that may not be present in the CVE Description. References are given resource tags such as third-party advisory, vendor advisory, technical paper, press/media, VDB entries, etc. These tags can help users quickly categorize the type of information each reference contains. References for a CVE are provided through the CVE list, the NVD does not have direct control over them. If you have concerns with existing CVE references or find other publicly available information that would be useful, then you can submit a request using the form at <https://cveform.mitre.org/> for the CVE Assignment Team to review.
@@ -126,7 +126,7 @@ pub struct Meta {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemType {
-  #[serde(rename(deserialize ="problemtype_data"))]
+  #[serde(rename(deserialize = "problemtype_data"))]
   problem_type_data: Vec<ProblemTypeDataItem>,
 }
 #[derive(Debug, Serialize, Deserialize, Clone)]

@@ -58,17 +58,22 @@ impl Product {
     )
   }
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<Self> {
-    Ok(products::dsl::products
+    Ok(
+      products::dsl::products
         .filter(products::vendor_id.eq(&args.vendor_id))
-        .first::<Product>(conn)?)
+        .first::<Product>(conn)?,
+    )
   }
-  pub fn query_by_name(conn: &mut MysqlConnection, args: &QueryProductByVendorName) -> Result<Self> {
-    let vendor_id:Vendor = vendors::table
-        .filter(vendors::name.eq(&args.vendor_name))
-        .first(conn)?;
-    let product_id:Product = Product::belonging_to(&vendor_id)
-        .filter(products::name.eq(&args.name)).
-        first(conn)?;
+  pub fn query_by_name(
+    conn: &mut MysqlConnection,
+    args: &QueryProductByVendorName,
+  ) -> Result<Self> {
+    let vendor_id: Vendor = vendors::table
+      .filter(vendors::name.eq(&args.vendor_name))
+      .first(conn)?;
+    let product_id: Product = Product::belonging_to(&vendor_id)
+      .filter(products::name.eq(&args.name))
+      .first(conn)?;
     Ok(product_id)
   }
 }

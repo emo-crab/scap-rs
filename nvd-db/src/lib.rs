@@ -1,4 +1,5 @@
 pub mod cve;
+pub mod cve_product;
 pub mod cvss;
 pub mod cwe;
 pub mod error;
@@ -6,5 +7,4 @@ pub mod models;
 pub mod product;
 pub mod schema;
 pub mod vendor;
-pub mod cve_product;
 // PURGE BINARY LOGS BEFORE NOW();

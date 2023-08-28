@@ -153,11 +153,11 @@ impl Cvss2 {
           obtain_other_privilege: u8::from(imv2.obtain_other_privilege),
           user_interaction_required: imv2.user_interaction_required.map(u8::from),
         };
-        match Self::create(conn, &new)  {
+        match Self::create(conn, &new) {
           Ok(c) => {
-          return Some(c.id);
+            return Some(c.id);
           }
-          Err(err)=>{
+          Err(err) => {
             println!("{err}");
           }
         }

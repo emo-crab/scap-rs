@@ -1,5 +1,3 @@
-
-
 use cwe::weakness_catalog::WeaknessCatalog;
 use diesel::mysql::MysqlConnection;
 use nvd_db::cwe::CreateCwe;

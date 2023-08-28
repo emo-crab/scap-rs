@@ -24,7 +24,7 @@ pub struct CreateCve {
   pub updated_at: NaiveDateTime,
 }
 
-pub struct QueryCve{
+pub struct QueryCve {
   pub id: String,
   pub year: Option<i32>,
   pub official: Option<u8>,
@@ -41,16 +41,21 @@ impl Cve {
         }
       }
     }
-      // mysql 不支持 get_result，要再查一次得到插入结果
-      Self::query(conn,&QueryCve{
+    // mysql 不支持 get_result，要再查一次得到插入结果
+    Self::query(
+      conn,
+      &QueryCve {
         id: args.id.clone(),
         year: None,
         official: None,
-      })
+      },
+    )
   }
   pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> Result<Self> {
-    Ok(cves::dsl::cves
+    Ok(
+      cves::dsl::cves
         .filter(cves::id.eq(&args.id))
-        .first::<Cve>(conn)?)
+        .first::<Cve>(conn)?,
+    )
   }
 }

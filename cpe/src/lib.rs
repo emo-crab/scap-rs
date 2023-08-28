@@ -56,15 +56,20 @@ pub struct CPEName {
   // 表示无法归类上上述其他属性的值
   pub other: Component,
 }
-#[derive(Debug, PartialEq, Eq, Serialize, Hash)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Hash)]
 pub struct Product {
+  pub part: String,
   pub vendor: String,
   pub product: String,
 }
 
 impl From<&CPEName> for Product {
   fn from(val: &CPEName) -> Self {
-    Product{ vendor: val.vendor.to_string(), product: val.product.to_string() }
+    Product {
+      part: val.part.to_string(),
+      vendor: val.vendor.to_string(),
+      product: val.product.to_string(),
+    }
   }
 }
 impl CPEName {

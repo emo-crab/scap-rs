@@ -1,14 +1,14 @@
 //! configurations
 //!
-use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
+use std::collections::HashSet;
 ///  A configuration is a container that holds a set of nodes which then contain CPE Name Match Criteria. Configurations consist of three different types.
 ///
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Configurations {
   // 版本
-  #[serde(rename(deserialize ="CVE_data_version"))]
+  #[serde(rename(deserialize = "CVE_data_version"))]
   pub data_version: String,
   // 漏洞节点
   pub nodes: Vec<Node>,
@@ -41,7 +41,7 @@ pub struct Match {
   pub version_end_including: Option<String>,
   // 排除 到版本结束
   pub version_end_excluding: Option<String>,
-  #[serde(rename(deserialize ="cpe_name"))]
+  #[serde(rename(deserialize = "cpe_name"))]
   pub cpe_name: Vec<CPEUri>,
 }
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -150,9 +150,9 @@ impl Node {
     }
     false
   }
-  pub fn vendor_product(&self)->HashSet<cpe::Product>{
-    let product = self.cpe_match.iter().map(|m|m.product());
-    let children = self.children.iter().flat_map(|node|node.vendor_product());
+  pub fn vendor_product(&self) -> HashSet<cpe::Product> {
+    let product = self.cpe_match.iter().map(|m| m.product());
+    let children = self.children.iter().flat_map(|node| node.vendor_product());
     product.chain(children).collect()
   }
 }

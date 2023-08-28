@@ -147,11 +147,11 @@ diesel::joinable!(cves -> cvss3 (cvss3_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    cve_product,
-    cves,
-    cvss2,
-    cvss3,
-    cwes,
-    products,
-    vendors,
+  cve_product,
+  cves,
+  cvss2,
+  cvss3,
+  cwes,
+  products,
+  vendors,
 );
