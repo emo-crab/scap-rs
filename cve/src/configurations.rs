@@ -1,5 +1,6 @@
 //! configurations
 //!
+use std::collections::HashSet;
 use serde::{Deserialize, Serialize};
 ///  A configuration is a container that holds a set of nodes which then contain CPE Name Match Criteria. Configurations consist of three different types.
 ///
@@ -67,7 +68,9 @@ impl Match {
       || self.version_end_including.is_some()
       || self.version_end_excluding.is_some()
   }
-
+  pub fn product(&self) -> cpe::Product {
+    cpe::Product::from(&self.cpe_uri.cpe23_uri)
+  }
   pub fn match_version_range(&self, ver: &str) -> bool {
     if let Some(start_inc) = &self.version_start_including {
       if !cpe::version_cmp(ver, start_inc, ">=") {
@@ -146,5 +149,10 @@ impl Node {
       }
     }
     false
+  }
+  pub fn vendor_product(&self)->HashSet<cpe::Product>{
+    let product = self.cpe_match.iter().map(|m|m.product());
+    let children = self.children.iter().flat_map(|node|node.vendor_product());
+    product.chain(children).collect()
   }
 }

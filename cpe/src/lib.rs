@@ -56,7 +56,17 @@ pub struct CPEName {
   // 表示无法归类上上述其他属性的值
   pub other: Component,
 }
+#[derive(Debug, PartialEq, Eq, Serialize, Hash)]
+pub struct Product {
+  pub vendor: String,
+  pub product: String,
+}
 
+impl From<&CPEName> for Product {
+  fn from(val: &CPEName) -> Self {
+    Product{ vendor: val.vendor.to_string(), product: val.product.to_string() }
+  }
+}
 impl CPEName {
   // 从uri转CPE属性
   pub fn from_uri(uri: &str) -> Result<Self> {

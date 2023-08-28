@@ -89,7 +89,7 @@ pub struct Product {
   pub updated_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq)]
 pub struct Vendor {
   pub id: Vec<u8>,
   pub official: u8,
