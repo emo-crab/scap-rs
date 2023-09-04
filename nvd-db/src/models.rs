@@ -2,7 +2,7 @@ use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde_json::Value;
-
+use serde::{Deserialize, Serialize};
 #[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Cve))]
 #[diesel(belongs_to(Product))]
@@ -32,7 +32,7 @@ pub struct Cve {
   pub updated_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 #[diesel(table_name = cvss2)]
 pub struct Cvss2 {
   pub id: Vec<u8>,
@@ -55,7 +55,7 @@ pub struct Cvss2 {
   pub user_interaction_required: Option<u8>,
 }
 
-#[derive(Queryable, Debug, Clone)]
+#[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 #[diesel(table_name = cvss3)]
 pub struct Cvss3 {
   pub id: Vec<u8>,
