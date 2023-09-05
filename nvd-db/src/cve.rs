@@ -39,9 +39,11 @@ pub struct CveInfo {
   pub updated_at: NaiveDateTime,
 }
 pub struct QueryCve {
-  pub id: String,
-  pub year: Option<i32>,
-  pub official: Option<u8>,
+  id: Option<String>,
+  year: Option<i32>,
+  official: Option<u8>,
+  limit: Option<i64>,
+  offset: Option<i64>,
 }
 impl Cve {
   // 创建CVE
@@ -59,9 +61,11 @@ impl Cve {
     Self::query(
       conn,
       &QueryCve {
-        id: args.id.clone(),
+        id: Some(args.id.clone()),
         year: None,
         official: None,
+        limit: None,
+        offset: None,
       },
     )
   }
@@ -72,14 +76,13 @@ impl Cve {
         .first::<Cve>(conn)?,
     )
   }
+  // 联表查cvss
   pub fn query_with_cvss(conn: &mut MysqlConnection, args: &QueryCve) -> Result<CveInfo> {
     let t = cves::dsl::cves
-      .inner_join(cvss2::table)
-      .inner_join(cvss3::table)
+      .left_join(cvss2::table)
+      .left_join(cvss3::table)
       .filter(cves::id.eq(&args.id));
-    let (c, c2, c3) = t.get_result::<(Cve, Cvss2, Cvss3)>(conn)?;
-    println!("{:?}", c2);
-    println!("{:?}", c3);
+    let (c, c2, c3) = t.get_result::<(Cve, Option<Cvss2>, Option<Cvss3>)>(conn)?;
     Ok(CveInfo {
       id: c.id,
       year: c.year,

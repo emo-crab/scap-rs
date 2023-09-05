@@ -35,6 +35,7 @@ pub struct Cve {
 #[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 #[diesel(table_name = cvss2)]
 pub struct Cvss2 {
+  #[serde(skip)]
   pub id: Vec<u8>,
   pub version: String,
   pub vector_string: String,
@@ -58,6 +59,7 @@ pub struct Cvss2 {
 #[derive(Queryable, Debug, Clone, Serialize, Deserialize)]
 #[diesel(table_name = cvss3)]
 pub struct Cvss3 {
+  #[serde(skip)]
   pub id: Vec<u8>,
   pub version: String,
   pub vector_string: String,
