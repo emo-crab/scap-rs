@@ -23,7 +23,7 @@ impl Vendor {
       .values(args)
       .execute(conn)
     {
-      // 重复了，说明已经存在该产品
+      // 重复了，说明已经存在该提供商
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
