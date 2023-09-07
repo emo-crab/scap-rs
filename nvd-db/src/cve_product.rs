@@ -18,7 +18,7 @@ pub struct CreateCveProductByName {
   pub product: String,
 }
 impl CveProduct {
-  // 创建弱点枚举
+  // 创建CVE和产品关联
   pub fn create(conn: &mut MysqlConnection, args: &CreateCveProduct) -> Result<Self> {
     if let Err(err) = diesel::insert_into(cve_product::table)
       .values(args)
@@ -40,6 +40,7 @@ impl CveProduct {
         .first::<CveProduct>(conn)?,
     )
   }
+  // 创建CVE和产品关联从名称
   pub fn create_by_name(conn: &mut MysqlConnection, args: &CreateCveProductByName) -> Result<Self> {
     let vp = QueryProductByVendorName {
       vendor_name: args.vendor.clone(),

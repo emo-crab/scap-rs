@@ -6,7 +6,7 @@ use nvd_db::cve::CreateCve;
 use nvd_db::cve_product::CreateCveProductByName;
 use nvd_db::error::Result;
 use nvd_db::models::{Cve, CveProduct, Cvss2, Cvss3, Product, Vendor};
-use nvd_db::product::{CreateProduct, QueryProduct};
+use nvd_db::product::{CreateProduct, QueryProductById};
 use nvd_db::vendor::CreateVendors;
 use std::fs::File;
 use std::io::BufReader;
@@ -123,11 +123,11 @@ pub fn create_product(
   name: String,
   part: String,
 ) -> Vec<u8> {
-  let q = QueryProduct {
+  let q = QueryProductById {
     vendor_id: vendor.clone(),
     name: name.clone(),
   };
-  if let Ok(v) = Product::query(conn, &q) {
+  if let Ok(v) = Product::query_by_id(conn, &q) {
     return v.id;
   }
   // 构建待插入对象

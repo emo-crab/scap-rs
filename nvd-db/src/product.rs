@@ -16,12 +16,7 @@ pub struct CreateProduct {
   pub homepage: Option<String>,
 }
 
-pub struct DeleteProduct {
-  pub id: Vec<u8>,
-  pub vendor_id: Vec<u8>,
-  pub name: String,
-}
-pub struct QueryProduct {
+pub struct QueryProductById {
   pub vendor_id: Vec<u8>,
   pub name: String,
 }
@@ -29,12 +24,18 @@ pub struct QueryProductByVendorName {
   pub vendor_name: String,
   pub name: String,
 }
+
+// 产品查询参数
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QueryProduct {
+  pub vendor_name: Option<String>,
+  pub name: Option<String>,
+  pub official: Option<u8>,
+  pub limit: i64,
+  pub offset: i64,
+}
+
 impl Product {
-  // 按照供应商ID删除
-  pub fn delete_by_vendor_id(conn: &mut MysqlConnection, args: &DeleteProduct) {
-    let f = products::table.filter(products::vendor_id.eq(&args.vendor_id));
-    diesel::delete(f).execute(conn).unwrap();
-  }
   // 创建产品
   pub fn create(conn: &mut MysqlConnection, args: &CreateProduct) -> Result<Self> {
     if let Err(err) = diesel::insert_into(products::table)
@@ -49,15 +50,15 @@ impl Product {
         }
       }
     }
-    Self::query(
+    Self::query_by_id(
       conn,
-      &QueryProduct {
+      &QueryProductById {
         vendor_id: args.vendor_id.clone(),
         name: args.name.clone(),
       },
     )
   }
-  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<Self> {
+  pub fn query_by_id(conn: &mut MysqlConnection, args: &QueryProductById) -> Result<Self> {
     Ok(
       products::dsl::products
         .filter(products::vendor_id.eq(&args.vendor_id))
@@ -76,5 +77,8 @@ impl Product {
       .filter(products::name.eq(&args.name))
       .first(conn)?;
     Ok(product_id)
+  }
+  pub fn query(conn:&mut MysqlConnection,){
+
   }
 }
