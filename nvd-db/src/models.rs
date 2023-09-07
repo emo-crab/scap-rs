@@ -1,8 +1,8 @@
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use serde_json::Value;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 #[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Cve))]
 #[diesel(belongs_to(Product))]
@@ -77,7 +77,9 @@ pub struct Cvss3 {
   pub impact_score: f32,
 }
 
-#[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
+#[derive(
+  Queryable, Selectable, Identifiable, Associations, Debug, PartialEq, Serialize, Deserialize,
+)]
 #[diesel(belongs_to(Vendor))]
 pub struct Product {
   pub id: Vec<u8>,

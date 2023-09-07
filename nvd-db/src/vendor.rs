@@ -38,10 +38,10 @@ impl Vendor {
         .first::<Vendor>(conn)?,
     )
   }
-  pub fn query(conn: &mut MysqlConnection, name: String) -> Result<Self> {
+  pub fn query(conn: &mut MysqlConnection, name: &str) -> Result<Self> {
     Ok(
       vendors::dsl::vendors
-        .filter(vendors::name.eq(&name))
+        .filter(vendors::name.eq(name))
         .first::<Self>(conn)?,
     )
   }

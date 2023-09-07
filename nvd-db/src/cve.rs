@@ -50,12 +50,12 @@ pub struct QueryCve {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CveInfoCount {
-  pub result:Vec<CveInfo>,
+  pub result: Vec<CveInfo>,
   pub total: i64,
 }
 impl Default for QueryCve {
   fn default() -> Self {
-    QueryCve{
+    QueryCve {
       id: None,
       year: None,
       official: None,
@@ -78,18 +78,11 @@ impl Cve {
       }
     }
     // mysql 不支持 get_result，要再查一次得到插入结果
-    Self::query_by_id(
-      conn,
-      &args.id,
-    )
+    Self::query_by_id(conn, &args.id)
   }
   // 查单个cve不联cvss表
   pub fn query_by_id(conn: &mut MysqlConnection, id: &str) -> Result<Self> {
-    Ok(
-      cves::dsl::cves
-        .filter(cves::id.eq(id))
-        .first::<Cve>(conn)?,
-    )
+    Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
   }
   // 联表查cvss
   pub fn query_by_id_with_cvss(conn: &mut MysqlConnection, id: &str) -> Result<CveInfo> {
@@ -114,12 +107,12 @@ impl Cve {
     })
   }
   // 按照查询条件返回列表和总数
-  pub fn query(conn:&mut MysqlConnection,args:&QueryCve)->Result<CveInfoCount>{
-    let query = {
-      let mut query = cves::table.
-          left_join(cvss2::table)
-          .left_join(cvss3::table)
-          .into_boxed();
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> Result<CveInfoCount> {
+    let total = {
+      let mut query = cves::table
+        .left_join(cvss2::table)
+        .left_join(cvss3::table)
+        .into_boxed();
       if let Some(id) = &args.id {
         query = query.filter(cves::id.eq(id));
       }
@@ -129,18 +122,18 @@ impl Cve {
       if let Some(official) = &args.official {
         query = query.filter(cves::official.eq(official));
       }
+      // 统计查询全部，分页用
       query
-    };
-    // 统计查询全部，分页用
-    let total = query
         .select(diesel::dsl::count(cves::id))
-        .first::<i64>(conn)?;
+        .first::<i64>(conn)?
+    };
+
     let result = {
       let query = {
-        let mut query = cves::table.
-            left_join(cvss2::table)
-            .left_join(cvss3::table)
-            .into_boxed();
+        let mut query = cves::table
+          .left_join(cvss2::table)
+          .left_join(cvss3::table)
+          .into_boxed();
         if let Some(id) = &args.id {
           query = query.filter(cves::id.eq(id));
         }
@@ -153,12 +146,13 @@ impl Cve {
         query
       };
       let cve_list =
-          query
-              .offset(args.offset)
-              .limit(args.limit)
-              .load::<(Cve, Option<Cvss2>, Option<Cvss3>)>(conn)?;
-      cve_list.into_iter().map(|(cve_info,c2,c3)|{
-        CveInfo {
+        query
+          .offset(args.offset)
+          .limit(args.limit)
+          .load::<(Cve, Option<Cvss2>, Option<Cvss3>)>(conn)?;
+      cve_list
+        .into_iter()
+        .map(|(cve_info, c2, c3)| CveInfo {
           id: cve_info.id,
           year: cve_info.year,
           official: cve_info.official,
@@ -171,9 +165,9 @@ impl Cve {
           configurations: cve_info.configurations,
           created_at: cve_info.created_at,
           updated_at: cve_info.updated_at,
-        }
-      }).collect::<Vec<_>>()
+        })
+        .collect::<Vec<_>>()
     };
-    Ok(CveInfoCount{result,total})
+    Ok(CveInfoCount { result, total })
   }
 }
