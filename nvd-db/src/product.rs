@@ -62,6 +62,7 @@ impl Product {
       },
     )
   }
+  // 查询产品从提供商的id
   pub fn query_by_id(conn: &mut MysqlConnection, args: &QueryProductById) -> Result<Self> {
     Ok(
       products::dsl::products
@@ -70,6 +71,7 @@ impl Product {
         .first::<Product>(conn)?,
     )
   }
+  // 查询产品从提供商的名称
   pub fn query_by_name(
     conn: &mut MysqlConnection,
     args: &QueryProductByVendorName,
@@ -82,15 +84,17 @@ impl Product {
       .first(conn)?;
     Ok(product_id)
   }
+
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
     let total = {
       let mut query = products::table.into_boxed();
       if let Some(vendor_name) = &args.vendor_name {
-        let v = Vendor::query(conn,vendor_name)?;
+        let v = Vendor::query_by_name(conn, vendor_name)?;
         query = query.filter(products::vendor_id.eq(v.id));
       }
       if let Some(name) = &args.name {
-        query = query.filter(products::name.eq(name));
+        let name = format!("{}%", name);
+        query = query.filter(products::name.like(name));
       }
       if let Some(official) = &args.official {
         query = query.filter(products::official.eq(official));
@@ -104,11 +108,12 @@ impl Product {
       let query = {
         let mut query = products::table.into_boxed();
         if let Some(vendor_name) = &args.vendor_name {
-          let v = Vendor::query(conn,vendor_name)?;
+          let v = Vendor::query_by_name(conn, vendor_name)?;
           query = query.filter(products::vendor_id.eq(v.id));
         }
         if let Some(name) = &args.name {
-          query = query.filter(products::name.eq(name));
+          let name = format!("{}%", name);
+          query = query.filter(products::name.like(name));
         }
         if let Some(official) = &args.official {
           query = query.filter(products::official.eq(official));
@@ -118,6 +123,7 @@ impl Product {
       query
         .offset(args.offset)
         .limit(args.limit)
+        .order(products::name.asc())
         .load::<Product>(conn)?
     };
     Ok(ProductCount { result, total })

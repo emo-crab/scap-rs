@@ -95,7 +95,7 @@ pub fn create_vendor(
   name: String,
   description: Option<String>,
 ) -> Vec<u8> {
-  if let Ok(v) = Vendor::query(conn, name.clone()) {
+  if let Ok(v) = Vendor::query_by_name(conn, name.clone()) {
     return v.id;
   }
   // 构建待插入对象

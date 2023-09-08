@@ -82,7 +82,9 @@ pub struct Cvss3 {
 )]
 #[diesel(belongs_to(Vendor))]
 pub struct Product {
+  #[serde(skip)]
   pub id: Vec<u8>,
+  #[serde(skip)]
   pub vendor_id: Vec<u8>,
   pub official: u8,
   pub part: String,
@@ -93,8 +95,9 @@ pub struct Product {
   pub updated_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq)]
+#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Vendor {
+  #[serde(skip)]
   pub id: Vec<u8>,
   pub official: u8,
   pub name: String,
