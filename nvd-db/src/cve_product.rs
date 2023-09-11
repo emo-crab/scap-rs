@@ -17,6 +17,14 @@ pub struct CreateCveProductByName {
   pub vendor: String,
   pub product: String,
 }
+#[derive(Debug)]
+pub struct QueryCveProduct {
+  pub cve_id: Option<String>,
+  pub vendor: Option<String>,
+  pub product: Option<String>,
+  pub limit: i64,
+  pub offset: i64,
+}
 impl CveProduct {
   // 创建CVE和产品关联
   pub fn create(conn: &mut MysqlConnection, args: &CreateCveProduct) -> Result<Self> {
@@ -54,5 +62,9 @@ impl CveProduct {
         product_id: p.id,
       },
     )
+  }
+
+  pub fn query(conn:&mut MysqlConnection,args:&QueryCveProduct) {
+
   }
 }

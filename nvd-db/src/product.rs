@@ -88,6 +88,7 @@ impl Product {
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
     let total = {
       let mut query = products::table.into_boxed();
+      // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
       if let Some(vendor_name) = &args.vendor_name {
         let v = Vendor::query_by_name(conn, vendor_name)?;
         query = query.filter(products::vendor_id.eq(v.id));
