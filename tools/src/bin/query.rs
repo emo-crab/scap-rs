@@ -44,17 +44,21 @@ fn query_cve() {
   let c = Cve::query(
     connection_pool.get().unwrap().deref_mut(),
     &QueryCve {
-      id: None,
+      id: Some("CVE-2020-7354".to_string()),
       year: None,
       official: None,
       vendor: None,
-      product: Some("metasploit_framework".to_string()),
-      limit: 3,
+      product: Some("metasploit".to_string()),
+      severity: None,
+      limit: 20,
       offset: 0,
     },
   )
   .unwrap();
-  println!("{:#}", serde_json::to_string_pretty(&c).unwrap());
+  for result in c.result{
+    println!("{:#}", serde_json::to_string_pretty(&result.id).unwrap());
+  }
+
 }
 
 fn query_cve_by_product() {

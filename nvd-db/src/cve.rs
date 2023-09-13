@@ -1,8 +1,7 @@
 use crate::cve_product::ProductByName;
 use crate::error::{NVDDBError, Result};
-use crate::models::{Cve, CveProduct, Product, Vendor};
-use crate::product::QueryProductById;
-use crate::schema::{cve_product, cves, products};
+use crate::models::{Cve, CveProduct};
+use crate::schema::cves;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
@@ -36,6 +35,7 @@ pub struct QueryCve {
   pub official: Option<u8>,
   pub vendor: Option<String>,
   pub product: Option<String>,
+  pub severity:Option<String>,
   pub limit: i64,
   pub offset: i64,
 }
@@ -52,6 +52,7 @@ impl Default for QueryCve {
       official: None,
       vendor: None,
       product: None,
+      severity: None,
       limit: 20,
       offset: 0,
     }
@@ -76,12 +77,6 @@ impl Cve {
   // 查单个cve不联cvss表
   pub fn query_by_id(conn: &mut MysqlConnection, id: &str) -> Result<Self> {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
-  }
-  // 联表查cvss
-  pub fn query_by_id_with_cvss(conn: &mut MysqlConnection, id: &str) -> Result<Cve> {
-    let t = cves::dsl::cves.filter(cves::id.eq(id));
-    let c = t.get_result::<Cve>(conn)?;
-    Ok(c)
   }
   // 按照查询条件返回列表和总数
   pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> Result<CveInfoCount> {
@@ -114,7 +109,6 @@ impl Cve {
         .select(diesel::dsl::count(cves::id))
         .first::<i64>(conn)?
     };
-
     let result = {
       let query = {
         let mut query = cves::table.into_boxed();

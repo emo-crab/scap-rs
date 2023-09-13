@@ -16,6 +16,7 @@
 
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
+use crate::severity::SeverityTypeV3;
 use crate::v3::attack_complexity::AttackComplexityType;
 use crate::v3::attack_vector::AttackVectorType;
 use crate::v3::impact_metrics::{
@@ -23,7 +24,6 @@ use crate::v3::impact_metrics::{
 };
 use crate::v3::privileges_required::PrivilegesRequiredType;
 use crate::v3::scope::ScopeType;
-use crate::v3::severity::SeverityType;
 use crate::v3::user_interaction::UserInteractionType;
 use crate::version::Version;
 use serde::{Deserialize, Serialize};
@@ -35,7 +35,6 @@ pub mod attack_vector;
 pub mod impact_metrics;
 pub mod privileges_required;
 pub mod scope;
-pub mod severity;
 pub mod user_interaction;
 
 /// 2.1. Exploitability Metrics
@@ -116,7 +115,7 @@ pub struct CVSS {
   /// 基础评分
   pub base_score: f32,
   /// [`SeverityType`] 基础评级
-  pub base_severity: SeverityType,
+  pub base_severity: SeverityTypeV3,
 }
 
 impl CVSS {
@@ -236,10 +235,10 @@ impl FromStr for CVSS {
       scope,
       impact,
       base_score: 0.0,
-      base_severity: SeverityType::None,
+      base_severity: SeverityTypeV3::None,
     };
     cvss.base_score = cvss.base_score();
-    cvss.base_severity = SeverityType::from(cvss.base_score);
+    cvss.base_severity = SeverityTypeV3::from(cvss.base_score);
     cvss.vector_string = cvss.to_string();
     Ok(cvss)
   }
@@ -303,11 +302,11 @@ impl CVSSBuilder {
       scope,
       impact,
       base_score: 0.0,
-      base_severity: SeverityType::None,
+      base_severity: SeverityTypeV3::None,
     };
     cvss.vector_string = cvss.to_string();
     cvss.base_score = cvss.base_score();
-    cvss.base_severity = SeverityType::from(cvss.base_score);
+    cvss.base_severity = SeverityTypeV3::from(cvss.base_score);
     cvss
   }
 }

@@ -2,6 +2,7 @@
 use cvss::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
+use cvss::severity::SeverityTypeV2;
 
 /// This is impact type information (e.g. a text description, CVSSv2, CVSSv3, etc.).
 ///
@@ -32,7 +33,7 @@ pub struct ImpactMetricV2 {
   // 评分
   pub impact_score: f32,
   // 评级
-  pub severity: String,
+  pub severity: SeverityTypeV2,
   pub ac_insuf_info: Option<bool>,
   pub obtain_all_privilege: bool,
   pub obtain_user_privilege: bool,
