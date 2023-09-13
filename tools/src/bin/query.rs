@@ -7,7 +7,7 @@ use nvd_db::cve_product::QueryCveProduct;
 use tools::init_db_pool;
 
 fn main() {
-  query_cve_by_product();
+  query_cve();
 }
 
 fn query_vendor() {
@@ -45,8 +45,10 @@ fn query_cve() {
     connection_pool.get().unwrap().deref_mut(),
     &QueryCve {
       id: None,
-      year: Some(2014),
+      year: None,
       official: None,
+      vendor: None,
+      product: Some("metasploit_framework".to_string()),
       limit: 3,
       offset: 0,
     },

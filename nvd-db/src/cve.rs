@@ -1,11 +1,14 @@
+use crate::cve_product::ProductByName;
 use crate::error::{NVDDBError, Result};
-use crate::models::Cve;
-use crate::schema::cves;
+use crate::models::{Cve, CveProduct, Product, Vendor};
+use crate::product::QueryProductById;
+use crate::schema::{cve_product, cves, products};
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+
 // 创建CVE
 #[derive(Debug, Insertable)]
 #[diesel(table_name = cves)]
@@ -31,6 +34,8 @@ pub struct QueryCve {
   pub id: Option<String>,
   pub year: Option<i32>,
   pub official: Option<u8>,
+  pub vendor: Option<String>,
+  pub product: Option<String>,
   pub limit: i64,
   pub offset: i64,
 }
@@ -45,6 +50,8 @@ impl Default for QueryCve {
       id: None,
       year: None,
       official: None,
+      vendor: None,
+      product: None,
       limit: 20,
       offset: 0,
     }
@@ -89,6 +96,19 @@ impl Cve {
       if let Some(official) = &args.official {
         query = query.filter(cves::official.eq(official));
       }
+      // 根据供应商和产品查询CVE编号，和字段ID冲突
+      if args.vendor.is_some() || args.product.is_some() {
+        let cve_ids = CveProduct::query_cve_by_product(
+          conn,
+          &ProductByName {
+            vendor: args.vendor.clone(),
+            product: args.product.clone(),
+          },
+        )?;
+        if !cve_ids.is_empty() {
+          query = query.filter(cves::id.eq_any(cve_ids));
+        }
+      }
       // 统计查询全部，分页用
       query
         .select(diesel::dsl::count(cves::id))
@@ -107,9 +127,21 @@ impl Cve {
         if let Some(official) = &args.official {
           query = query.filter(cves::official.eq(official));
         }
+        // 根据供应商和产品查询CVE编号，和字段ID冲突
+        if args.vendor.is_some() || args.product.is_some() {
+          let cve_ids = CveProduct::query_cve_by_product(
+            conn,
+            &ProductByName {
+              vendor: args.vendor.clone(),
+              product: args.product.clone(),
+            },
+          )?;
+          if !cve_ids.is_empty() {
+            query = query.filter(cves::id.eq_any(cve_ids));
+          }
+        }
         query
       };
-      
       query
         .offset(args.offset)
         .limit(args.limit)

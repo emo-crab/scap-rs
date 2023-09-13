@@ -33,11 +33,17 @@ pub struct CveProductInfo {
   pub cve: Cve,
   pub product: Product,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CveProductInfoCount {
   pub result: Vec<CveProductInfo>,
   pub total: i64,
 }
+pub struct ProductByName {
+  pub vendor: Option<String>,
+  pub product: Option<String>,
+}
+
 impl CveProduct {
   // 创建CVE和产品关联
   pub fn create(conn: &mut MysqlConnection, args: &CreateCveProduct) -> Result<Self> {
@@ -75,6 +81,44 @@ impl CveProduct {
         product_id: p.id,
       },
     )
+  }
+  // 根据供应商和产品查询CVE编号列表
+  pub fn query_cve_by_product(
+    conn: &mut MysqlConnection,
+    args: &ProductByName,
+  ) -> Result<Vec<String>> {
+    // 根据供应商和产品过滤
+    let mut query = cve_product::table.into_boxed();
+    if let Some(vendor_name) = &args.vendor {
+      let v = Vendor::query_by_name(conn, vendor_name)?;
+      if let Some(product_name) = &args.product {
+        let p = Product::query_by_id(
+          conn,
+          &QueryProductById {
+            vendor_id: v.id,
+            name: product_name.to_string(),
+          },
+        )?;
+        query = query.filter(cve_product::product_id.eq(p.id));
+      } else {
+        // 只有供应商的，获取全部产品的id
+        let ids = Product::belonging_to(&v)
+          .select(products::id)
+          .load::<Vec<u8>>(conn)?;
+        query = query.filter(cve_product::product_id.eq_any(ids));
+      }
+    } else {
+      // 只有产品的
+      if let Some(name) = &args.product {
+        let ids = products::table
+          .select(products::id)
+          .filter(products::name.like(format!("%{name}%")))
+          .load::<Vec<u8>>(conn)?;
+        query = query.filter(cve_product::product_id.eq_any(ids));
+      }
+    }
+    let cve_id = query.select(cve_product::cve_id).load::<String>(conn)?;
+    Ok(cve_id)
   }
   // 根据供应商，产品和CVE编号 返回CVE和产品信息
   pub fn query(conn: &mut MysqlConnection, args: &QueryCveProduct) -> Result<CveProductInfoCount> {
@@ -123,32 +167,16 @@ impl CveProduct {
           .inner_join(products::table)
           .into_boxed();
         // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
-        if let Some(vendor_name) = &args.vendor {
-          let v = Vendor::query_by_name(conn, vendor_name)?;
-          if let Some(product_name) = &args.product {
-            let p = Product::query_by_id(
-              conn,
-              &QueryProductById {
-                vendor_id: v.id,
-                name: product_name.to_string(),
-              },
-            )?;
-            query = query.filter(cve_product::product_id.eq(p.id));
-          } else {
-            // 只有供应商的，获取全部产品的id
-            let ids = Product::belonging_to(&v)
-              .select(products::id)
-              .load::<Vec<u8>>(conn)?;
-            query = query.filter(cve_product::product_id.eq_any(ids));
-          }
-        } else {
-          // 只有产品的
-          if let Some(name) = &args.product {
-            let ids = products::table
-              .select(products::id)
-              .filter(products::name.like(format!("%{name}%")))
-              .load::<Vec<u8>>(conn)?;
-            query = query.filter(cve_product::product_id.eq_any(ids));
+        if args.vendor.is_some() || args.product.is_some() {
+          let cve_ids = CveProduct::query_cve_by_product(
+            conn,
+            &ProductByName {
+              vendor: args.vendor.clone(),
+              product: args.product.clone(),
+            },
+          )?;
+          if !cve_ids.is_empty() {
+            query = query.filter(cve_product::cve_id.eq_any(cve_ids));
           }
         }
         if let Some(id) = &args.cve_id {
