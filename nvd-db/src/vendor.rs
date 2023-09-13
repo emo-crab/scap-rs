@@ -59,7 +59,7 @@ impl Vendor {
     let total = {
       let mut query = vendors::table.into_boxed();
       if let Some(name) = &args.name {
-        let name = format!("{}%", name);
+        let name = format!("{name}%");
         query = query.filter(vendors::name.like(name));
       }
       if let Some(official) = &args.official {
@@ -74,7 +74,7 @@ impl Vendor {
       let query = {
         let mut query = vendors::table.into_boxed();
         if let Some(name) = &args.name {
-          let name = format!("{}%", name);
+          let name = format!("{name}%");
           query = query.filter(vendors::name.like(name));
         }
         if let Some(official) = &args.official {

@@ -1,11 +1,12 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
+use cve::impact::{ImpactMetricV2, ImpactMetricV3};
 use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 use nvd_db::cve::CreateCve;
 use nvd_db::cve_product::CreateCveProductByName;
 use nvd_db::error::Result;
-use nvd_db::models::{Cve, CveProduct, Cvss2, Cvss3, Product, Vendor};
+use nvd_db::models::{Cve, CveProduct, Product, Vendor};
 use nvd_db::product::{CreateProduct, QueryProductById};
 use nvd_db::vendor::CreateVendors;
 use std::fs::File;
@@ -15,6 +16,18 @@ use std::str::FromStr;
 use tools::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
+fn v3(v3: &Option<ImpactMetricV3>) -> (String, f32) {
+  return match v3 {
+    None => (String::new(), 0.0),
+    Some(v) => (v.cvss_v3.vector_string.to_string(), v.cvss_v3.base_score),
+  };
+}
+fn v2(v2: &Option<ImpactMetricV2>) -> (String, f32) {
+  return match v2 {
+    None => (String::new(), 0.0),
+    Some(v) => (v.cvss_v2.vector_string.to_string(), v.cvss_v2.base_score),
+  };
+}
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<String> {
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
@@ -25,8 +38,10 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<S
     references: serde_json::json!(cve_item.cve.references),
     description: serde_json::json!(cve_item.cve.description),
     problem_type: serde_json::json!(cve_item.cve.problem_type),
-    cvss3_id: Cvss3::create_from_impact(connection, cve_item.impact.base_metric_v3),
-    cvss2_id: Cvss2::create_from_impact(connection, cve_item.impact.base_metric_v2),
+    cvss3_vector: v3(&cve_item.impact.base_metric_v3).0,
+    cvss3_score: v3(&cve_item.impact.base_metric_v3).1,
+    cvss2_vector: v2(&cve_item.impact.base_metric_v2).0,
+    cvss2_score: v2(&cve_item.impact.base_metric_v2).1,
     assigner: cve_item.cve.meta.assigner,
     configurations: serde_json::json!(cve_item.configurations),
     official: u8::from(true),
@@ -95,7 +110,7 @@ pub fn create_vendor(
   name: String,
   description: Option<String>,
 ) -> Vec<u8> {
-  if let Ok(v) = Vendor::query_by_name(conn, name.clone()) {
+  if let Ok(v) = Vendor::query_by_name(conn, &name) {
     return v.id;
   }
   // 构建待插入对象

@@ -94,7 +94,7 @@ impl Product {
         query = query.filter(products::vendor_id.eq(v.id));
       }
       if let Some(name) = &args.name {
-        let name = format!("{}%", name);
+        let name = format!("{name}%");
         query = query.filter(products::name.like(name));
       }
       if let Some(official) = &args.official {
@@ -113,7 +113,7 @@ impl Product {
           query = query.filter(products::vendor_id.eq(v.id));
         }
         if let Some(name) = &args.name {
-          let name = format!("{}%", name);
+          let name = format!("{name}%");
           query = query.filter(products::name.like(name));
         }
         if let Some(official) = &args.official {

@@ -64,7 +64,7 @@ impl CveProduct {
     )
   }
 
-  pub fn query(conn:&mut MysqlConnection,args:&QueryCveProduct) {
+  pub fn query(_conn:&mut MysqlConnection,_args:&QueryCveProduct) {
 
   }
 }

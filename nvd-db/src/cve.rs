@@ -1,6 +1,6 @@
 use crate::error::{NVDDBError, Result};
-use crate::models::{Cve, Cvss2, Cvss3};
-use crate::schema::{cves, cvss2, cvss3};
+use crate::models::Cve;
+use crate::schema::cves;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
@@ -17,24 +17,10 @@ pub struct CreateCve {
   pub references: Value,
   pub description: Value,
   pub problem_type: Value,
-  pub cvss3_id: Option<Vec<u8>>,
-  pub cvss2_id: Option<Vec<u8>>,
-  pub configurations: Value,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
-}
-// 返回的CVE结构
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CveInfo {
-  pub id: String,
-  pub year: i32,
-  pub official: u8,
-  pub assigner: String,
-  pub references: Value,
-  pub description: Value,
-  pub problem_type: Value,
-  pub cvss3: Value,
-  pub cvss2: Value,
+  pub cvss3_vector: String,
+  pub cvss3_score: f32,
+  pub cvss2_vector: String,
+  pub cvss2_score: f32,
   pub configurations: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
@@ -50,7 +36,7 @@ pub struct QueryCve {
 }
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CveInfoCount {
-  pub result: Vec<CveInfo>,
+  pub result: Vec<Cve>,
   pub total: i64,
 }
 impl Default for QueryCve {
@@ -85,34 +71,15 @@ impl Cve {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
   }
   // 联表查cvss
-  pub fn query_by_id_with_cvss(conn: &mut MysqlConnection, id: &str) -> Result<CveInfo> {
-    let t = cves::dsl::cves
-      .left_join(cvss2::table)
-      .left_join(cvss3::table)
-      .filter(cves::id.eq(id));
-    let (c, c2, c3) = t.get_result::<(Cve, Option<Cvss2>, Option<Cvss3>)>(conn)?;
-    Ok(CveInfo {
-      id: c.id,
-      year: c.year,
-      official: c.official,
-      assigner: c.assigner,
-      references: c.references,
-      description: c.description,
-      problem_type: c.problem_type,
-      cvss3: serde_json::json!(c3),
-      cvss2: serde_json::json!(c2),
-      configurations: c.configurations,
-      created_at: c.created_at,
-      updated_at: c.updated_at,
-    })
+  pub fn query_by_id_with_cvss(conn: &mut MysqlConnection, id: &str) -> Result<Cve> {
+    let t = cves::dsl::cves.filter(cves::id.eq(id));
+    let c = t.get_result::<Cve>(conn)?;
+    Ok(c)
   }
   // 按照查询条件返回列表和总数
   pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> Result<CveInfoCount> {
     let total = {
-      let mut query = cves::table
-        .left_join(cvss2::table)
-        .left_join(cvss3::table)
-        .into_boxed();
+      let mut query = cves::table.into_boxed();
       if let Some(id) = &args.id {
         query = query.filter(cves::id.eq(id));
       }
@@ -130,10 +97,7 @@ impl Cve {
 
     let result = {
       let query = {
-        let mut query = cves::table
-          .left_join(cvss2::table)
-          .left_join(cvss3::table)
-          .into_boxed();
+        let mut query = cves::table.into_boxed();
         if let Some(id) = &args.id {
           query = query.filter(cves::id.eq(id));
         }
@@ -145,28 +109,11 @@ impl Cve {
         }
         query
       };
-      let cve_list =
-        query
-          .offset(args.offset)
-          .limit(args.limit)
-          .load::<(Cve, Option<Cvss2>, Option<Cvss3>)>(conn)?;
-      cve_list
-        .into_iter()
-        .map(|(cve_info, c2, c3)| CveInfo {
-          id: cve_info.id,
-          year: cve_info.year,
-          official: cve_info.official,
-          assigner: cve_info.assigner,
-          references: cve_info.references,
-          description: cve_info.description,
-          problem_type: cve_info.problem_type,
-          cvss3: serde_json::json!(c3),
-          cvss2: serde_json::json!(c2),
-          configurations: cve_info.configurations,
-          created_at: cve_info.created_at,
-          updated_at: cve_info.updated_at,
-        })
-        .collect::<Vec<_>>()
+      
+      query
+        .offset(args.offset)
+        .limit(args.limit)
+        .load::<Cve>(conn)?
     };
     Ok(CveInfoCount { result, total })
   }
