@@ -17,16 +17,16 @@ use tools::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 fn v3(v3: &Option<ImpactMetricV3>) -> (String, f32) {
-  return match v3 {
+  match v3 {
     None => (String::new(), 0.0),
     Some(v) => (v.cvss_v3.vector_string.to_string(), v.cvss_v3.base_score),
-  };
+  }
 }
 fn v2(v2: &Option<ImpactMetricV2>) -> (String, f32) {
-  return match v2 {
+  match v2 {
     None => (String::new(), 0.0),
     Some(v) => (v.cvss_v2.vector_string.to_string(), v.cvss_v2.base_score),
-  };
+  }
 }
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<String> {
   let id = cve_item.cve.meta.id;

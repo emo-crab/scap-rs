@@ -62,10 +62,10 @@ fn query_cve_by_product() {
     &QueryCveProduct {
       cve_id: None,
       vendor: None,
-      product: None,
+      product: Some("exchange".to_string()),
       limit: 3,
       offset: 0,
     },
-  );
+  ).unwrap();
   println!("{:#}", serde_json::to_string_pretty(&c).unwrap());
 }

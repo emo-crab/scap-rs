@@ -72,17 +72,17 @@ impl Product {
     )
   }
   // 查询产品从提供商的名称
-  pub fn query_by_name(
+  pub fn query_by_vendor_name(
     conn: &mut MysqlConnection,
     args: &QueryProductByVendorName,
   ) -> Result<Self> {
-    let vendor_id: Vendor = vendors::table
+    let v: Vendor = vendors::table
       .filter(vendors::name.eq(&args.vendor_name))
       .first(conn)?;
-    let product_id: Product = Product::belonging_to(&vendor_id)
+    let p: Product = Product::belonging_to(&v)
       .filter(products::name.eq(&args.name))
       .first(conn)?;
-    Ok(product_id)
+    Ok(p)
   }
 
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
