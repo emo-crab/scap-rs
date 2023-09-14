@@ -4,6 +4,8 @@ use crate::schema::{products, vendors};
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use crate::DB;
+
 #[derive(Insertable)]
 #[diesel(table_name = products)]
 pub struct CreateProduct {
@@ -39,6 +41,31 @@ pub struct QueryProduct {
   pub offset: i64,
 }
 
+impl QueryProduct {
+  fn query<'a>(
+    &'a self,
+    _conn: &mut MysqlConnection,
+    mut query: vendors::BoxedQuery<'a, DB>,
+  ) -> Result<vendors::BoxedQuery<'a, DB>> {
+    if let Some(name) = &self.name {
+      let name = format!("{name}%");
+      query = query.filter(vendors::name.like(name));
+    }
+    if let Some(official) = &self.official {
+      query = query.filter(vendors::official.eq(official));
+    }
+    return Ok(query);
+  }
+  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+    let query = self.query(conn, vendors::table.into_boxed())?;
+    // 统计查询全部，分页用
+    Ok(
+      query
+          .select(diesel::dsl::count(vendors::id))
+          .first::<i64>(conn)?,
+    )
+  }
+}
 impl Product {
   // 创建产品
   pub fn create(conn: &mut MysqlConnection, args: &CreateProduct) -> Result<Self> {

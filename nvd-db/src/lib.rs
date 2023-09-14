@@ -6,4 +6,5 @@ pub mod models;
 pub mod product;
 pub mod schema;
 pub mod vendor;
+pub type DB = diesel::mysql::Mysql;
 // PURGE BINARY LOGS BEFORE NOW();

@@ -1,13 +1,13 @@
 use nvd_db::cve::QueryCve;
+use nvd_db::cve_product::QueryCveProduct;
 use nvd_db::models::{Cve, CveProduct, Product, Vendor};
 use nvd_db::product::QueryProduct;
 use nvd_db::vendor::QueryVendor;
 use std::ops::DerefMut;
-use nvd_db::cve_product::QueryCveProduct;
 use tools::init_db_pool;
 
 fn main() {
-  query_cve();
+  query_vendor();
 }
 
 fn query_vendor() {
@@ -44,21 +44,25 @@ fn query_cve() {
   let c = Cve::query(
     connection_pool.get().unwrap().deref_mut(),
     &QueryCve {
-      id: Some("CVE-2020-7354".to_string()),
+      id: None,
       year: None,
       official: None,
       vendor: None,
-      product: Some("metasploit".to_string()),
-      severity: None,
-      limit: 20,
-      offset: 0,
+      product: Some("open-vm-tools".to_string()),
+      severity: Some("High".to_string()),
+      limit: Some(1000),
+      offset: Some(0),
     },
   )
   .unwrap();
-  for result in c.result{
-    println!("{:#}", serde_json::to_string_pretty(&result.id).unwrap());
+  println!("{}", c.total);
+  for result in c.result {
+    println!(
+      "{}: {}:{}",
+      result.id, result.cvss2_score, result.cvss3_score
+    );
+    // println!("{:#}", serde_json::to_string_pretty(&result.cvss3_score).unwrap());
   }
-
 }
 
 fn query_cve_by_product() {
@@ -69,9 +73,10 @@ fn query_cve_by_product() {
       cve_id: None,
       vendor: None,
       product: Some("exchange".to_string()),
-      limit: 3,
-      offset: 0,
+      limit: Some(3),
+      offset: Some(0),
     },
-  ).unwrap();
+  )
+  .unwrap();
   println!("{:#}", serde_json::to_string_pretty(&c).unwrap());
 }

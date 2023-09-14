@@ -2,6 +2,7 @@ use crate::error::{NVDDBError, Result};
 use crate::models::{Cve, CveProduct, Product, Vendor};
 use crate::product::{QueryProductById, QueryProductByVendorName};
 use crate::schema::{cve_product, cves, products};
+use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
@@ -17,14 +18,6 @@ pub struct CreateCveProductByName {
   pub cve_id: String,
   pub vendor: String,
   pub product: String,
-}
-#[derive(Debug)]
-pub struct QueryCveProduct {
-  pub cve_id: Option<String>,
-  pub vendor: Option<String>,
-  pub product: Option<String>,
-  pub limit: i64,
-  pub offset: i64,
 }
 
 // 返回的CVE产品结构
@@ -42,6 +35,66 @@ pub struct CveProductInfoCount {
 pub struct ProductByName {
   pub vendor: Option<String>,
   pub product: Option<String>,
+}
+#[derive(Debug)]
+pub struct QueryCveProduct {
+  pub cve_id: Option<String>,
+  pub vendor: Option<String>,
+  pub product: Option<String>,
+  pub limit: Option<i64>,
+  pub offset: Option<i64>,
+}
+
+impl QueryCveProduct {
+  // 查询参数过滤实现,免得写重复的过滤代码
+  // https://github.com/diesel-rs/diesel/discussions/3468
+  fn query<'a>(
+    &'a self,
+    conn: &mut MysqlConnection,
+    mut query: cve_product::BoxedQuery<'a, DB>,
+  ) -> Result<cve_product::BoxedQuery<'a, DB>> {
+    // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
+    if let Some(vendor_name) = &self.vendor {
+      let v = Vendor::query_by_name(conn, vendor_name)?;
+      if let Some(product_name) = &self.product {
+        let p = Product::query_by_id(
+          conn,
+          &QueryProductById {
+            vendor_id: v.id,
+            name: product_name.to_string(),
+          },
+        )?;
+        query = query.filter(cve_product::product_id.eq(p.id));
+      } else {
+        let ids = Product::belonging_to(&v)
+          .select(products::id)
+          .load::<Vec<u8>>(conn)?;
+        query = query.filter(cve_product::product_id.eq_any(ids));
+      }
+    } else {
+      // 只有产品的
+      if let Some(name) = &self.product {
+        let ids = products::table
+          .select(products::id)
+          .filter(products::name.like(format!("%{name}%")))
+          .load::<Vec<u8>>(conn)?;
+        query = query.filter(cve_product::product_id.eq_any(ids));
+      }
+    }
+    if let Some(id) = &self.cve_id {
+      query = query.filter(cve_product::cve_id.eq(id));
+    }
+    Ok(query)
+  }
+  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+    let query = self.query(conn, cve_product::table.into_boxed())?;
+    // 统计查询全部，分页用
+    Ok(
+      query
+        .select(diesel::dsl::count(cve_product::cve_id))
+        .first::<i64>(conn)?,
+    )
+  }
 }
 
 impl CveProduct {
@@ -122,73 +175,21 @@ impl CveProduct {
   }
   // 根据供应商，产品和CVE编号 返回CVE和产品信息
   pub fn query(conn: &mut MysqlConnection, args: &QueryCveProduct) -> Result<CveProductInfoCount> {
-    let total = {
-      let mut query = cve_product::table.into_boxed();
-      // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
-      if let Some(vendor_name) = &args.vendor {
-        let v = Vendor::query_by_name(conn, vendor_name)?;
-        if let Some(product_name) = &args.product {
-          let p = Product::query_by_id(
-            conn,
-            &QueryProductById {
-              vendor_id: v.id,
-              name: product_name.to_string(),
-            },
-          )?;
-          query = query.filter(cve_product::product_id.eq(p.id));
-        } else {
-          let ids = Product::belonging_to(&v)
-            .select(products::id)
-            .load::<Vec<u8>>(conn)?;
-          query = query.filter(cve_product::product_id.eq_any(ids));
-        }
-      } else {
-        // 只有产品的
-        if let Some(name) = &args.product {
-          let ids = products::table
-            .select(products::id)
-            .filter(products::name.like(format!("%{name}%")))
-            .load::<Vec<u8>>(conn)?;
-          query = query.filter(cve_product::product_id.eq_any(ids));
-        }
-      }
-      if let Some(id) = &args.cve_id {
-        query = query.filter(cve_product::cve_id.eq(id));
-      }
-      // 统计查询全部，分页用
-      query
-        .select(diesel::dsl::count(cve_product::cve_id))
-        .first::<i64>(conn)?
-    };
+    let total = args.total(conn)?;
     let result = {
-      let query = {
-        let mut query = cve_product::table
-          .inner_join(cves::table)
-          .inner_join(products::table)
-          .into_boxed();
-        // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
-        if args.vendor.is_some() || args.product.is_some() {
-          let cve_ids = CveProduct::query_cve_by_product(
-            conn,
-            &ProductByName {
-              vendor: args.vendor.clone(),
-              product: args.product.clone(),
-            },
-          )?;
-          if !cve_ids.is_empty() {
-            query = query.filter(cve_product::cve_id.eq_any(cve_ids));
-          }
-        }
-        if let Some(id) = &args.cve_id {
-          query = query.filter(cve_product::cve_id.eq(id));
-        }
-        query
-      };
-      let cpp = query
-        .offset(args.offset)
-        .limit(args.limit)
-        .load::<(CveProduct, Cve, Product)>(conn)?;
-      cpp
+      let cve_ids_query = args.query(conn, cve_product::table.into_boxed())?;
+      let cve_ids = cve_ids_query
+        .offset(args.offset.unwrap_or(0))
+        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
+        .select(cve_product::cve_id)
+        .load::<String>(conn)?;
+      let query = cve_product::table
+        .inner_join(cves::table)
+        .inner_join(products::table)
+        .into_boxed();
+      query
+        .filter(cve_product::cve_id.eq_any(cve_ids))
+        .load::<(CveProduct, Cve, Product)>(conn)?
         .into_iter()
         .map(|(_cp, c, p)| CveProductInfo { cve: c, product: p })
         .collect::<Vec<_>>()
