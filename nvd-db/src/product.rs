@@ -1,10 +1,10 @@
 use crate::error::{NVDDBError, Result};
 use crate::models::{Product, Vendor};
 use crate::schema::{products, vendors};
+use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
-use crate::DB;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -45,24 +45,24 @@ impl QueryProduct {
   fn query<'a>(
     &'a self,
     _conn: &mut MysqlConnection,
-    mut query: vendors::BoxedQuery<'a, DB>,
-  ) -> Result<vendors::BoxedQuery<'a, DB>> {
+    mut query: products::BoxedQuery<'a, DB>,
+  ) -> Result<products::BoxedQuery<'a, DB>> {
     if let Some(name) = &self.name {
       let name = format!("{name}%");
-      query = query.filter(vendors::name.like(name));
+      query = query.filter(products::name.like(name));
     }
     if let Some(official) = &self.official {
-      query = query.filter(vendors::official.eq(official));
+      query = query.filter(products::official.eq(official));
     }
     return Ok(query);
   }
   fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
-    let query = self.query(conn, vendors::table.into_boxed())?;
+    let query = self.query(conn, products::table.into_boxed())?;
     // 统计查询全部，分页用
     Ok(
       query
-          .select(diesel::dsl::count(vendors::id))
-          .first::<i64>(conn)?,
+        .select(diesel::dsl::count(products::id))
+        .first::<i64>(conn)?,
     )
   }
 }
@@ -113,41 +113,9 @@ impl Product {
   }
 
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
-    let total = {
-      let mut query = products::table.into_boxed();
-      // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
-      if let Some(vendor_name) = &args.vendor_name {
-        let v = Vendor::query_by_name(conn, vendor_name)?;
-        query = query.filter(products::vendor_id.eq(v.id));
-      }
-      if let Some(name) = &args.name {
-        let name = format!("{name}%");
-        query = query.filter(products::name.like(name));
-      }
-      if let Some(official) = &args.official {
-        query = query.filter(products::official.eq(official));
-      }
-      // 统计查询全部，分页用
-      query
-        .select(diesel::dsl::count(products::id))
-        .first::<i64>(conn)?
-    };
+    let total = args.total(conn)?;
     let result = {
-      let query = {
-        let mut query = products::table.into_boxed();
-        if let Some(vendor_name) = &args.vendor_name {
-          let v = Vendor::query_by_name(conn, vendor_name)?;
-          query = query.filter(products::vendor_id.eq(v.id));
-        }
-        if let Some(name) = &args.name {
-          let name = format!("{name}%");
-          query = query.filter(products::name.like(name));
-        }
-        if let Some(official) = &args.official {
-          query = query.filter(products::official.eq(official));
-        }
-        query
-      };
+      let query = args.query(conn,products::table.into_boxed())?;
       query
         .offset(args.offset)
         .limit(args.limit)
