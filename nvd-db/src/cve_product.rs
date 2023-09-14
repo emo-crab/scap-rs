@@ -141,35 +141,15 @@ impl CveProduct {
     args: &ProductByName,
   ) -> Result<Vec<String>> {
     // 根据供应商和产品过滤
-    let mut query = cve_product::table.into_boxed();
-    if let Some(vendor_name) = &args.vendor {
-      let v = Vendor::query_by_name(conn, vendor_name)?;
-      if let Some(product_name) = &args.product {
-        let p = Product::query_by_id(
-          conn,
-          &QueryProductById {
-            vendor_id: v.id,
-            name: product_name.to_string(),
-          },
-        )?;
-        query = query.filter(cve_product::product_id.eq(p.id));
-      } else {
-        // 只有供应商的，获取全部产品的id
-        let ids = Product::belonging_to(&v)
-          .select(products::id)
-          .load::<Vec<u8>>(conn)?;
-        query = query.filter(cve_product::product_id.eq_any(ids));
-      }
-    } else {
-      // 只有产品的
-      if let Some(name) = &args.product {
-        let ids = products::table
-          .select(products::id)
-          .filter(products::name.like(format!("%{name}%")))
-          .load::<Vec<u8>>(conn)?;
-        query = query.filter(cve_product::product_id.eq_any(ids));
-      }
-    }
+    let ProductByName { vendor, product } = args;
+    let args = QueryCveProduct {
+      cve_id: None,
+      vendor: vendor.clone(),
+      product: product.clone(),
+      limit: None,
+      offset: None,
+    };
+    let query = args.query(conn, cve_product::table.into_boxed())?;
     let cve_id = query.select(cve_product::cve_id).load::<String>(conn)?;
     Ok(cve_id)
   }
