@@ -12,6 +12,7 @@ pub enum NVDDBError {
   },
   #[error("DatabaseErrorKind `{value}`")]
   DatabaseErrorKind { value: String },
+  QueryResult
 }
 impl From<DieselError> for NVDDBError {
   fn from(err: DieselError) -> Self {

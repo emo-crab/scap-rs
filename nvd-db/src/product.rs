@@ -37,8 +37,8 @@ pub struct QueryProduct {
   pub vendor_name: Option<String>,
   pub name: Option<String>,
   pub official: Option<u8>,
-  pub limit: i64,
-  pub offset: i64,
+  pub limit: Option<i64>,
+  pub offset: Option<i64>,
 }
 
 impl QueryProduct {
@@ -115,10 +115,10 @@ impl Product {
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
     let total = args.total(conn)?;
     let result = {
-      let query = args.query(conn,products::table.into_boxed())?;
+      let query = args.query(conn, products::table.into_boxed())?;
       query
-        .offset(args.offset)
-        .limit(args.limit)
+        .offset(args.offset.unwrap_or(0))
+        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
         .order(products::name.asc())
         .load::<Product>(conn)?
     };

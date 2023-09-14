@@ -112,8 +112,8 @@ impl CveProduct {
         }
       }
     }
+    // mysql 不支持 get_result，要再查一次得到插入结果
     Ok(
-      // mysql 不支持 get_result，要再查一次得到插入结果
       cve_product::dsl::cve_product
         .filter(cve_product::cve_id.eq(&args.cve_id))
         .filter(cve_product::product_id.eq(&args.product_id))
@@ -163,6 +163,7 @@ impl CveProduct {
         .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
         .select(cve_product::cve_id)
         .load::<String>(conn)?;
+      // 联表查要把表写在前面，但是这样就用不了query了，所以先查处cve编号列表再eq_any过滤
       let query = cve_product::table
         .inner_join(cves::table)
         .inner_join(products::table)

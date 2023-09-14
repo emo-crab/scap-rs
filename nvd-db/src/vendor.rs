@@ -24,8 +24,8 @@ pub struct VendorCount {
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,
-  pub limit: i64,
-  pub offset: i64,
+  pub limit: Option<i64>,
+  pub offset: Option<i64>,
 }
 
 impl QueryVendor {
@@ -48,8 +48,8 @@ impl QueryVendor {
     // 统计查询全部，分页用
     Ok(
       query
-          .select(diesel::dsl::count(vendors::id))
-          .first::<i64>(conn)?,
+        .select(diesel::dsl::count(vendors::id))
+        .first::<i64>(conn)?,
     )
   }
 }
@@ -89,8 +89,8 @@ impl Vendor {
     let result = {
       let query = args.query(conn, vendors::table.into_boxed())?;
       query
-        .offset(args.offset)
-        .limit(args.limit)
+        .offset(args.offset.unwrap_or(0))
+        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };
