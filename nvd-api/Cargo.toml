@@ -1,5 +1,5 @@
 [package]
-name = "nvd-db"
+name = "nvd-api"
 version = "0.1.0"
 edition = "2021"
 

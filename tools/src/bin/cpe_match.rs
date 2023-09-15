@@ -1,7 +1,7 @@
 use diesel::{BelongingToDsl, ExpressionMethods, QueryDsl, RunQueryDsl};
-use nvd_db::cve_product::CreateCveProductByName;
-use nvd_db::models::{CveProduct, Product, Vendor};
-use nvd_db::schema::{products, vendors};
+use nvd_api::cve_product::CreateCveProductByName;
+use nvd_api::models::{CveProduct, Product, Vendor};
+use nvd_api::schema::{products, vendors};
 use std::ops::DerefMut;
 use tools::init_db_pool;
 // mysql> drop database nvd;

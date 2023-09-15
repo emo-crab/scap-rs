@@ -1,4 +1,4 @@
-//! nvd-db error
+//! nvd-api error
 use diesel::result::Error as DieselError;
 use thiserror::Error;
 pub type Result<T> = std::result::Result<T, NVDDBError>;
@@ -12,7 +12,6 @@ pub enum NVDDBError {
   },
   #[error("DatabaseErrorKind `{value}`")]
   DatabaseErrorKind { value: String },
-  QueryResult
 }
 impl From<DieselError> for NVDDBError {
   fn from(err: DieselError) -> Self {

@@ -1,8 +1,8 @@
-use nvd_db::cve::QueryCve;
-use nvd_db::cve_product::QueryCveProduct;
-use nvd_db::models::{Cve, CveProduct, Product, Vendor};
-use nvd_db::product::QueryProduct;
-use nvd_db::vendor::QueryVendor;
+use nvd_api::cve::QueryCve;
+use nvd_api::cve_product::QueryCveProduct;
+use nvd_api::models::{Cve, CveProduct, Product, Vendor};
+use nvd_api::product::QueryProduct;
+use nvd_api::vendor::QueryVendor;
 use std::ops::DerefMut;
 use tools::init_db_pool;
 
@@ -17,8 +17,8 @@ fn query_vendor() {
     &QueryVendor {
       name: Some("php".to_string()),
       official: None,
-      limit: 10,
-      offset: 0,
+      limit: Some(10),
+      offset: Some(0),
     },
   )
   .unwrap();
@@ -32,8 +32,8 @@ fn query_product() {
       vendor_name: Some("php".to_string()),
       name: None,
       official: None,
-      limit: 10,
-      offset: 0,
+      limit: Some(10),
+      offset: Some(0),
     },
   )
   .unwrap();
