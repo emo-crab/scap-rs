@@ -1,6 +1,6 @@
 use crate::error::{NVDDBError, Result};
 use crate::models::{Cve, CveProduct, Product, Vendor};
-use crate::product::{QueryProductById, QueryProductByVendorName};
+use crate::models::product_db::{QueryProductById, QueryProductByVendorName};
 use crate::schema::{cve_product, cves, products};
 use crate::DB;
 use diesel::prelude::*;

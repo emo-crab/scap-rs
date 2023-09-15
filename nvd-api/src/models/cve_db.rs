@@ -1,4 +1,3 @@
-use crate::cve_product::ProductByName;
 use crate::error::{NVDDBError, Result};
 use crate::models::{Cve, CveProduct};
 use crate::schema::cves;
@@ -8,6 +7,7 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use crate::DB;
+use crate::models::cve_product_db::ProductByName;
 
 // 创建CVE
 #[derive(Debug, Insertable)]
@@ -113,7 +113,7 @@ impl QueryCve {
         _ => {}
       }
     }
-    return Ok(query);
+    Ok(query)
   }
   fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
     let query = self.query(conn, cves::table.into_boxed())?;

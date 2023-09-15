@@ -54,7 +54,7 @@ impl QueryProduct {
     if let Some(official) = &self.official {
       query = query.filter(products::official.eq(official));
     }
-    return Ok(query);
+    Ok(query)
   }
   fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
     let query = self.query(conn, products::table.into_boxed())?;

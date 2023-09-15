@@ -7,12 +7,12 @@ mod tests {
   };
   use cvss::v3::privileges_required::PrivilegesRequiredType;
   use cvss::v3::scope::ScopeType;
-  use cvss::v3::severity::SeverityType;
   use cvss::v3::user_interaction::UserInteractionType;
   use cvss::v3::{ExploitAbility, Impact};
   use cvss::version::Version;
   use std::collections::HashMap;
   use std::str::FromStr;
+  use cvss::severity::SeverityTypeV3;
 
   #[test]
   fn it_works() {
@@ -54,7 +54,7 @@ mod tests {
       "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
     );
     assert_eq!(cvss_v3.base_score, 10.0);
-    assert_eq!(cvss_v3.base_severity, SeverityType::Critical);
+    assert_eq!(cvss_v3.base_severity, SeverityTypeV3::Critical);
   }
   #[test]
   fn test_cvss_scope() {
@@ -62,11 +62,11 @@ mod tests {
       cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:L/A:H").unwrap();
     println!("{cvss_v3_unchanged:?}");
     assert_eq!(cvss_v3_unchanged.base_score, 7.1);
-    assert_eq!(cvss_v3_unchanged.base_severity, SeverityType::High);
+    assert_eq!(cvss_v3_unchanged.base_severity, SeverityTypeV3::High);
     let cvss_v3_changed =
       cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:L/A:H").unwrap();
     assert_eq!(cvss_v3_changed.base_score, 8.2);
-    assert_eq!(cvss_v3_changed.base_severity, SeverityType::High);
+    assert_eq!(cvss_v3_changed.base_severity, SeverityTypeV3::High);
   }
 
   #[test]

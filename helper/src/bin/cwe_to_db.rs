@@ -1,11 +1,11 @@
 use cwe::weakness_catalog::WeaknessCatalog;
 use diesel::mysql::MysqlConnection;
-use nvd_api::cwe::CreateCwe;
+use nvd_api::models::cwe_db::CreateCwe;
 use nvd_api::models::Cwe;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
-use tools::init_db_pool;
+use helper::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 fn import_to_db(

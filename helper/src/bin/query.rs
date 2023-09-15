@@ -1,10 +1,10 @@
-use nvd_api::cve::QueryCve;
-use nvd_api::cve_product::QueryCveProduct;
+use nvd_api::models::cve_db::QueryCve;
+use nvd_api::models::cve_product_db::QueryCveProduct;
 use nvd_api::models::{Cve, CveProduct, Product, Vendor};
-use nvd_api::product::QueryProduct;
-use nvd_api::vendor::QueryVendor;
+use nvd_api::models::product_db::QueryProduct;
+use nvd_api::models::vendor_db::QueryVendor;
 use std::ops::DerefMut;
-use tools::init_db_pool;
+use helper::init_db_pool;
 
 fn main() {
   query_vendor();
@@ -39,6 +39,7 @@ fn query_product() {
   .unwrap();
   println!("{:#}", serde_json::to_string_pretty(&c).unwrap());
 }
+
 fn query_cve() {
   let connection_pool = init_db_pool();
   let c = Cve::query(

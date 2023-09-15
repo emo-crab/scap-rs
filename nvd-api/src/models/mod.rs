@@ -1,3 +1,9 @@
+pub mod cve_db;
+pub mod cve_product_db;
+pub mod cwe_db;
+pub mod product_db;
+pub mod vendor_db;
+
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;

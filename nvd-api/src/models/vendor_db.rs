@@ -41,7 +41,7 @@ impl QueryVendor {
     if let Some(official) = &self.official {
       query = query.filter(vendors::official.eq(official));
     }
-    return Ok(query);
+    Ok(query)
   }
   fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
     let query = self.query(conn, vendors::table.into_boxed())?;
