@@ -8,6 +8,7 @@ include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
 
 [workspace]
 members = ["cpe", "cve", "cvss", "cwe", "nvd-api", "helper"]
+default-members = ["nvd-api"]
 
 #https://github.com/johnthagen/min-sized-rust
 [profile.release]
