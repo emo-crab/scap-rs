@@ -4,7 +4,9 @@ use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
 use std::str::FromStr;
 #[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Default)]
 pub enum Version {
+  #[default]
   None,
   #[serde(rename = "2.0")]
   V2_0,
@@ -15,11 +17,7 @@ pub enum Version {
   // todo V4
 }
 
-impl Default for Version {
-  fn default() -> Self {
-    Version::None
-  }
-}
+
 
 impl FromStr for Version {
   type Err = CVSSError;

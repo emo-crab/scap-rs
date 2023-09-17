@@ -28,6 +28,7 @@ pub struct CreateCve {
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
+
 // CVE查询参数
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryCve {
@@ -48,6 +49,7 @@ pub struct QueryCve {
   // 分页偏移
   pub offset: Option<i64>,
 }
+
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CveInfoCount {
   pub result: Vec<Cve>,
@@ -151,7 +153,7 @@ impl Cve {
       // 限制最大分页为20,防止拒绝服务攻击
       query
         .offset(args.offset.unwrap_or(0))
-        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
+        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(0), 20))
         .load::<Cve>(conn)?
     };
     Ok(CveInfoCount { result, total })

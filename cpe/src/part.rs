@@ -4,8 +4,10 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{fmt, str::FromStr};
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Default)]
 pub enum Part {
   // any
+  #[default]
   Any,
   // 硬件设备 h
   Hardware,
@@ -44,11 +46,7 @@ impl<'de> Deserialize<'de> for Part {
   }
 }
 
-impl Default for Part {
-  fn default() -> Self {
-    Part::Any
-  }
-}
+
 
 impl From<Part> for char {
   fn from(val: Part) -> Self {
