@@ -1,8 +1,9 @@
-use crate::error::{NVDDBError, Result};
+use crate::error::{NVDApiError, Result};
 use crate::models::{Cve, CveProduct};
 use crate::schema::cves;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
+use diesel::r2d2::{ConnectionManager, PooledConnection};
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -134,7 +135,7 @@ impl Cve {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDDBError::DieselError { source: err });
+          return Err(NVDApiError::DieselError { source: err });
         }
       }
     }

@@ -1,4 +1,4 @@
-use crate::error::{NVDDBError, Result};
+use crate::error::{NVDApiError, Result};
 use crate::models::Cwe;
 use crate::schema::cwes;
 use diesel::prelude::*;
@@ -20,7 +20,7 @@ impl Cwe {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDDBError::DieselError { source: err });
+          return Err(NVDApiError::DieselError { source: err });
         }
       }
     }

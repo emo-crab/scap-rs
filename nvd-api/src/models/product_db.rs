@@ -1,4 +1,4 @@
-use crate::error::{NVDDBError, Result};
+use crate::error::{NVDApiError, Result};
 use crate::models::{Product, Vendor};
 use crate::schema::{products, vendors};
 use crate::DB;
@@ -77,7 +77,7 @@ impl Product {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDDBError::DieselError { source: err });
+          return Err(NVDApiError::DieselError { source: err });
         }
       }
     }

@@ -1,4 +1,4 @@
-use crate::error::{NVDDBError, Result};
+use crate::error::{NVDApiError, Result};
 use crate::models::{Cve, CveProduct, Product, Vendor};
 use crate::models::product_db::{QueryProductById, QueryProductByVendorName};
 use crate::schema::{cve_product, cves, products};
@@ -108,7 +108,7 @@ impl CveProduct {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDDBError::DieselError { source: err });
+          return Err(NVDApiError::DieselError { source: err });
         }
       }
     }
