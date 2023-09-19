@@ -1,6 +1,6 @@
-use crate::error::{ DBResult, DBError};
-use crate::models::{Cve, CveProduct, Product, Vendor};
+use crate::error::{DBError, DBResult};
 use crate::models::product_db::{QueryProductById, QueryProductByVendorName};
+use crate::models::{Cve, CveProduct, Product, Vendor};
 use crate::schema::{cve_product, cves, products};
 use crate::DB;
 use diesel::prelude::*;
@@ -121,7 +121,10 @@ impl CveProduct {
     )
   }
   // 创建CVE和产品关联从名称
-  pub fn create_by_name(conn: &mut MysqlConnection, args: &CreateCveProductByName) -> DBResult<Self> {
+  pub fn create_by_name(
+    conn: &mut MysqlConnection,
+    args: &CreateCveProductByName,
+  ) -> DBResult<Self> {
     let vp = QueryProductByVendorName {
       vendor_name: args.vendor.clone(),
       name: args.product.clone(),
@@ -154,13 +157,16 @@ impl CveProduct {
     Ok(cve_id)
   }
   // 根据供应商，产品和CVE编号 返回CVE和产品信息
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCveProduct) -> DBResult<CveProductInfoCount> {
+  pub fn query(
+    conn: &mut MysqlConnection,
+    args: &QueryCveProduct,
+  ) -> DBResult<CveProductInfoCount> {
     let total = args.total(conn)?;
     let result = {
       let cve_ids_query = args.query(conn, cve_product::table.into_boxed())?;
       let cve_ids = cve_ids_query
         .offset(args.offset.unwrap_or(0))
-        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
+        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
         .select(cve_product::cve_id)
         .load::<String>(conn)?;
       // 联表查要把表写在前面，但是这样就用不了query了，所以先查处cve编号列表再eq_any过滤

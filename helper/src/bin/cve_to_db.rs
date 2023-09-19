@@ -5,7 +5,7 @@ use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 use nvd_api::models::cve_db::CreateCve;
 use nvd_api::models::cve_product_db::CreateCveProductByName;
-use nvd_api::error::Result;
+use nvd_api::error::DBResult;
 use nvd_api::models::{Cve, CveProduct, Product, Vendor};
 use nvd_api::models::product_db::{CreateProduct, QueryProductById};
 use nvd_api::models::vendor_db::CreateVendors;
@@ -28,7 +28,7 @@ fn v2(v2: &Option<ImpactMetricV2>) -> (String, f32) {
     Some(v) => (v.cvss_v2.vector_string.to_string(), v.cvss_v2.base_score),
   }
 }
-fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> Result<String> {
+fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> DBResult<String> {
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
   let new_post = CreateCve {

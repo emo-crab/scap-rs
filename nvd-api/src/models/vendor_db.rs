@@ -1,4 +1,4 @@
-use crate::error::{ DBResult, DBError};
+use crate::error::{DBError, DBResult};
 use crate::models::Vendor;
 use crate::schema::vendors;
 use crate::DB;
@@ -21,6 +21,7 @@ pub struct VendorCount {
   pub result: Vec<Vendor>,
   pub total: i64,
 }
+#[derive(Debug, Serialize, Deserialize)]
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,
@@ -90,7 +91,7 @@ impl Vendor {
       let query = args.query(conn, vendors::table.into_boxed())?;
       query
         .offset(args.offset.unwrap_or(0))
-        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
+        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };

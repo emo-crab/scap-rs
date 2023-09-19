@@ -1,4 +1,4 @@
-use crate::error::{ DBResult, DBError};
+use crate::error::{DBError, DBResult};
 use crate::models::{Product, Vendor};
 use crate::schema::{products, vendors};
 use crate::DB;
@@ -36,6 +36,7 @@ pub struct ProductCount {
 pub struct QueryProduct {
   pub vendor_name: Option<String>,
   pub name: Option<String>,
+  pub part: Option<String>,
   pub official: Option<u8>,
   pub limit: Option<i64>,
   pub offset: Option<i64>,
@@ -44,9 +45,16 @@ pub struct QueryProduct {
 impl QueryProduct {
   fn query<'a>(
     &'a self,
-    _conn: &mut MysqlConnection,
+    conn: &mut MysqlConnection,
     mut query: products::BoxedQuery<'a, DB>,
   ) -> DBResult<products::BoxedQuery<'a, DB>> {
+    if let Some(name) = &self.vendor_name {
+      let v = Vendor::query_by_name(conn, name)?;
+      query = query.filter(products::vendor_id.eq(v.id));
+    }
+    if let Some(part) = &self.part {
+      query = query.filter(products::part.eq(part));
+    }
     if let Some(name) = &self.name {
       let name = format!("{name}%");
       query = query.filter(products::name.like(name));
@@ -118,7 +126,7 @@ impl Product {
       let query = args.query(conn, products::table.into_boxed())?;
       query
         .offset(args.offset.unwrap_or(0))
-        .limit(args.limit.map_or(20, |l| if l > 20 { 20 } else { l }))
+        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
         .order(products::name.asc())
         .load::<Product>(conn)?
     };

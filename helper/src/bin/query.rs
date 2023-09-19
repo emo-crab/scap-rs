@@ -31,6 +31,7 @@ fn query_product() {
     &QueryProduct {
       vendor_name: Some("php".to_string()),
       name: None,
+      part: None,
       official: None,
       limit: Some(10),
       offset: Some(0),

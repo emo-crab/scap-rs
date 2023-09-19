@@ -1,13 +1,13 @@
-use crate::error::{ DBResult, DBError};
+use crate::error::{DBError, DBResult};
+use crate::models::cve_product_db::ProductByName;
 use crate::models::{Cve, CveProduct};
 use crate::schema::cves;
+use crate::DB;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use crate::DB;
-use crate::models::cve_product_db::ProductByName;
 
 // 创建CVE
 #[derive(Debug, Insertable)]
@@ -82,9 +82,7 @@ impl QueryCve {
           product: self.product.clone(),
         },
       )?;
-      if !cve_ids.is_empty() {
-        query = query.filter(cves::id.eq_any(cve_ids));
-      }
+      query = query.filter(cves::id.eq_any(cve_ids));
     }
     if let Some(severity) = &self.severity {
       match severity.to_lowercase().as_str() {
@@ -120,9 +118,11 @@ impl QueryCve {
   fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
     let query = self.query(conn, cves::table.into_boxed())?;
     // 统计查询全部，分页用
-    Ok(query
-      .select(diesel::dsl::count(cves::id))
-      .first::<i64>(conn)?)
+    Ok(
+      query
+        .select(diesel::dsl::count(cves::id))
+        .first::<i64>(conn)?,
+    )
   }
 }
 
@@ -153,7 +153,7 @@ impl Cve {
       // 限制最大分页为20,防止拒绝服务攻击
       query
         .offset(args.offset.unwrap_or(0))
-        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(0), 20))
+        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
         .load::<Cve>(conn)?
     };
     Ok(CveInfoCount { result, total })

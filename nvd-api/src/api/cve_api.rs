@@ -2,8 +2,9 @@ use crate::models::Cve;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, Error, HttpResponse};
 use std::ops::DerefMut;
+use crate::models::cve_db::QueryCve;
 
-#[get("/cve/{id}")]
+#[get("/{id}")]
 async fn api_cve_id(id: web::Path<String>, pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
   let contact = web::block(move || {
     let mut conn = pool.get()?;
@@ -13,11 +14,11 @@ async fn api_cve_id(id: web::Path<String>, pool: web::Data<Pool>) -> Result<Http
   Ok(HttpResponse::Ok().json(contact))
 }
 
-#[get("/cve/{id}")]
-async fn api_cve_list(id: web::Path<String>, pool: web::Data<Pool>) -> ApiResponse {
+#[get("")]
+async fn api_cve_list(args: web::Query<QueryCve>, pool: web::Data<Pool>) -> ApiResponse {
   let contact = web::block(move || {
     let mut conn = pool.get()?;
-    Cve::query_by_id(conn.deref_mut(), &id)
+    Cve::query(conn.deref_mut(), &args)
   })
   .await??;
   Ok(HttpResponse::Ok().json(contact))
