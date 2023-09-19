@@ -1,4 +1,4 @@
-use crate::error::{NVDApiError, Result};
+use crate::error::{ DBResult, DBError};
 use crate::models::Cwe;
 use crate::schema::cwes;
 use diesel::prelude::*;
@@ -14,13 +14,13 @@ pub struct CreateCwe {
 
 impl Cwe {
   // 创建弱点枚举
-  pub fn create(conn: &mut MysqlConnection, args: &CreateCwe) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateCwe) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(cwes::table).values(args).execute(conn) {
       // 重复了，说明已经存在弱点
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDApiError::DieselError { source: err });
+          return Err(DBError::DieselError { source: err });
         }
       }
     }

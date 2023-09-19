@@ -1,4 +1,4 @@
-use crate::error::{NVDApiError, Result};
+use crate::error::{ DBResult, DBError};
 use crate::models::Vendor;
 use crate::schema::vendors;
 use crate::DB;
@@ -33,7 +33,7 @@ impl QueryVendor {
     &'a self,
     _conn: &mut MysqlConnection,
     mut query: vendors::BoxedQuery<'a, DB>,
-  ) -> Result<vendors::BoxedQuery<'a, DB>> {
+  ) -> DBResult<vendors::BoxedQuery<'a, DB>> {
     if let Some(name) = &self.name {
       let name = format!("{name}%");
       query = query.filter(vendors::name.like(name));
@@ -43,7 +43,7 @@ impl QueryVendor {
     }
     Ok(query)
   }
-  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+  fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
     let query = self.query(conn, vendors::table.into_boxed())?;
     // 统计查询全部，分页用
     Ok(
@@ -55,7 +55,7 @@ impl QueryVendor {
 }
 impl Vendor {
   // 创建提供商
-  pub fn create(conn: &mut MysqlConnection, args: &CreateVendors) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateVendors) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(vendors::table)
       .values(args)
       .execute(conn)
@@ -64,7 +64,7 @@ impl Vendor {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDApiError::DieselError { source: err });
+          return Err(DBError::DieselError { source: err });
         }
       }
     }
@@ -76,7 +76,7 @@ impl Vendor {
     )
   }
   // 查询提供商从名称
-  pub fn query_by_name(conn: &mut MysqlConnection, name: &str) -> Result<Self> {
+  pub fn query_by_name(conn: &mut MysqlConnection, name: &str) -> DBResult<Self> {
     Ok(
       vendors::dsl::vendors
         .filter(vendors::name.eq(name))
@@ -84,7 +84,7 @@ impl Vendor {
     )
   }
   // 查询提供商从查询参数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> Result<VendorCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<VendorCount> {
     let total = args.total(conn)?;
     let result = {
       let query = args.query(conn, vendors::table.into_boxed())?;

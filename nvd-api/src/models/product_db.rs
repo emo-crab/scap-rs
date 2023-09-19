@@ -1,4 +1,4 @@
-use crate::error::{NVDApiError, Result};
+use crate::error::{ DBResult, DBError};
 use crate::models::{Product, Vendor};
 use crate::schema::{products, vendors};
 use crate::DB;
@@ -46,7 +46,7 @@ impl QueryProduct {
     &'a self,
     _conn: &mut MysqlConnection,
     mut query: products::BoxedQuery<'a, DB>,
-  ) -> Result<products::BoxedQuery<'a, DB>> {
+  ) -> DBResult<products::BoxedQuery<'a, DB>> {
     if let Some(name) = &self.name {
       let name = format!("{name}%");
       query = query.filter(products::name.like(name));
@@ -56,7 +56,7 @@ impl QueryProduct {
     }
     Ok(query)
   }
-  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+  fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
     let query = self.query(conn, products::table.into_boxed())?;
     // 统计查询全部，分页用
     Ok(
@@ -68,7 +68,7 @@ impl QueryProduct {
 }
 impl Product {
   // 创建产品
-  pub fn create(conn: &mut MysqlConnection, args: &CreateProduct) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateProduct) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(products::table)
       .values(args)
       .execute(conn)
@@ -77,7 +77,7 @@ impl Product {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDApiError::DieselError { source: err });
+          return Err(DBError::DieselError { source: err });
         }
       }
     }
@@ -90,7 +90,7 @@ impl Product {
     )
   }
   // 查询产品从提供商的id
-  pub fn query_by_id(conn: &mut MysqlConnection, args: &QueryProductById) -> Result<Self> {
+  pub fn query_by_id(conn: &mut MysqlConnection, args: &QueryProductById) -> DBResult<Self> {
     Ok(
       products::dsl::products
         .filter(products::vendor_id.eq(&args.vendor_id))
@@ -102,7 +102,7 @@ impl Product {
   pub fn query_by_vendor_name(
     conn: &mut MysqlConnection,
     args: &QueryProductByVendorName,
-  ) -> Result<Self> {
+  ) -> DBResult<Self> {
     let v: Vendor = vendors::table
       .filter(vendors::name.eq(&args.vendor_name))
       .first(conn)?;
@@ -112,7 +112,7 @@ impl Product {
     Ok(p)
   }
 
-  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> Result<ProductCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> DBResult<ProductCount> {
     let total = args.total(conn)?;
     let result = {
       let query = args.query(conn, products::table.into_boxed())?;

@@ -1,9 +1,8 @@
-use crate::error::{NVDApiError, Result};
+use crate::error::{ DBResult, DBError};
 use crate::models::{Cve, CveProduct};
 use crate::schema::cves;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
-use diesel::r2d2::{ConnectionManager, PooledConnection};
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -64,7 +63,7 @@ impl QueryCve {
     &'a self,
     conn: &mut MysqlConnection,
     mut query: cves::BoxedQuery<'a, DB>,
-  ) -> Result<cves::BoxedQuery<'a, DB>> {
+  ) -> DBResult<cves::BoxedQuery<'a, DB>> {
     if let Some(id) = &self.id {
       query = query.filter(cves::id.eq(id));
     }
@@ -118,7 +117,7 @@ impl QueryCve {
     }
     Ok(query)
   }
-  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+  fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
     let query = self.query(conn, cves::table.into_boxed())?;
     // 统计查询全部，分页用
     Ok(query
@@ -129,13 +128,13 @@ impl QueryCve {
 
 impl Cve {
   // 创建CVE
-  pub fn create(conn: &mut MysqlConnection, args: &CreateCve) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateCve) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(cves::table).values(args).execute(conn) {
       // 重复了，说明已经存在CVE
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDApiError::DieselError { source: err });
+          return Err(DBError::DieselError { source: err });
         }
       }
     }
@@ -143,11 +142,11 @@ impl Cve {
     Self::query_by_id(conn, &args.id)
   }
   // 查单个cve不联cvss表
-  pub fn query_by_id(conn: &mut MysqlConnection, id: &str) -> Result<Self> {
+  pub fn query_by_id(conn: &mut MysqlConnection, id: &str) -> DBResult<Self> {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
   }
   // 按照查询条件返回列表和总数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> Result<CveInfoCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> DBResult<CveInfoCount> {
     let total = args.total(conn)?;
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;

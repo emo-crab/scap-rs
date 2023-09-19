@@ -1,4 +1,4 @@
-use crate::error::{NVDApiError, Result};
+use crate::error::{ DBResult, DBError};
 use crate::models::{Cve, CveProduct, Product, Vendor};
 use crate::models::product_db::{QueryProductById, QueryProductByVendorName};
 use crate::schema::{cve_product, cves, products};
@@ -52,7 +52,7 @@ impl QueryCveProduct {
     &'a self,
     conn: &mut MysqlConnection,
     mut query: cve_product::BoxedQuery<'a, DB>,
-  ) -> Result<cve_product::BoxedQuery<'a, DB>> {
+  ) -> DBResult<cve_product::BoxedQuery<'a, DB>> {
     // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
     if let Some(vendor_name) = &self.vendor {
       let v = Vendor::query_by_name(conn, vendor_name)?;
@@ -86,7 +86,7 @@ impl QueryCveProduct {
     }
     Ok(query)
   }
-  fn total(&self, conn: &mut MysqlConnection) -> Result<i64> {
+  fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
     let query = self.query(conn, cve_product::table.into_boxed())?;
     // 统计查询全部，分页用
     Ok(
@@ -99,7 +99,7 @@ impl QueryCveProduct {
 
 impl CveProduct {
   // 创建CVE和产品关联
-  pub fn create(conn: &mut MysqlConnection, args: &CreateCveProduct) -> Result<Self> {
+  pub fn create(conn: &mut MysqlConnection, args: &CreateCveProduct) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(cve_product::table)
       .values(args)
       .execute(conn)
@@ -108,7 +108,7 @@ impl CveProduct {
       match err {
         DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {}
         _ => {
-          return Err(NVDApiError::DieselError { source: err });
+          return Err(DBError::DieselError { source: err });
         }
       }
     }
@@ -121,7 +121,7 @@ impl CveProduct {
     )
   }
   // 创建CVE和产品关联从名称
-  pub fn create_by_name(conn: &mut MysqlConnection, args: &CreateCveProductByName) -> Result<Self> {
+  pub fn create_by_name(conn: &mut MysqlConnection, args: &CreateCveProductByName) -> DBResult<Self> {
     let vp = QueryProductByVendorName {
       vendor_name: args.vendor.clone(),
       name: args.product.clone(),
@@ -139,7 +139,7 @@ impl CveProduct {
   pub fn query_cve_by_product(
     conn: &mut MysqlConnection,
     args: &ProductByName,
-  ) -> Result<Vec<String>> {
+  ) -> DBResult<Vec<String>> {
     // 根据供应商和产品过滤
     let ProductByName { vendor, product } = args;
     let args = QueryCveProduct {
@@ -154,7 +154,7 @@ impl CveProduct {
     Ok(cve_id)
   }
   // 根据供应商，产品和CVE编号 返回CVE和产品信息
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCveProduct) -> Result<CveProductInfoCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCveProduct) -> DBResult<CveProductInfoCount> {
     let total = args.total(conn)?;
     let result = {
       let cve_ids_query = args.query(conn, cve_product::table.into_boxed())?;
