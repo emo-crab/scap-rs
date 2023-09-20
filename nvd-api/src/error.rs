@@ -47,27 +47,21 @@ impl From<DieselError> for DBError {
 }
 impl From<diesel::r2d2::PoolError> for DBError {
   fn from(err: diesel::r2d2::PoolError) -> Self {
-    match err {
-      _ => DBError::R2d2Error { source: err },
-    }
+    DBError::R2d2Error { source: err }
   }
 }
 
 impl From<actix_web::error::BlockingError> for NVDApiError {
   fn from(err: actix_web::error::BlockingError) -> Self {
-    match err {
-      _ => NVDApiError::InternalServerError {
-        value: err.to_string(),
-      },
+    NVDApiError::InternalServerError {
+      value: err.to_string(),
     }
   }
 }
 impl From<actix_web::Error> for NVDApiError {
   fn from(err: actix_web::Error) -> Self {
-    match err {
-      _ => NVDApiError::InternalServerError {
-        value: err.to_string(),
-      },
+    NVDApiError::InternalServerError {
+      value: err.to_string(),
     }
   }
 }

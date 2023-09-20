@@ -1,8 +1,8 @@
+use crate::models::cve_db::QueryCve;
 use crate::models::Cve;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, Error, HttpResponse};
 use std::ops::DerefMut;
-use crate::models::cve_db::QueryCve;
 
 #[get("/{id}")]
 async fn api_cve_id(id: web::Path<String>, pool: web::Data<Pool>) -> Result<HttpResponse, Error> {

@@ -5,8 +5,7 @@ use std::{convert::TryFrom, fmt, str::FromStr};
 
 use crate::error::{CPEError, Result};
 
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum Language {
   // 任意值
   #[default]
@@ -18,8 +17,6 @@ pub enum Language {
   // 符合语言
   Language(LanguageTag),
 }
-
-
 
 impl FromStr for Language {
   type Err = CPEError;
@@ -95,8 +92,7 @@ impl<'de> Deserialize<'de> for Language {
   }
 }
 // 组件
-#[derive(Debug, Clone, PartialEq, Eq, Hash)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
 pub enum Component {
   // 任意值
   #[default]
@@ -147,8 +143,6 @@ impl TryFrom<String> for Component {
     Self::from_str(val.as_str())
   }
 }
-
-
 
 impl FromStr for Component {
   type Err = CPEError;

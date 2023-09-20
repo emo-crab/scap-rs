@@ -3,17 +3,17 @@ use cached::SizedCache;
 use cve::impact::{ImpactMetricV2, ImpactMetricV3};
 use cve::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
+use helper::init_db_pool;
+use nvd_api::error::DBResult;
 use nvd_api::models::cve_db::CreateCve;
 use nvd_api::models::cve_product_db::CreateCveProductByName;
-use nvd_api::error::DBResult;
-use nvd_api::models::{Cve, CveProduct, Product, Vendor};
 use nvd_api::models::product_db::{CreateProduct, QueryProductById};
 use nvd_api::models::vendor_db::CreateVendors;
+use nvd_api::models::{Cve, CveProduct, Product, Vendor};
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::str::FromStr;
-use helper::init_db_pool;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 fn v3(v3: &Option<ImpactMetricV3>) -> (String, f32) {

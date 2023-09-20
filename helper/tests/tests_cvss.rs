@@ -1,5 +1,6 @@
 #[cfg(test)]
 mod tests {
+  use cvss::severity::SeverityTypeV3;
   use cvss::v3::attack_complexity::AttackComplexityType;
   use cvss::v3::attack_vector::AttackVectorType;
   use cvss::v3::impact_metrics::{
@@ -12,7 +13,6 @@ mod tests {
   use cvss::version::Version;
   use std::collections::HashMap;
   use std::str::FromStr;
-  use cvss::severity::SeverityTypeV3;
 
   #[test]
   fn it_works() {

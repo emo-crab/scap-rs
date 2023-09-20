@@ -1,8 +1,8 @@
 //! impact
 use cvss::error::{CVSSError, Result};
+use cvss::severity::SeverityTypeV2;
 use serde::{Deserialize, Serialize};
 use std::str::FromStr;
-use cvss::severity::SeverityTypeV2;
 
 /// This is impact type information (e.g. a text description, CVSSv2, CVSSv3, etc.).
 ///

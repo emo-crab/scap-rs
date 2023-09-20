@@ -16,3 +16,4 @@ Cargo.lock
 /examples/nvdcve/data-feeds.html
 /.env
 /nvd-api/nvd-er.mwb.bak
+/nvd-api/dist/

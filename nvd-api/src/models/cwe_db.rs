@@ -1,4 +1,4 @@
-use crate::error::{ DBResult, DBError};
+use crate::error::{DBError, DBResult};
 use crate::models::Cwe;
 use crate::schema::cwes;
 use diesel::prelude::*;

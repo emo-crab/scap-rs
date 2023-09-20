@@ -1,5 +1,5 @@
 use actix_cors::Cors;
-use actix_web::{get, http, middleware, web, App, HttpServer, Responder};
+use actix_web::{http, middleware, web, App, HttpServer};
 use nvd_api::api::api_route;
 use nvd_api::init_db_pool;
 

@@ -1,0 +1,6 @@
+[build]
+target = "nvd-yew/index.html"
+dist = "nvd-api/dist"
+
+#[[proxy]]
+#backend = "http://[::1]:8081/api/"

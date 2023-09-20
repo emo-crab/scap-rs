@@ -3,8 +3,7 @@ use crate::error::{CVSSError, Result};
 use serde::{Deserialize, Serialize};
 use std::fmt::Formatter;
 use std::str::FromStr;
-#[derive(Debug, Serialize, Deserialize, Clone)]
-#[derive(Default)]
+#[derive(Debug, Serialize, Deserialize, Clone, Default)]
 pub enum Version {
   #[default]
   None,
@@ -16,8 +15,6 @@ pub enum Version {
   V3_1,
   // todo V4
 }
-
-
 
 impl FromStr for Version {
   type Err = CVSSError;

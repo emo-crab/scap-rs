@@ -3,8 +3,7 @@ use crate::error::{CPEError, Result};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::{fmt, str::FromStr};
 
-#[derive(Debug, Clone, PartialEq, Eq)]
-#[derive(Default)]
+#[derive(Debug, Clone, PartialEq, Eq, Default)]
 pub enum Part {
   // any
   #[default]
@@ -45,8 +44,6 @@ impl<'de> Deserialize<'de> for Part {
     })
   }
 }
-
-
 
 impl From<Part> for char {
   fn from(val: Part) -> Self {

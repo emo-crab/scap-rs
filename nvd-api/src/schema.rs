@@ -81,10 +81,4 @@ diesel::joinable!(cve_product -> cves (cve_id));
 diesel::joinable!(cve_product -> products (product_id));
 diesel::joinable!(products -> vendors (vendor_id));
 
-diesel::allow_tables_to_appear_in_same_query!(
-    cve_product,
-    cves,
-    cwes,
-    products,
-    vendors,
-);
+diesel::allow_tables_to_appear_in_same_query!(cve_product, cves, cwes, products, vendors,);
