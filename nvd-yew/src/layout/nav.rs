@@ -19,13 +19,13 @@ impl Component for Nav {
       <header class="mdl-layout__header">
         <div class="mdl-layout__header-row">
           <span class="mdl-layout-title">{"Title"}</span>
-          <div class="mdl-layout-spacer"></div>
           <nav class="mdl-navigation">
-            <a class="mdl-navigation__link" href="">{"Link"}</a>
-            <a class="mdl-navigation__link" href="">{"Link"}</a>
-            <a class="mdl-navigation__link" href="">{"Link"}</a>
-            <a class="mdl-navigation__link" href="">{"Link"}</a>
+            <a class="mdl-navigation__link" href="">{"CVE"}</a>
+            <a class="mdl-navigation__link" href="">{"Vendor"}</a>
+            <a class="mdl-navigation__link" href="">{"Product"}</a>
+            <a class="mdl-navigation__link" href="">{"About"}</a>
           </nav>
+          <div class="mdl-layout-spacer"></div>
         </div>
       </header>
       <div class="mdl-layout__drawer">
