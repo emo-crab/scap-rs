@@ -1,7 +1,7 @@
 mod layout;
 mod routes;
 mod services;
-use routes::{switch, Route};
+use routes::Route;
 use layout::nav::Nav;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -11,7 +11,7 @@ pub fn app() -> Html {
   <>
       <BrowserRouter>
           <Nav />
-          <Switch<Route> render={switch} />
+          <Switch<Route> render={Route::switch} />
       </BrowserRouter>
   </>
   }

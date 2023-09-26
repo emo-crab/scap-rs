@@ -11,17 +11,7 @@ impl Component for Home {
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
-        <div class="tile is-ancestor is-vertical">
-        </div>
-    }
-  }
-}
-impl Home {
-  fn view_info_tiles(&self) -> Html {
-    html! {
-        <>
 
-        </>
     }
   }
 }
