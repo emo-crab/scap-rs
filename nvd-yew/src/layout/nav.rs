@@ -11,10 +11,14 @@ pub enum Msg {
 }
 
 impl Nav {
-  fn is_active(ctx: &Context<Self>)->String{
-    let route:Route = ctx.link().route().unwrap();
+  fn is_active(ctx: &Context<Self>) -> String {
+    let route: Route = ctx.link().route().unwrap();
     console::log_1(&wasm_bindgen::JsValue::from(route.to_path()));
-    return  if matches!(route, Route::CveList) { "active".to_string() }else{String::new()}
+    return if matches!(route, Route::CveList) {
+      "active".to_string()
+    } else {
+      String::new()
+    };
   }
 }
 impl Component for Nav {
@@ -41,14 +45,13 @@ impl Component for Nav {
 
     html! {
     <header>
-      // <!-- Fixed navbar -->
       <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
         <div class="container-fluid">
-          <button class="navbar-toggler" type="button" onclick={ctx.link().callback(|_|Msg::ToggleNavbar)} data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <button class="navbar-toggler" type="button" onclick={ctx.link().callback(|_|Msg::ToggleNavbar)} data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav">
             <span class="navbar-toggler-icon"></span>
           </button>
           <Link<Route> classes={classes!("navbar-brand")} to={Route::Home}>
-          <img src="https://avatars.githubusercontent.com/u/30642514?v=4" height="30px" style="margin-bottom: 4px;"/>
+          <img src="https://avatars.githubusercontent.com/u/30642514?v=4" class="img-circle" height="30px" style="margin-bottom: 4px;"/>
           <span style="font-size: 24px; font-weight: 500; padding-left: 5px;">
           {"nvd-rs 演示"}
           </span>
@@ -61,13 +64,20 @@ impl Component for Nav {
               <li class="nav-item">
                 <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>
               </li>
-              <li class="nav-item">
-                <Link<Route> classes={classes!("nav-link", "active")} to={Route::CveList}>{"CVE"}</Link<Route>>
-              </li>
             </ul>
+            <div class="nav-item d-none d-md-flex me-3">
+              <div class="btn-list">
+                <a href="https://github.com/emo-cat/nvd-rs" class="btn btn-outline-secondary" target="_blank" rel="noreferrer">
+                  <i class="bi-github" style="color: #f8f9fa;">{"Source code"}</i>
+                </a>
+                <a href="https://github.com/sponsors/codecalm" class="btn btn-outline-light" target="_blank" rel="noreferrer">
+                  <i class="bi bi-suit-heart" style="color: red;"></i>{"Sponsor"}
+                </a>
+              </div>
+            </div>
             <form class="d-flex">
               <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-              <button class="btn btn-outline-success" type="submit">{"Search"}</button>
+              <button class="btn btn-outline-light" type="submit">{"Search"}</button>
             </form>
           </div>
         </div>

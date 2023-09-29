@@ -1,8 +1,10 @@
+mod cve_list;
 mod home;
 mod page_not_found;
 
 use home::Home;
 use page_not_found::PageNotFound;
+use cve_list::CVEList;
 use yew::prelude::*;
 use yew_router::prelude::*;
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
@@ -26,6 +28,9 @@ impl Route {
     match routes {
       Route::Home => {
         html! { <Home /> }
+      }
+      Route::CveList => {
+        html! {<CVEList/>}
       }
       Route::NotFound => {
         html! { <PageNotFound /> }
