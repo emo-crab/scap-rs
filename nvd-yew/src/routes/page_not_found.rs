@@ -1,5 +1,6 @@
+use crate::routes::Route;
 use yew::prelude::*;
-
+use yew_router::prelude::*;
 pub struct PageNotFound;
 
 impl Component for PageNotFound {
@@ -12,18 +13,23 @@ impl Component for PageNotFound {
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
-        <section class="hero is-danger is-bold is-large">
-            <div class="hero-body">
-                <div class="container">
-                    <h1 class="title">
-                        { "Page not found" }
-                    </h1>
-                    <h2 class="subtitle">
-                        { "Page page does not seem to exist" }
-                    </h2>
-                </div>
-            </div>
-        </section>
+    <div class="empty">
+      <div class="empty-img">
+      <i class="bi bi-4-square" style="font-size: 8rem;"></i>
+      <i class="bi bi-0-square" style="font-size: 8rem;"></i>
+      <i class="bi bi-4-square" style="font-size: 8rem;"></i>
+      </div>
+      <p class="empty-title">{"No page found"}</p>
+      <p class="empty-subtitle text-muted">
+        {"Try adjusting your search or filter to find what you're looking for."}
+      </p>
+      <div class="empty-action">
+      <Link<Route> classes={classes!("btn","btn-primary")} to={Route::Home}>
+         <i class="bi bi-arrow-return-right"></i>
+          {"Go back to the homepage"}
+      </Link<Route>>
+      </div>
+    </div>
     }
   }
 }

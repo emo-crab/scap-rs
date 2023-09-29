@@ -14,25 +14,25 @@ impl Nav {
   fn is_active(ctx: &Context<Self>) -> String {
     let route: Route = ctx.link().route().unwrap();
     console::log_1(&wasm_bindgen::JsValue::from(route.to_path()));
-    return if matches!(route, Route::CveList) {
+    if matches!(route, Route::CveList) {
       "active".to_string()
     } else {
       String::new()
-    };
+    }
   }
 }
 impl Component for Nav {
   type Message = Msg;
   type Properties = ();
 
-  fn create(ctx: &Context<Self>) -> Self {
+  fn create(_ctx: &Context<Self>) -> Self {
     Self {
       navbar_active: true,
       expanded: true,
     }
   }
 
-  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+  fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
       Msg::ToggleNavbar => {
         self.navbar_active = !self.navbar_active;
@@ -41,7 +41,7 @@ impl Component for Nav {
     }
   }
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let Self { navbar_active, .. } = *self;
+    let Self {  .. } = *self;
 
     html! {
     <header>
@@ -67,18 +67,14 @@ impl Component for Nav {
             </ul>
             <div class="nav-item d-none d-md-flex me-3">
               <div class="btn-list">
+                <a href="https://blog.kali-team.cn/donate" class="btn btn-outline-light" target="_blank" rel="noreferrer">
+                  <i class="bi bi-suit-heart" style="color: red;"></i>{"Sponsor"}
+                </a>
                 <a href="https://github.com/emo-cat/nvd-rs" class="btn btn-outline-secondary" target="_blank" rel="noreferrer">
                   <i class="bi-github" style="color: #f8f9fa;">{"Source code"}</i>
                 </a>
-                <a href="https://github.com/sponsors/codecalm" class="btn btn-outline-light" target="_blank" rel="noreferrer">
-                  <i class="bi bi-suit-heart" style="color: red;"></i>{"Sponsor"}
-                </a>
               </div>
             </div>
-            <form class="d-flex">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-              <button class="btn btn-outline-light" type="submit">{"Search"}</button>
-            </form>
           </div>
         </div>
       </nav>

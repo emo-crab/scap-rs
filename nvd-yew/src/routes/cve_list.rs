@@ -1,4 +1,4 @@
-use crate::component::CVERow;
+use crate::component::{CVEPagination, CVERow};
 use yew::prelude::*;
 pub struct CVEList;
 impl Component for CVEList {
@@ -48,35 +48,14 @@ impl Component for CVEList {
               </tr>
             </thead>
             <tbody>
-            { items.into_iter().map(|name| {
+            { items.into_iter().map(|_name| {
               html!{<>{html!( <CVERow/>) }</>}
                 }).collect::<Html>()
               }
             </tbody>
           </table>
         </div>
-        <div class="card-footer d-flex align-items-center">
-          <p class="m-0 text-muted">{"Showing"} <span>{"1"}</span> {"to"} <span>{"8"}</span> {"of"} <span>{"16"}</span> {"entries"}</p>
-          <ul class="pagination m-0 ms-auto">
-            <li class="page-item disabled">
-              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                <i class="bi bi-chevron-left"></i>
-                {"prev"}
-              </a>
-            </li>
-            <li class="page-item"><a class="page-link" href="#">{"1"}</a></li>
-            <li class="page-item active"><a class="page-link" href="#">{"2"}</a></li>
-            <li class="page-item"><a class="page-link" href="#">{"3"}</a></li>
-            <li class="page-item"><a class="page-link" href="#">{"4"}</a></li>
-            <li class="page-item"><a class="page-link" href="#">{"5"}</a></li>
-            <li class="page-item">
-              <a class="page-link" href="#">
-                {"next"}
-                <i class="bi bi-chevron-right"></i>
-              </a>
-            </li>
-          </ul>
-        </div>
+      <CVEPagination />
       </div>
     }
   }
