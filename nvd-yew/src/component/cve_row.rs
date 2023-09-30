@@ -1,5 +1,6 @@
+use crate::routes::Route;
 use yew::prelude::*;
-
+use yew_router::prelude::*;
 pub struct CVERow;
 impl Component for CVERow {
   type Message = ();
@@ -13,7 +14,12 @@ impl Component for CVERow {
     html! {
     <>
         <tr>
-          <td><a href="/cve/CVE-2023-5077" class="text-reset" tabindex="-1" target="_blank">{"CVE-2023-5077"}</a></td>
+          <td><a href="/cve/CVE-2023-5077" class="text-reset" tabindex="-1" target="_blank"></a>
+          <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{"CVE-2023-5077".to_string()}}}>
+             <i class="bi bi-arrow-up-left"></i>
+              {"CVE-2023-5077"}
+          </Link<Route>>
+          </td>
           <td>{"Design Works"}</td>
           <td>
             <span class="flag flag-country-us"></span>
