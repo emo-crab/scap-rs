@@ -2,10 +2,12 @@ mod cve;
 mod cve_list;
 mod home;
 mod page_not_found;
+mod cvss;
 
 use cve::CVELDetails;
 use cve_list::CVEList;
 use home::Home;
+use cvss::CVSS;
 use page_not_found::PageNotFound;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -17,6 +19,8 @@ pub enum Route {
   CveList,
   #[at("/")]
   Home,
+  #[at("/cvss")]
+  CVSS,
   #[not_found]
   #[at("/404")]
   NotFound,
@@ -36,6 +40,9 @@ impl Route {
       }
       Route::Cve { id } => {
         html! {<CVELDetails id={id}/ >}
+      }
+      Route::CVSS => {
+        html! { <CVSS /> }
       }
       Route::NotFound => {
         html! { <PageNotFound /> }
