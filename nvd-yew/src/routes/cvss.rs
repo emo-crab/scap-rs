@@ -24,7 +24,7 @@ impl Component for CVSS {
       <div class="card-body">
         <div class="tab-content">
           <div class="tab-pane show active" id="tabs-cvss3">
-            <CVSS3/>
+            <CVSS3 vector={"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H".to_string()}/>
           </div>
           <div class="tab-pane" id="tabs-cvss2">
             <div>{"Fringilla egestas nunc quis tellus diam rhoncus ultricies tristique enim at diam, sem nunc amet, pellentesque id egestas velit sed"}</div>

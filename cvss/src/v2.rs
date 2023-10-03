@@ -35,6 +35,7 @@ use crate::v2::impact_metrics::{
 };
 use crate::version::Version;
 use serde::{Deserialize, Serialize};
+use crate::severity::SeverityTypeV2;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all(deserialize = "camelCase"))]
@@ -137,4 +138,26 @@ impl CVSS {
   fn round_to_1_decimal(&self, score: f32) -> f32 {
     (score * 10.0).ceil() / 10.0
   }
+}
+
+/// cvss v2
+///
+/// The CVSSv2 <https://www.first.org/cvss/v2/guide> scoring data, split up into Base Metrics Group (BM), Temporal Metrics Group (TM) and Environmental Metrics Group (EM).
+///
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
+pub struct ImpactMetricV2 {
+  pub cvss_v2: CVSS,
+  // 漏洞的可利用评分
+  pub exploitability_score: f32,
+  // 评分
+  pub impact_score: f32,
+  // 评级
+  pub severity: SeverityTypeV2,
+  pub ac_insuf_info: Option<bool>,
+  pub obtain_all_privilege: bool,
+  pub obtain_user_privilege: bool,
+  pub obtain_other_privilege: bool,
+  // 用户交互
+  pub user_interaction_required: Option<bool>,
 }

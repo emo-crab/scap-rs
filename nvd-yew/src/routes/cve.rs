@@ -1,4 +1,4 @@
-use crate::component::{CVEPagination, CVERow};
+
 use yew::prelude::*;
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
 pub struct Props {
@@ -14,7 +14,7 @@ impl Component for CVELDetails {
   }
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
-    let items = (1..=10).collect::<Vec<_>>();
+    let _items = (1..=10).collect::<Vec<_>>();
     html! {
 <div class="px-lg-5 px-3 py-lg-3 pt-4 bg-white">
 <section class="content-header">

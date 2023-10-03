@@ -311,6 +311,38 @@ impl CVSSBuilder {
   }
 }
 
+/// cvss v3
+///
+/// The CVSSv3 <https://www.first.org/cvss/specification-document> scoring data.
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
+pub struct ImpactMetricV3 {
+  pub cvss_v3: CVSS,
+  /// 漏洞的可利用 评分
+  pub exploitability_score: f32,
+  /// 影响评分
+  pub impact_score: f32,
+}
+
+impl FromStr for ImpactMetricV3 {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    match CVSS::from_str(s) {
+      Ok(c) => {
+        let exploitability_score = c.exploitability_score();
+        let impact_score = c.impact_score();
+        Ok(Self {
+          cvss_v3: c,
+          exploitability_score,
+          impact_score,
+        })
+      }
+      Err(err) => Err(err),
+    }
+  }
+}
+
 #[cfg(test)]
 mod tests {
   use crate::v3::roundup;
