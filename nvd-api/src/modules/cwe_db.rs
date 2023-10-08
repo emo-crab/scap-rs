@@ -1,5 +1,5 @@
 use crate::error::{DBError, DBResult};
-use crate::models::Cwe;
+use crate::modules::Cwe;
 use crate::schema::cwes;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};

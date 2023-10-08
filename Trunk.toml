@@ -2,5 +2,5 @@
 target = "nvd-yew/index.html"
 dist = "nvd-api/dist"
 
-#[[proxy]]
-#backend = "http://[::1]:8081/api/"
+[[proxy]]
+backend = "http://127.0.0.1:8888/api/"

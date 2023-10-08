@@ -19,7 +19,7 @@ async fn main() -> std::io::Result<()> {
       .app_data(web::Data::new(connection_pool.clone()))
       .service(web::scope("/api").configure(api_route))
   })
-  .bind(("127.0.0.1", 8080))?
+  .bind(("127.0.0.1", 8888))?
   .run()
   .await
 }

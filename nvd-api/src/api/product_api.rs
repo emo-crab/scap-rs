@@ -1,5 +1,5 @@
-use crate::models::product_db::QueryProduct;
-use crate::models::Product;
+use crate::modules::product_db::QueryProduct;
+use crate::modules::Product;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpResponse};
 use std::ops::DerefMut;

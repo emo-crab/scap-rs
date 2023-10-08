@@ -1,8 +1,8 @@
 use cwe::weakness_catalog::WeaknessCatalog;
 use diesel::mysql::MysqlConnection;
 use helper::init_db_pool;
-use nvd_api::models::cwe_db::CreateCwe;
-use nvd_api::models::Cwe;
+use nvd_api::modules::cwe_db::CreateCwe;
+use nvd_api::modules::Cwe;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;

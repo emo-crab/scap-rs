@@ -1,6 +1,6 @@
 pub mod api;
 pub mod error;
-pub mod models;
+pub mod modules;
 pub mod schema;
 
 use crate::error::NVDApiError;

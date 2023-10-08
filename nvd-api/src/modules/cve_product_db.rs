@@ -1,6 +1,6 @@
 use crate::error::{DBError, DBResult};
-use crate::models::product_db::{QueryProductById, QueryProductByVendorName};
-use crate::models::{Cve, CveProduct, Product, Vendor};
+use crate::modules::product_db::{QueryProductById, QueryProductByVendorName};
+use crate::modules::{Cve, CveProduct, Product, Vendor};
 use crate::schema::{cve_product, cves, products};
 use crate::DB;
 use diesel::prelude::*;

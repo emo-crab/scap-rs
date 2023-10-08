@@ -1,5 +1,5 @@
 use crate::error::{DBError, DBResult};
-use crate::models::{Product, Vendor};
+use crate::modules::{Product, Vendor};
 use crate::schema::{products, vendors};
 use crate::DB;
 use diesel::prelude::*;

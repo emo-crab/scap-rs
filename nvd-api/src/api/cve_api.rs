@@ -1,5 +1,5 @@
-use crate::models::cve_db::QueryCve;
-use crate::models::Cve;
+use crate::modules::cve_db::QueryCve;
+use crate::modules::Cve;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, Error, HttpResponse};
 use std::ops::DerefMut;

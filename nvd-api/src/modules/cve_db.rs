@@ -1,6 +1,6 @@
 use crate::error::{DBError, DBResult};
-use crate::models::cve_product_db::ProductByName;
-use crate::models::{Cve, CveProduct};
+use crate::modules::cve_product_db::ProductByName;
+use crate::modules::{Cve, CveProduct};
 use crate::schema::cves;
 use crate::DB;
 use chrono::NaiveDateTime;

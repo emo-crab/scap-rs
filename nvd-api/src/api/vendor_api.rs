@@ -1,5 +1,5 @@
-use crate::models::vendor_db::QueryVendor;
-use crate::models::Vendor;
+use crate::modules::vendor_db::QueryVendor;
+use crate::modules::Vendor;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, Error, HttpResponse};
 use std::ops::DerefMut;

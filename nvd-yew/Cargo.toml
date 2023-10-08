@@ -11,3 +11,7 @@ yew-router = "0.17.0"
 web-sys = { version = "0.3.63", features = ["console"] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
 cvss = { path = "../cvss" }
+js-sys = "0.3.64"
+reqwest = { version = "0.11", features = ["json", "cookies"] }
+serde = "1"
+thiserror = "1.0"

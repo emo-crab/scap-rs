@@ -2,6 +2,8 @@ mod layout;
 mod routes;
 mod services;
 mod component;
+mod error;
+mod modules;
 
 use layout::{Footer, Main, Nav};
 use yew::prelude::*;

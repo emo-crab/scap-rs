@@ -1,13 +1,13 @@
 use actix_web::http::StatusCode;
 use actix_web::HttpResponse;
 use diesel::result::{Error as DieselError, Error};
-use thiserror::Error;
+use thiserror::Error as ThisError;
 // API错误处理
 pub type ApiResult<T> = Result<T, NVDApiError>;
 // 数据库错误处理
 pub type DBResult<T> = Result<T, DBError>;
 // API错误枚举
-#[derive(Error, Debug)]
+#[derive(ThisError, Debug)]
 pub enum NVDApiError {
   #[error("Not Found `{value}`")]
   NotFound { value: String },
