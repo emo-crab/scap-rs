@@ -4,6 +4,7 @@ mod services;
 mod component;
 mod error;
 mod modules;
+mod debug;
 
 use layout::{Footer, Main, Nav};
 use yew::prelude::*;

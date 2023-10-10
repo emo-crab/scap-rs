@@ -1,3 +1,9 @@
-mod cve;
+pub mod cve;
 mod request;
-pub use request::{request_delete, request_get, request_post, request_put};
+use crate::error::Error;
+use request::request_get;
+
+pub enum FetchState<T> {
+  Success(T),
+  Failed(Error),
+}

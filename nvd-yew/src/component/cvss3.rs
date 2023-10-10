@@ -20,7 +20,7 @@ impl Component for CVSS3 {
     let cvss_v3 = v3.cvss_v3.clone();
     let score = v3.cvss_v3.base_score;
     let version = v3.cvss_v3.version;
-    let base_severity = v3.cvss_v3.base_severity;
+    let base_severity = v3.cvss_v3.base_severity.to_string();
     let exploitability_score = v3.exploitability_score;
     let impact_score = v3.impact_score;
     html! {

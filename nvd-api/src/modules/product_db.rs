@@ -122,11 +122,13 @@ impl Product {
 
   pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> DBResult<ProductCount> {
     let total = args.total(conn)?;
+    let offset = args.offset.unwrap_or(0);
+    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
     let result = {
       let query = args.query(conn, products::table.into_boxed())?;
       query
-        .offset(args.offset.unwrap_or(0))
-        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
+        .offset(offset)
+        .limit(limit)
         .order(products::name.asc())
         .load::<Product>(conn)?
     };

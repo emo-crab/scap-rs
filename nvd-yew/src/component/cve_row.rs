@@ -1,23 +1,27 @@
+use crate::modules::cve::Cve;
 use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
+
 pub struct CVERow;
 impl Component for CVERow {
   type Message = ();
-  type Properties = ();
+  type Properties = Cve;
 
   fn create(_ctx: &Context<Self>) -> Self {
     Self
   }
 
-  fn view(&self, _ctx: &Context<Self>) -> Html {
+  fn view(&self, ctx: &Context<Self>) -> Html {
+    let c = ctx.props().clone();
+    let cve_id = c.id;
     html! {
     <>
         <tr>
-          <td><a href="/cve/CVE-2023-5077" class="text-reset" tabindex="-1" target="_blank"></a>
-          <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{"CVE-2023-5077".to_string()}}}>
+          <td><a href={format!("/cve/{}",cve_id)} class="text-reset" tabindex="-1" target="_blank"></a>
+          <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{cve_id.clone()}}}>
              <i class="bi bi-arrow-up-left"></i>
-              {"CVE-2023-5077"}
+              {cve_id.clone()}
           </Link<Route>>
           </td>
           <td>{"Design Works"}</td>

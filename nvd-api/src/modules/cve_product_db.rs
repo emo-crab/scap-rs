@@ -162,11 +162,14 @@ impl CveProduct {
     args: &QueryCveProduct,
   ) -> DBResult<CveProductInfoCount> {
     let total = args.total(conn)?;
+    // 限制最大分页为20,防止拒绝服务攻击
+    let offset = args.offset.unwrap_or(0);
+    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
     let result = {
       let cve_ids_query = args.query(conn, cve_product::table.into_boxed())?;
       let cve_ids = cve_ids_query
-        .offset(args.offset.unwrap_or(0))
-        .limit(std::cmp::min(args.offset.to_owned().unwrap_or(10), 10))
+        .offset(offset)
+        .limit(limit)
         .select(cve_product::cve_id)
         .load::<String>(conn)?;
       // 联表查要把表写在前面，但是这样就用不了query了，所以先查处cve编号列表再eq_any过滤

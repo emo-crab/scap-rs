@@ -5,9 +5,9 @@ mod page_not_found;
 mod cvss;
 
 use cve::CVELDetails;
-use cve_list::CVEList;
 use home::Home;
 use cvss::CVSS;
+use crate::modules::cve::CveInfoList;
 use page_not_found::PageNotFound;
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -36,7 +36,7 @@ impl Route {
         html! { <Home /> }
       }
       Route::CveList => {
-        html! {<CVEList/>}
+        html! {<CveInfoList/>}
       }
       Route::Cve { id } => {
         html! {<CVELDetails id={id}/ >}

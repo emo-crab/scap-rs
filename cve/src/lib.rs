@@ -83,13 +83,13 @@ pub struct CVE {
 }
 /// These URLs are supplemental information relevant to the vulnerability, which include details that may not be present in the CVE Description. References are given resource tags such as third-party advisory, vendor advisory, technical paper, press/media, VDB entries, etc. These tags can help users quickly categorize the type of information each reference contains. References for a CVE are provided through the CVE list, the NVD does not have direct control over them. If you have concerns with existing CVE references or find other publicly available information that would be useful, then you can submit a request using the form at <https://cveform.mitre.org/> for the CVE Assignment Team to review.
 ///
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct References {
   pub reference_data: Vec<Reference>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Reference {
   pub url: String,
@@ -98,19 +98,19 @@ pub struct Reference {
   pub tags: Vec<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Description {
   pub description_data: Vec<DescriptionData>,
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct DescriptionData {
   pub lang: String,
   pub value: String,
 }
 /// This is metadata about the CVE ID such as the CVE ID, who requested it, who assigned it, when it was requested, when it was assigned, the current state (PUBLIC, REJECT, etc.) and so on.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct Meta {
   /// CVE-YEAR-NNNNNNN - the CVE ID in the format listed in <http://cve.mitre.org/cve/identifiers/syntaxchange.html#new>
@@ -123,18 +123,18 @@ pub struct Meta {
 /// This is problem type information (e.g. CWE identifier).
 ///
 /// Must contain: At least one entry, can be text, OWASP, CWE, please note that while only one is required you can use more than one (or indeed all three) as long as they are correct.
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemType {
-  #[serde(rename(deserialize = "problemtype_data"))]
+  #[serde(rename = "problemtype_data")]
   problem_type_data: Vec<ProblemTypeDataItem>,
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemTypeDataItem {
   pub description: Vec<ProblemTypeDescription>,
 }
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemTypeDescription {
   pub lang: String,

@@ -1,16 +1,45 @@
 use crate::component::{CVEPagination, CVERow};
+use crate::console_log;
+use crate::modules::cve::CveInfoList;
+use crate::services::cve::cve_list;
+use crate::services::FetchState;
 use yew::prelude::*;
-pub struct CVEList;
-impl Component for CVEList {
-  type Message = ();
+
+pub enum Msg {
+  SetFetchState(FetchState<CveInfoList>),
+  Get,
+  GetError,
+}
+impl Component for CveInfoList {
+  type Message = Msg;
   type Properties = ();
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self
+  fn create(ctx: &Context<Self>) -> Self {
+    CveInfoList::default()
   }
-
-  fn view(&self, _ctx: &Context<Self>) -> Html {
-    let items = (1..=10).collect::<Vec<_>>();
+  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    match msg {
+      Msg::SetFetchState(FetchState::Success(cil)) => {
+        self.total = cil.total;
+        self.offset = cil.offset;
+        self.limit = cil.limit;
+        self.result = cil.result;
+        return true;
+      }
+      Msg::Get => {
+        ctx.link().send_future(async {
+          match cve_list().await {
+            Ok(md) => Msg::SetFetchState(FetchState::Success(md)),
+            Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
+          }
+        });
+      }
+      Msg::GetError => {}
+      _ => {}
+    }
+    false
+  }
+  fn view(&self, ctx: &Context<Self>) -> Html {
     html! {
       <div class="card">
         <div class="card-header">
@@ -48,8 +77,8 @@ impl Component for CVEList {
               </tr>
             </thead>
             <tbody>
-            { items.into_iter().map(|_name| {
-              html!{<>{html!( <CVERow/>) }</>}
+            { self.result.iter().map(|item| {
+              html!{<>{html!( <CVERow ..item.clone()/>) }</>}
                 }).collect::<Html>()
               }
             </tbody>
@@ -57,6 +86,11 @@ impl Component for CVEList {
         </div>
       <CVEPagination />
       </div>
+    }
+  }
+  fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    if first_render {
+      ctx.link().send_message(Msg::Get);
     }
   }
 }

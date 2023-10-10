@@ -1,5 +1,6 @@
+use crate::error::Error;
 use super::request_get;
-
-// pub async fn current() -> Result<MyUser, Error> {
-//     request_get::<MyUser>("/whoami".to_string()).await
-// }
+use crate::modules::cve::CveInfoList;
+pub async fn cve_list() -> Result<CveInfoList, Error> {
+    request_get::<CveInfoList>("/cve".to_string()).await
+}

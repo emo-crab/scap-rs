@@ -15,7 +15,7 @@ pub enum NVDApiError {
   InternalServerError { value: String },
 }
 // 数据库错误枚举
-#[derive(Error, Debug)]
+#[derive(ThisError, Debug)]
 pub enum DBError {
   #[error("DieselError `{source}`")]
   DieselError {

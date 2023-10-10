@@ -1,5 +1,4 @@
 use crate::routes::Route;
-use web_sys::console;
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub struct Nav {
@@ -10,17 +9,6 @@ pub enum Msg {
   ToggleNavbar,
 }
 
-impl Nav {
-  fn is_active(ctx: &Context<Self>) -> String {
-    let route: Route = ctx.link().route().unwrap();
-    console::log_1(&wasm_bindgen::JsValue::from(route.to_path()));
-    if matches!(route, Route::CveList) {
-      "active".to_string()
-    } else {
-      String::new()
-    }
-  }
-}
 impl Component for Nav {
   type Message = Msg;
   type Properties = ();
@@ -59,7 +47,7 @@ impl Component for Nav {
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
               <li class="nav-item">
-                <Link<Route> classes={classes!("nav-link",Nav::is_active(ctx))} to={Route::CveList}>{"Vulnerabilities"}</Link<Route>>
+                <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Vulnerabilities"}</Link<Route>>
               </li>
               <li class="nav-item">
                 <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>
