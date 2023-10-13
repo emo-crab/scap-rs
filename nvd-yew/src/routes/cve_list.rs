@@ -42,9 +42,6 @@ impl Component for CveInfoList {
   fn view(&self, ctx: &Context<Self>) -> Html {
     html! {
       <div class="card">
-        <div class="card-header">
-          <h3 class="card-title">{"Vulnerabilities (CVE)"}</h3>
-        </div>
         <div class="card-body border-bottom py-2">
           <div class="d-flex">
             <div class="text-muted">
@@ -63,15 +60,15 @@ impl Component for CveInfoList {
           </div>
         </div>
         <div class="table-responsive">
-          <table class="table card-table table-vcenter text-nowrap datatable">
+          <table class="table card-table table-vcenter datatable table-striped table-sm">
             <thead>
               <tr>
                 <th class="w-1">{"CVE编号"}</th>
                 <th>{"漏洞名称"}</th>
                 <th>{"漏洞类型"}</th>
-                <th>{"CVSS评分"}</th>
+                <th>{"CVSSv2评分"}</th>
+                <th>{"CVSSv3评分"}</th>
                 <th>{"披露时间"}</th>
-                <th>{"Status"}</th>
                 <th>{"Price"}</th>
                 <th></th>
               </tr>

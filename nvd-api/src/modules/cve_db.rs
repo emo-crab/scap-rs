@@ -159,7 +159,7 @@ impl Cve {
     let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;
-      query.offset(offset).limit(limit).load::<Cve>(conn)?
+      query.order(cves::id.desc()).offset(offset).limit(limit).load::<Cve>(conn)?
     };
     Ok(CveInfoCount {
       result,

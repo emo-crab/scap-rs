@@ -39,8 +39,8 @@ impl Component for Nav {
             <span class="navbar-toggler-icon"></span>
           </button>
           <Link<Route> classes={classes!("navbar-brand")} to={Route::Home}>
-          <img src="https://avatars.githubusercontent.com/u/30642514?v=4" class="img-circle" height="30px" style="margin-bottom: 4px;"/>
-          <span style="font-size: 24px; font-weight: 500; padding-left: 5px;">
+          <img src="https://avatars.githubusercontent.com/u/30642514?v=4" class="img-circle" height="24px" style="margin-bottom: 4px;"/>
+          <span>
           {"nvd-rs 演示"}
           </span>
           </Link<Route>>
