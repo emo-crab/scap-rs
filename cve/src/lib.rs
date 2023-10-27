@@ -127,7 +127,7 @@ pub struct Meta {
 #[serde(deny_unknown_fields)]
 pub struct ProblemType {
   #[serde(rename = "problemtype_data")]
-  problem_type_data: Vec<ProblemTypeDataItem>,
+  pub problem_type_data: Vec<ProblemTypeDataItem>,
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]

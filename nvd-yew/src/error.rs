@@ -28,9 +28,6 @@ pub enum Error {
     //504
     #[error("Gateway Timeout")]
     GatewayTimeout,
-    //Other
-    #[error("Other Error")]
-    Other,
     //deserialize error (unable to parse recieved data)
     #[error("Deserialize Error")]
     DeserializeError,

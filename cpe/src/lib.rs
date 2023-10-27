@@ -30,7 +30,7 @@ use part::Part;
 // https://scap.nist.gov/schema/cpe/2.3/cpe-naming_2.3.xsd
 // cpe:2.3:part:vendor:product:version:update:edition:language:sw_edition:target_sw: target_hw:other
 // CPE属性
-#[derive(Deserialize, Serialize, Debug, Clone, PartialEq)]
+#[derive(Deserialize, Serialize, Debug, Clone, PartialEq, Eq)]
 #[serde(deny_unknown_fields)]
 pub struct CPEName {
   // 分类：a，o，h

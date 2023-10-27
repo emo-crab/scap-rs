@@ -1,13 +1,13 @@
 mod cve;
 mod cve_list;
+mod cvss;
 mod home;
 mod page_not_found;
-mod cvss;
 
+use crate::modules::cve::{CveInfoList, QueryCve};
 use cve::CVELDetails;
-use home::Home;
 use cvss::CVSS;
-use crate::modules::cve::CveInfoList;
+use home::Home;
 use page_not_found::PageNotFound;
 use yew::prelude::*;
 use yew_router::prelude::*;

@@ -1,7 +1,8 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
-use cve::impact::{ImpactMetricV2, ImpactMetricV3};
 use cve::{CVEContainer, CVEItem};
+use cvss::v2::ImpactMetricV2;
+use cvss::v3::ImpactMetricV3;
 use diesel::mysql::MysqlConnection;
 use helper::init_db_pool;
 use nvd_api::error::DBResult;
@@ -14,6 +15,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::str::FromStr;
+
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 fn v3(v3: &Option<ImpactMetricV3>) -> (String, f32) {
@@ -163,17 +165,22 @@ pub fn create_product(
 }
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2002..2024 {
-    let p = format!("examples/nvdcve/nvdcve-1.1-{y}.json.gz");
+  for y in 2023..2024 {
+    let p = format!("helper/examples/nvdcve/nvdcve-1.1-{y}.json.gz");
     println!("{p}");
     let gz_open_file = File::open(p).unwrap();
     let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
     let file = BufReader::new(gz_decoder);
     let c: CVEContainer = serde_json::from_reader(file).unwrap();
+    let mut count = 0;
     for w in c.CVE_Items {
+      count = count + 1;
       import_to_db(connection_pool.get().unwrap().deref_mut(), w).unwrap_or_default();
+      if count == 100 {
+        std::process::exit(0);
+      }
       // break;
     }
-    // break;
+    break;
   }
 }

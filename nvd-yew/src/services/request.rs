@@ -1,17 +1,20 @@
+use crate::console_log;
 use crate::error::Error;
 use serde::{de::DeserializeOwned, Serialize};
 
-pub async fn request<B, T>(method: reqwest::Method, url: String, body: B) -> Result<T, Error>
+pub async fn request<B, Q, T>(
+  method: reqwest::Method,
+  url: String,
+  query: Q,
+  body: B,
+) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
   B: Serialize + std::fmt::Debug,
+  Q: Serialize + std::fmt::Debug,
 {
   let origin: String = web_sys::window().unwrap().location().origin().unwrap();
-  let url = format!(
-    "{}/api{}",
-    origin,
-    url
-  );
+  let url = format!("{}/api/{}", origin, url);
 
   let allow_body = method == reqwest::Method::POST || method == reqwest::Method::PUT;
   let client: reqwest::Client = reqwest::ClientBuilder::new()
@@ -21,9 +24,9 @@ where
   //fetch_credentials_include is for wasm32-unknown-unknown only
   let mut builder = client
     .request(method, &url)
+    .query(&query)
     .fetch_credentials_include()
     .header("Content-Type", "application/json");
-
   if allow_body {
     builder = builder.json(&body);
   }
@@ -32,11 +35,18 @@ where
   if let Ok(data) = response {
     if data.status().is_success() {
       let data: Result<T, _> = data.json::<T>().await;
-      if let Ok(data) = data {
-        Ok(data)
-      } else {
-        Err(Error::DeserializeError)
+      match data {
+        Ok(d) => Ok(d),
+        Err(err) => {
+          console_log!("{:?}", err);
+          Err(Error::DeserializeError)
+        }
       }
+      // if let Ok(data) = data {
+      //   Ok(data)
+      // } else {
+      //   Err(Error::DeserializeError)
+      // }
     } else {
       match data.status().as_u16() {
         401 => Err(Error::Unauthorized),
@@ -55,32 +65,37 @@ where
   }
 }
 
-pub async fn request_get<T>(url: String) -> Result<T, Error>
+pub async fn request_get<Q, T>(url: String, query: Q) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
+  Q: Serialize + std::fmt::Debug,
 {
-  request(reqwest::Method::GET, url, ()).await
+  request(reqwest::Method::GET, url, query, ()).await
 }
 
-pub async fn request_post<B, T>(url: String, body: B) -> Result<T, Error>
+pub async fn request_post<B, Q, T>(url: String, query: Q, body: B) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
+  Q: Serialize + std::fmt::Debug,
   B: Serialize + std::fmt::Debug,
 {
-  request(reqwest::Method::POST, url, body).await
+  request(reqwest::Method::POST, url, query, body).await
 }
 
-pub async fn request_put<B, T>(url: String, body: B) -> Result<T, Error>
+pub async fn request_put<B, Q, T>(url: String, query: Q, body: B) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
+  Q: Serialize + std::fmt::Debug,
   B: Serialize + std::fmt::Debug,
 {
-  request(reqwest::Method::PUT, url, body).await
+  request(reqwest::Method::PUT, url, query, body).await
 }
 
-pub async fn request_delete<T>(url: String) -> Result<T, Error>
+pub async fn request_delete<B, Q, T>(url: String) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
+  Q: Serialize + std::fmt::Debug,
+  B: Serialize + std::fmt::Debug,
 {
-  request(reqwest::Method::DELETE, url, ()).await
+  request(reqwest::Method::DELETE, url, (), ()).await
 }

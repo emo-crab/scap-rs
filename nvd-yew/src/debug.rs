@@ -1,6 +1,3 @@
-/// When debugging your Worker via `wrangler dev`, `wrangler tail`, or from the Workers Dashboard,
-/// anything passed to this macro will be printed to the terminal or written to the console.
-use web_sys;
 #[macro_export]
 macro_rules! console_debug {
     ($($t:tt)*) => {
