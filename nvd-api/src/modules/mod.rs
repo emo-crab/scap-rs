@@ -24,7 +24,6 @@ pub struct CveProduct {
 pub struct Cve {
   pub id: String,
   pub year: i32,
-  pub official: u8,
   pub assigner: String,
   pub references: Value,
   pub description: Value,

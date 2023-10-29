@@ -15,7 +15,6 @@ use serde_json::Value;
 pub struct CreateCve {
   pub id: String,
   pub year: i32,
-  pub official: u8,
   pub assigner: String,
   pub references: Value,
   pub description: Value,
@@ -75,9 +74,6 @@ impl QueryCve {
     }
     if let Some(year) = &self.year {
       query = query.filter(cves::year.eq(year));
-    }
-    if let Some(official) = &self.official {
-      query = query.filter(cves::official.eq(official));
     }
     // 根据供应商和产品查询CVE编号，和字段ID冲突
     if self.vendor.is_some() || self.product.is_some() {

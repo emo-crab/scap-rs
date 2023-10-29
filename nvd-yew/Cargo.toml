@@ -8,7 +8,13 @@ edition = "2021"
 [dependencies]
 yew = { version = "0.21.0", features = ["csr"] }
 yew-router = "0.18.0"
-web-sys = { version = "0.3.63", features = ["console"] }
+web-sys = { version = "0.3.63", features = [
+    "console",
+    "Document",
+    "Element",
+    "Node",
+    "Window",
+    "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
 cvss = { path = "../cvss" }
 cve = { path = "../cve" }

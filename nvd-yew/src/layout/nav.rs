@@ -49,9 +49,9 @@ impl Component for Nav {
               <li class="nav-item">
                 <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Vulnerabilities"}</Link<Route>>
               </li>
-              <li class="nav-item">
-                <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>
-              </li>
+              // <li class="nav-item">
+              //   <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>
+              // </li>
             </ul>
             <div class="nav-item d-none d-md-flex me-3">
               <div class="btn-list">

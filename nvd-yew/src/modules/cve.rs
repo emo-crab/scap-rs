@@ -5,7 +5,6 @@ use yew::prelude::*;
 pub struct Cve {
   pub id: String,
   pub year: i32,
-  pub official: u8,
   pub assigner: String,
   pub references: cve::References,
   pub description: cve::Description,
@@ -37,8 +36,6 @@ pub struct QueryCve {
   pub id: Option<String>,
   // 年份
   pub year: Option<i32>,
-  // 是否为官方数据
-  pub official: Option<u8>,
   // 供应商
   pub vendor: Option<String>,
   // 产品

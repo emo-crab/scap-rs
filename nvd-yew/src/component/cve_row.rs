@@ -47,7 +47,7 @@ impl Component for CVERow {
           </Link<Route>>
           </td>
           <td>
-          {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
+          {html!(<span class="badge rounded-pill bg-secondary">{vendor.len()}</span>)}
           {
             vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(index,value)| {
               html!{
@@ -57,7 +57,7 @@ impl Component for CVERow {
               }
             }).collect::<Html>()
           }
-          {if vendor_product.len()>3{html!(<i>{format!("{} and more",vendor_product.len()-2)}</i>)}else{html!()}}
+          {if vendor.len()>3{html!(<i>{format!("{} and more",vendor.len()-2)}</i>)}else{html!()}}
           </td>
           <td>
           {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}

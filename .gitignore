@@ -13,7 +13,7 @@ Cargo.lock
 *.xml.gz
 *.json.gz
 *.xml.zip
-/examples/nvdcve/data-feeds.html
+/helper/examples/nvdcve/data-feeds.html
 /.env
 /nvd-api/nvd-er.mwb.bak
 /nvd-api/dist/

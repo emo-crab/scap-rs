@@ -1,22 +1,36 @@
 use crate::component::CVERow;
 use crate::console_log;
 use crate::modules::cve::{CveInfoList, QueryCve};
+use crate::routes::Route;
 use crate::services::cve::cve_list;
 use crate::services::FetchState;
+use std::str::FromStr;
+use wasm_bindgen::JsCast;
+use web_sys::{EventTarget, HtmlButtonElement, HtmlElement};
 use yew::prelude::*;
-
+use yew_router::prelude::*;
 pub enum Msg {
   SetFetchState(FetchState<CveInfoList>),
   Query,
   GetError,
   NextPage,
+  PrevPage,
+  ToPage(i64),
+}
+#[derive(Clone, Debug, PartialEq, Eq, Properties)]
+pub struct Props {
+  pub query: QueryCve,
 }
 impl Component for CveInfoList {
   type Message = Msg;
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    CveInfoList::default()
+    let query = ctx.link().location().unwrap().query::<QueryCve>().unwrap();
+    CveInfoList {
+      query,
+      ..CveInfoList::default()
+    }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
@@ -44,8 +58,33 @@ impl Component for CveInfoList {
       }
       Msg::GetError => {}
       Msg::NextPage => {
-        console_log!("{:?}", self.query);
         self.query.offset = Some(self.query.offset.unwrap_or(0) + self.query.limit.unwrap_or(10));
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
+        ctx.link().send_message(Msg::Query);
+      }
+      Msg::PrevPage => {
+        self.query.offset = Some(self.query.offset.unwrap_or(0) - self.query.limit.unwrap_or(10));
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
+        ctx.link().send_message(Msg::Query);
+      }
+      Msg::ToPage(page) => {
+        self.query.offset = Some((page - 1) * self.query.limit.unwrap_or(10));
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
         ctx.link().send_message(Msg::Query);
       }
     }
@@ -109,21 +148,31 @@ impl CveInfoList {
     let limit = self.limit;
     let offset = self.offset;
     let next_page = ctx.link().callback(|_| Msg::NextPage);
+    let prev_page = ctx.link().callback(|_| Msg::PrevPage);
+    let to_page = ctx.link().callback(|e: MouseEvent| {
+      let target: EventTarget = e.target().unwrap();
+      let page: i64 = i64::from_str(&target.clone().unchecked_into::<HtmlButtonElement>().value())
+        .unwrap_or_default();
+      Msg::ToPage(page)
+    });
+    let page_count = total / 10;
+    console_log!("{}", offset / 10);
     html! {
         <div class="card-footer d-flex align-items-center">
           <p class="m-0 text-muted">{"展示"} <span>{offset+1}</span> {"到"} <span>{offset+limit}</span> {"条"} <span>{"总数"}</span>{total} </p>
           <ul class="pagination m-0 ms-auto">
-            // {for }
-            <li class="page-item disabled">
-              <a class="page-link" href="#" tabindex="-1" aria-disabled="true">
-                <i class="bi bi-chevron-left"></i>
+            <li class={classes!(["page-item",if offset == 0 { "disabled" } else { "" }])}>
+              <button class="page-link" onclick={prev_page}>
                 {"prev"}
-              </a>
+                <i class="bi bi-chevron-left"></i>
+              </button>
             </li>
-            <li class="page-item active"><a class="page-link" href="#">{"1"}</a></li>
-            <li class="page-item"><a class="page-link" href="#">{"2"}</a></li>
-            <li class="page-item"><a class="page-link" href="#">{"3"}</a></li>
-            <li class="page-item">
+            {
+              (1..=page_count+1).into_iter().map(move|n|{
+              html!{<li class={classes!(["page-item",if n==(offset/10)+1 { "active" } else { "" }])}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
+            }).collect::<Html>()
+            }
+            <li class={classes!(["page-item",if offset+10>=total { "disabled" } else { "" }])}>
               <button class="page-link" onclick={next_page}>
                 {"next"}
                 <i class="bi bi-chevron-right"></i>

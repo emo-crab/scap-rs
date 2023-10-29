@@ -46,7 +46,6 @@ fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> DBResult
     cvss2_score: v2(&cve_item.impact.base_metric_v2).1,
     assigner: cve_item.cve.meta.assigner,
     configurations: serde_json::json!(cve_item.configurations),
-    official: u8::from(true),
     year: i32::from_str(y).unwrap_or_default(),
   };
   // 插入到数据库

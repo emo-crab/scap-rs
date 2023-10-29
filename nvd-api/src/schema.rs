@@ -14,7 +14,6 @@ diesel::table! {
         #[max_length = 32]
         id -> Varchar,
         year -> Integer,
-        official -> Unsigned<Tinyint>,
         #[max_length = 64]
         assigner -> Varchar,
         references -> Json,
