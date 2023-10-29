@@ -6,7 +6,7 @@ use crate::services::cve::cve_list;
 use crate::services::FetchState;
 use std::str::FromStr;
 use wasm_bindgen::JsCast;
-use web_sys::{EventTarget, HtmlButtonElement, HtmlElement};
+use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub enum Msg {
@@ -96,11 +96,19 @@ impl Component for CveInfoList {
         <div class="card-body border-bottom py-2">
           <div class="d-flex">
             <div class="text-muted">
-              {"Show"}
-              <div class="mx-2 d-inline-block">
-                <input type="text" class="form-control form-control-sm" value="8" size="3" aria-label="Invoices count"/>
+            <form class="row g-3">
+              <div class="col-md-4 ms-auto text-muted">
+                <select class="form-select-sm" aria-label="Default select example">
+                  <option selected=true>{"Open this select menu"}</option>
+                  <option value="1">{"One"}</option>
+                  <option value="2">{"Two"}</option>
+                  <option value="3">{"Three"}</option>
+                </select>
               </div>
-              {"entries"}
+              <div class="col-md-4 ms-auto text-muted">
+                <input type="text" class="form-control-sm is-valid" id="validationServer02" value="Otto" required=false/>
+              </div>
+            </form>
             </div>
             <div class="ms-auto text-muted">
               {"Search:"}
@@ -155,7 +163,27 @@ impl CveInfoList {
         .unwrap_or_default();
       Msg::ToPage(page)
     });
-    let page_count = total / 10;
+    let mut page_lists: Vec<(String, bool)> = Vec::new();
+    let mut page_count = total / 10;
+    if total % 10 != 0 {
+      page_count = page_count + 1;
+    }
+    for n in (1..=page_count).into_iter() {
+      if n <= 3 || n > (total / 10 - 3) {
+        page_lists.push((n.to_string(), (offset / 10 + 1) == n));
+      } else if (offset / 10 + 1) == n {
+        if n != 4 {
+          page_lists.push(("...".to_string(), false));
+        }
+        page_lists.push((n.to_string(), true));
+        if n != (total / 10 - 3) {
+          page_lists.push(("...".to_string(), false));
+        }
+      }
+    }
+    if !page_lists.contains(&("...".to_string(), false)) && page_lists.len() > 6 {
+      page_lists.insert(3, ("...".to_string(), false));
+    }
     console_log!("{}", offset / 10);
     html! {
         <div class="card-footer d-flex align-items-center">
@@ -168,8 +196,8 @@ impl CveInfoList {
               </button>
             </li>
             {
-              (1..=page_count+1).into_iter().map(move|n|{
-              html!{<li class={classes!(["page-item",if n==(offset/10)+1 { "active" } else { "" }])}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
+              page_lists.into_iter().map(move|(n,active)|{
+              html!{<li class={classes!(["page-item",if active { "active" } else { "" }])}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
             }).collect::<Html>()
             }
             <li class={classes!(["page-item",if offset+10>=total { "disabled" } else { "" }])}>
