@@ -163,45 +163,56 @@ impl CveInfoList {
         .unwrap_or_default();
       Msg::ToPage(page)
     });
-    let mut page_lists: Vec<(String, bool)> = Vec::new();
+    let mut page_lists: Vec<(String, Vec<String>)> = Vec::new();
     let mut page_count = total / 10;
     if total % 10 != 0 {
       page_count = page_count + 1;
     }
     for n in (1..=page_count).into_iter() {
-      if n <= 3 || n > (total / 10 - 3) {
-        page_lists.push((n.to_string(), (offset / 10 + 1) == n));
-      } else if (offset / 10 + 1) == n {
-        if n != 4 {
-          page_lists.push(("...".to_string(), false));
+      let mut class_list = Vec::new();
+      // 当前激活的页面
+      let active = (offset / 10 + 1);
+      if active == n {
+        class_list.push("active".to_string());
+      }
+      // 前三个，后三个，激活页面三个
+      if n <= 2 || n > page_count - 2 {
+        page_lists.push((n.to_string(), class_list));
+      } else if active == n {
+        page_lists.push((n.to_string(), class_list));
+      } else if n == active + 1 {
+        page_lists.push((n.to_string(), class_list));
+        if n < page_count - 2 {
+          page_lists.push(("...".to_string(), vec!["disabled".to_string()]));
         }
-        page_lists.push((n.to_string(), true));
-        if n != (total / 10 - 3) {
-          page_lists.push(("...".to_string(), false));
+      } else if n == active - 1 {
+        // 离前三个很远
+        if n > 3 {
+          page_lists.push(("...".to_string(), vec!["disabled".to_string()]));
         }
+        page_lists.push((n.to_string(), class_list));
       }
     }
-    if !page_lists.contains(&("...".to_string(), false)) && page_lists.len() > 6 {
-      page_lists.insert(3, ("...".to_string(), false));
+    if !page_lists.contains(&("...".to_string(), vec!["disabled".to_string()])) && page_count > 6 {
+      page_lists.insert(2, ("...".to_string(), vec!["disabled".to_string()]));
     }
-    console_log!("{}", offset / 10);
     html! {
         <div class="card-footer d-flex align-items-center">
           <p class="m-0 text-muted">{"展示"} <span>{offset+1}</span> {"到"} <span>{offset+limit}</span> {"条"} <span>{"总数"}</span>{total} </p>
-          <ul class="pagination m-0 ms-auto">
+          <ul class="pagination pagination-sm m-0 ms-auto">
             <li class={classes!(["page-item",if offset == 0 { "disabled" } else { "" }])}>
-              <button class="page-link" onclick={prev_page}>
+              <button class="btn btn-sm page-link" onclick={prev_page}>
                 {"prev"}
                 <i class="bi bi-chevron-left"></i>
               </button>
             </li>
             {
               page_lists.into_iter().map(move|(n,active)|{
-              html!{<li class={classes!(["page-item",if active { "active" } else { "" }])}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
+              html!{<li class={classes!(active)}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
             }).collect::<Html>()
             }
             <li class={classes!(["page-item",if offset+10>=total { "disabled" } else { "" }])}>
-              <button class="page-link" onclick={next_page}>
+              <button class="btn btn-sm page-link" onclick={next_page}>
                 {"next"}
                 <i class="bi bi-chevron-right"></i>
               </button>
