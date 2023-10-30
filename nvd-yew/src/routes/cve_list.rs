@@ -93,31 +93,7 @@ impl Component for CveInfoList {
   fn view(&self, ctx: &Context<Self>) -> Html {
     html! {
       <div class="card">
-        <div class="card-body border-bottom py-2">
-          <div class="d-flex">
-            <div class="text-muted">
-            <form class="row g-3">
-              <div class="col-md-4 ms-auto text-muted">
-                <select class="form-select-sm" aria-label="Default select example">
-                  <option selected=true>{"Open this select menu"}</option>
-                  <option value="1">{"One"}</option>
-                  <option value="2">{"Two"}</option>
-                  <option value="3">{"Three"}</option>
-                </select>
-              </div>
-              <div class="col-md-4 ms-auto text-muted">
-                <input type="text" class="form-control-sm is-valid" id="validationServer02" value="Otto" required=false/>
-              </div>
-            </form>
-            </div>
-            <div class="ms-auto text-muted">
-              {"Search:"}
-              <div class="ms-2 d-inline-block">
-                <input type="text" class="form-control form-control-sm" aria-label="Search invoice"/>
-              </div>
-            </div>
-          </div>
-        </div>
+        {self.query(ctx)}
         <div class="table-responsive">
           <table class="table card-table table-vcenter datatable table-striped table-sm">
             <thead>
@@ -219,6 +195,37 @@ impl CveInfoList {
             </li>
           </ul>
         </div>
+    }
+  }
+  fn query(&self, ctx: &Context<Self>) -> Html {
+    html!{
+    <div class="card-body border-bottom py-2">
+      <div class="d-flex">
+        <div class="text-muted">
+        <form class="row g-3">
+          <div class="col-md-3 text-muted">
+            <select class="form-select form-select-sm" aria-label="Default select example">
+              <option selected=true>{"Open this select menu"}</option>
+              <option value="none">{"none"}</option>
+              <option value="low">{"low"}</option>
+              <option value="medium">{"medium"}</option>
+              <option value="high">{"high"}</option>
+              <option value="critical">{"critical"}</option>
+            </select>
+          </div>
+          <div class="col-md-3 text-muted">
+            <input type="text" class="form-control form-control-sm is-valid" id="validationServer02" value="Otto" required=false/>
+          </div>
+        </form>
+        </div>
+        <div class="ms-auto text-muted">
+          {"Search:"}
+          <div class="ms-2 d-inline-block">
+            <input type="text" class="form-control form-control-sm" aria-label="Search invoice"/>
+          </div>
+        </div>
+      </div>
+    </div>
     }
   }
 }

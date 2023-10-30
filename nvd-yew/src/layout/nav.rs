@@ -47,7 +47,7 @@ impl Component for Nav {
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
               <li class="nav-item">
-                <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Vulnerabilities"}</Link<Route>>
+                <Link<Route> classes={classes!("nav-link")} to={Route::CveList}><b>{"CVE"}</b></Link<Route>>
               </li>
               // <li class="nav-item">
               //   <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>

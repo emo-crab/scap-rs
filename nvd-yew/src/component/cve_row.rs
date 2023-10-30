@@ -47,7 +47,6 @@ impl Component for CVERow {
           </Link<Route>>
           </td>
           <td>
-          {html!(<span class="badge rounded-pill bg-secondary">{vendor.len()}</span>)}
           {
             vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(index,value)| {
               html!{
@@ -85,8 +84,8 @@ impl Component for CVERow {
             {update}
           </td>
         </tr>
-        <tr class="table-active">
-          <td colspan="7" class="table-active text-truncate" style="max-width: 150px;">{description.join("")}</td>
+        <tr class="table">
+          <td colspan="7" class="table text-truncate" style="max-width: 150px;">{description.join("")}</td>
         </tr>
     </>
     }
