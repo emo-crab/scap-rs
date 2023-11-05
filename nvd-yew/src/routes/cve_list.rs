@@ -16,6 +16,7 @@ pub enum Msg {
   NextPage,
   PrevPage,
   ToPage(i64),
+  Severity(String),
 }
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
 pub struct Props {
@@ -79,6 +80,16 @@ impl Component for CveInfoList {
       }
       Msg::ToPage(page) => {
         self.query.offset = Some((page - 1) * self.query.limit.unwrap_or(10));
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
+        ctx.link().send_message(Msg::Query);
+      }
+      Msg::Severity(severity) => {
+        self.query.severity = Some(severity);
         ctx
           .link()
           .navigator()
@@ -198,24 +209,28 @@ impl CveInfoList {
     }
   }
   fn query(&self, ctx: &Context<Self>) -> Html {
-    html!{
+    let query_severity = ctx.link().callback(|e: MouseEvent| {
+      let target: EventTarget = e.target().unwrap();
+      let severity: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
+      Msg::Severity(severity)
+    });
+    html! {
     <div class="card-body border-bottom py-2">
       <div class="d-flex">
         <div class="text-muted">
         <form class="row g-3">
-          <div class="col-md-3 text-muted">
-            <select class="form-select form-select-sm" aria-label="Default select example">
-              <option selected=true>{"Open this select menu"}</option>
-              <option value="none">{"none"}</option>
-              <option value="low">{"low"}</option>
-              <option value="medium">{"medium"}</option>
-              <option value="high">{"high"}</option>
-              <option value="critical">{"critical"}</option>
-            </select>
-          </div>
-          <div class="col-md-3 text-muted">
-            <input type="text" class="form-control form-control-sm is-valid" id="validationServer02" value="Otto" required=false/>
-          </div>
+          <ul class="col-md-3 text-muted dropdown">
+              <button class="btn btn-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                {"Severity"}
+              </button>
+              <ul class="dropdown-menu">
+                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-secondary btn-sm"  value="none">{"none"}</button></li>
+                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-info btn-sm" value="low">{"low"}</button></li>
+                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-warning btn-sm" value="medium">{"medium"}</button></li>
+                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-danger btn-sm" value="high">{"high"}</button></li>
+                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn text-light bg-dark btn-sm" value="critical">{"critical"}</button></li>
+              </ul>
+          </ul>
         </form>
         </div>
         <div class="ms-auto text-muted">

@@ -152,7 +152,7 @@ impl Cve {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
     let offset = args.offset.unwrap_or(0);
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
+    let limit = 10;
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;
       query.order(cves::id.desc()).offset(offset).limit(limit).load::<Cve>(conn)?
