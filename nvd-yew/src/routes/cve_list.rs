@@ -1,4 +1,4 @@
-use crate::component::{CVEQuery, CVEQueryProps, CVERow, Pagination, PaginationProps};
+use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
 use crate::console_log;
 use crate::modules::cve::{CveInfoList, QueryCve};
 use crate::routes::Route;
@@ -111,6 +111,11 @@ impl Component for CveInfoList {
     false
   }
   fn view(&self, ctx: &Context<Self>) -> Html {
+    let set_vendor = ctx.link().callback(|event: MouseEvent| {
+      let target: EventTarget = event.target().unwrap();
+      let vendor: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
+      Msg::QueryMsg(QueryMsg::Vendor(vendor))
+    });
     html! {
       <div class="card">
         {self.query(ctx)}
@@ -128,8 +133,10 @@ impl Component for CveInfoList {
               </tr>
             </thead>
             <tbody>
-            { self.result.iter().map(|item| {
-              html!{<>{html!( <CVERow ..item.clone()/>) }</>}
+            {
+              self.result.iter().map(|item| {
+              let p = CveProps{props:item.clone(),set_vendor:set_vendor.clone()};
+              html!{<>{html!( <CVERow ..p/>) }</>}
                 }).collect::<Html>()
               }
             </tbody>
@@ -153,8 +160,8 @@ impl CveInfoList {
     let offset = self.offset;
     let next_page = ctx.link().callback(|_| Msg::PageMsg(PageMsg::NextPage));
     let prev_page = ctx.link().callback(|_| Msg::PageMsg(PageMsg::PrevPage));
-    let to_page = ctx.link().callback(|e: MouseEvent| {
-      let target: EventTarget = e.target().unwrap();
+    let to_page = ctx.link().callback(|event: MouseEvent| {
+      let target: EventTarget = event.target().unwrap();
       let page: i64 = i64::from_str(&target.clone().unchecked_into::<HtmlButtonElement>().value())
         .unwrap_or_default();
       Msg::PageMsg(PageMsg::ToPage(page))
@@ -177,7 +184,7 @@ impl CveInfoList {
     });
     let query = ctx
       .link()
-      .callback(|args:QueryCve| Msg::QueryMsg(QueryMsg::Query(args)));
+      .callback(|args: QueryCve| Msg::QueryMsg(QueryMsg::Query(args)));
     let p = CVEQueryProps {
       props: self.query.clone(),
       query_severity,

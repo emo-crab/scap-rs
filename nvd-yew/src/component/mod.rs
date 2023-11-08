@@ -4,6 +4,6 @@ mod cvss3;
 mod pagination;
 
 pub use cve_query::{CVEQuery, CVEQueryProps};
-pub use cve_row::CVERow;
+pub use cve_row::{CVERow, CveProps};
 pub use cvss3::CVSS3;
 pub use pagination::{Pagination, PaginationProps};
