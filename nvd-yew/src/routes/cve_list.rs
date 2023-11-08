@@ -17,6 +17,8 @@ pub enum Msg {
   PrevPage,
   ToPage(i64),
   Severity(String),
+  Vendor(String),
+  Product(String),
 }
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
 pub struct Props {
@@ -98,6 +100,26 @@ impl Component for CveInfoList {
           .unwrap();
         ctx.link().send_message(Msg::Query);
       }
+      Msg::Vendor(vendor) => {
+        self.query.vendor = Some(vendor);
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
+        ctx.link().send_message(Msg::Query);
+      }
+      Msg::Product(product) => {
+        self.query.product = Some(product);
+        ctx
+          .link()
+          .navigator()
+          .unwrap()
+          .push_with_query(&Route::CveList, &self.query)
+          .unwrap();
+        ctx.link().send_message(Msg::Query);
+      }
     }
     false
   }
@@ -109,13 +131,13 @@ impl Component for CveInfoList {
           <table class="table card-table table-vcenter datatable table-striped table-sm">
             <thead>
               <tr>
-                <th>{"CVE编号"}</th>
-                <th>{"影响供应商"}</th>
-                <th>{"影响产品"}</th>
-                <th>{"漏洞类型"}</th>
-                <th>{"CVSSv2评分"}</th>
-                <th>{"CVSSv3评分"}</th>
-                <th>{"披露时间"}</th>
+                <th>{"CVE"}</th>
+                <th>{"Vendors"}</th>
+                <th>{"Products"}</th>
+                <th>{"CWE"}</th>
+                <th>{"CVSS v2"}</th>
+                <th>{"CVSS v3"}</th>
+                <th>{"Updated"}</th>
               </tr>
             </thead>
             <tbody>
@@ -215,28 +237,40 @@ impl CveInfoList {
       Msg::Severity(severity)
     });
     html! {
-    <div class="card-body border-bottom py-2">
+    <div class="card-body border-bottom py-1">
       <div class="d-flex">
         <div class="text-muted">
-        <form class="row g-3">
-          <ul class="col-md-3 text-muted dropdown">
-              <button class="btn btn-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                {"Severity"}
-              </button>
-              <ul class="dropdown-menu">
-                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-secondary btn-sm"  value="none">{"none"}</button></li>
-                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-info btn-sm" value="low">{"low"}</button></li>
-                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-warning btn-sm" value="medium">{"medium"}</button></li>
-                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-danger btn-sm" value="high">{"high"}</button></li>
-                <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn text-light bg-dark btn-sm" value="critical">{"critical"}</button></li>
-              </ul>
+        <form class="row g-1">
+          <div class="col input-group input-group-sm flex-nowrap">
+          <ul class="dropdown">
+            <button class="btn btn-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+              {"Severity"}
+            </button>
+            <ul class="dropdown-menu">
+              <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-secondary btn-sm"  value="none">{"none (0.0)"}</button></li>
+              <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-info btn-sm" value="low">{"low (0.1-3.9)"}</button></li>
+              <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-warning btn-sm" value="medium">{"medium (4.0-6.9)"}</button></li>
+              <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn bg-danger btn-sm" value="high">{"high (7.0-8.9)"}</button></li>
+              <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn text-light bg-dark btn-sm" value="critical">{"critical (9.0-10.0)"}</button></li>
+            </ul>
           </ul>
+          <input class="form-control form-control-sm" style="height: min-content;" value={self.query.severity.clone()}/>
+          </div>
+          <div class="col input-group input-group-sm text-muted" style="height: min-content;">
+            <span class="input-group-text bg-info">{"Vendor"}</span>
+            <input type="text" class="form-control"  aria-label="vendor"/>
+          </div>
+          <div class="col input-group input-group-sm text-muted" style="height: min-content;">
+            <span class="input-group-text bg-success">{"Product"}</span>
+            <input type="text" class="form-control"  aria-label="product"/>
+          </div>
         </form>
         </div>
         <div class="ms-auto text-muted">
-          {"Search:"}
-          <div class="ms-2 d-inline-block">
+          <div class="input-group input-group-sm">
+            <span class="input-group-text">{"Search"}</span>
             <input type="text" class="form-control form-control-sm" aria-label="Search invoice"/>
+            <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
           </div>
         </div>
       </div>

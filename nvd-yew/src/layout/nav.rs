@@ -41,7 +41,7 @@ impl Component for Nav {
           <Link<Route> classes={classes!("navbar-brand")} to={Route::Home}>
           <img src="https://avatars.githubusercontent.com/u/30642514?v=4" class="img-circle" height="24px" style="margin-bottom: 4px;"/>
           <span>
-          {"nvd-rs 演示"}
+          {"nvd-rs"}
           </span>
           </Link<Route>>
           <div class="collapse navbar-collapse" id="navbarNav">
@@ -58,8 +58,8 @@ impl Component for Nav {
                 <a href="https://blog.kali-team.cn/donate" class="btn btn-outline-light" target="_blank" rel="noreferrer">
                   <i class="bi bi-suit-heart" style="color: red;"></i>{"Sponsor"}
                 </a>
-                <a href="https://github.com/emo-cat/nvd-rs" class="btn btn-outline-secondary" target="_blank" rel="noreferrer">
-                  <i class="bi-github" style="color: #f8f9fa;">{"Source code"}</i>
+                <a href="https://github.com/emo-cat/nvd-rs" class="btn btn-outline-light" target="_blank" rel="noreferrer">
+                  <i class="bi-github" style="color: light;">{"Source code"}</i>
                 </a>
               </div>
             </div>

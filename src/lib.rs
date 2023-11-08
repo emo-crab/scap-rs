@@ -3,3 +3,4 @@
   html_root_url = "https://emo-car.github.io/nvd-rs"
 )]
 // https://github.com/vgwidt/sumi/
+// https://www.cnnvd.org.cn/home/dataDownLoad
