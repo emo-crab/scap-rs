@@ -1,13 +1,13 @@
 
 use yew::prelude::*;
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
-pub struct Props {
+pub struct CVEProps {
   pub id: String,
 }
 pub struct CVELDetails;
 impl Component for CVELDetails {
   type Message = ();
-  type Properties = Props;
+  type Properties = CVEProps;
 
   fn create(_ctx: &Context<Self>) -> Self {
     Self
