@@ -87,8 +87,8 @@ impl Vendor {
   // 查询提供商从查询参数
   pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<VendorCount> {
     let total = args.total(conn)?;
-    let offset = args.offset.unwrap_or(0);
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
+    let offset = args.offset.unwrap_or(0).abs();
+    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10).abs(), 10);
     let result = {
       let query = args.query(conn, vendors::table.into_boxed())?;
       query

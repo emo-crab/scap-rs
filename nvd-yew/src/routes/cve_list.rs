@@ -270,7 +270,7 @@ impl CveInfoList {
           <div class="input-group input-group-sm">
             <span class="input-group-text">{"Search"}</span>
             <input type="text" class="form-control form-control-sm" aria-label="Search invoice"/>
-            <button class="btn btn-outline-secondary" type="button"><i class="bi bi-search"></i></button>
+            <button class="btn btn-secondary" type="button"><i class="bi bi-search"></i></button>
           </div>
         </div>
       </div>
