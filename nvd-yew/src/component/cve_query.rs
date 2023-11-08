@@ -34,7 +34,6 @@ impl Component for CVEQuery {
       let query_callback = ctx.props().query.clone();
       Callback::from(move |event: SubmitEvent| {
         event.prevent_default();
-        let target = event.target().unwrap();
         let severity = severity_input.cast::<HtmlInputElement>().unwrap().value();
         let vendor = vendor_input.cast::<HtmlInputElement>().unwrap().value();
         let product = product_input.cast::<HtmlInputElement>().unwrap().value();

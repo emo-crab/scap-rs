@@ -113,8 +113,8 @@ impl Component for CveInfoList {
   fn view(&self, ctx: &Context<Self>) -> Html {
     let set_vendor = ctx.link().callback(|event: MouseEvent| {
       let target: EventTarget = event.target().unwrap();
-      let vendor: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
-      Msg::QueryMsg(QueryMsg::Vendor(vendor))
+      let target = event.target_unchecked_into::<HtmlButtonElement>();
+      Msg::QueryMsg(QueryMsg::Vendor(target.get_attribute("value").unwrap()))
     });
     html! {
       <div class="card">

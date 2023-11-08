@@ -4,7 +4,7 @@ use crate::routes::Route;
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use std::collections::HashSet;
 use wasm_bindgen::JsCast;
-use web_sys::{EventTarget, HtmlButtonElement};
+use web_sys::{EventTarget, HtmlButtonElement, HtmlElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -24,7 +24,7 @@ impl Component for CVERow {
 
   fn view(&self, ctx: &Context<Self>) -> Html {
     let c = ctx.props().props.clone();
-    // let set_vendor = ctx.props().set_vendor.clone();
+    let set_vendor = ctx.props().set_vendor.clone();
     let cve_id = c.id;
     let description = c
       .description
@@ -46,11 +46,6 @@ impl Component for CVERow {
         .map(|v| v.vendor.clone())
         .collect::<Vec<String>>(),
     );
-    let set_vendor = ctx.link().callback(|event: MouseEvent| {
-      let target: EventTarget = event.target().unwrap();
-      let vendor: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
-      console_log!("{:?}", vendor);
-    });
     html! {
     <>
         <tr class="table-group-divider">
@@ -62,10 +57,10 @@ impl Component for CVERow {
           </td>
           <td>
           {
-            vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(index,value)| {
+            vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
               <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
-              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;">{ value }</b>
+              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;" value={value.clone()}>{ value }</b>
               </button>
               }
             }).collect::<Html>()
@@ -75,9 +70,9 @@ impl Component for CVERow {
           <td>
           {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
           {
-            vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(index,value)| {
+            vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
-              <button  data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-success"  key={value.product.clone()} title={value.product.clone()}>
+              <button data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-success"  key={value.product.clone()} title={value.product.clone()}>
               <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;">{ value.product }</b>
               </button>
               }
