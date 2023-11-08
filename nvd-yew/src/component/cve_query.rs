@@ -1,6 +1,5 @@
-use crate::console_log;
 use crate::modules::cve::QueryCve;
-use web_sys::HtmlInputElement;
+use web_sys::{HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
 
 #[derive(PartialEq, Clone, Properties)]
@@ -25,6 +24,8 @@ impl Component for CVEQuery {
     let vendor_input = NodeRef::default();
     let product_input = NodeRef::default();
     let search_input = NodeRef::default();
+    let submit_button = NodeRef::default();
+    // 点击的是b标签，但是事件冒泡会将事件传到按钮
     let on_submit = {
       let severity_input = severity_input.clone();
       let vendor_input = vendor_input.clone();
@@ -65,10 +66,51 @@ impl Component for CVEQuery {
         })
       })
     };
+    let clean = {
+      let severity_input = severity_input.clone();
+      let vendor_input = vendor_input.clone();
+      let product_input = product_input.clone();
+      let search_input = search_input.clone();
+      let submit_button = submit_button.clone();
+      Callback::from(move |event: MouseEvent| {
+        let target = event
+          .target_unchecked_into::<HtmlButtonElement>()
+          .parent_element()
+          .unwrap();
+        let v = target.get_attribute("value").unwrap_or_default();
+        match v.as_str() {
+          "severity_input" => {
+            severity_input
+              .cast::<HtmlInputElement>()
+              .unwrap()
+              .set_value("");
+          }
+          "vendor_input" => {
+            vendor_input
+              .cast::<HtmlInputElement>()
+              .unwrap()
+              .set_value("");
+          }
+          "product_input" => {
+            product_input
+              .cast::<HtmlInputElement>()
+              .unwrap()
+              .set_value("");
+          }
+          "search_input" => {
+            search_input
+              .cast::<HtmlInputElement>()
+              .unwrap()
+              .set_value("");
+          }
+          _ => {}
+        }
+        submit_button.cast::<HtmlButtonElement>().unwrap().click();
+      })
+    };
     html! {
-    <div class="card-body border-bottom py-1">
-
-        <form class="row g-1" onsubmit={on_submit}>
+    <div class="card-body border-bottom py-1 d-flex">
+        <form class="row g-1 d-flex" onsubmit={on_submit}>
           <div class="col input-group input-group-sm flex-nowrap">
           <ul class="dropdown">
             <button class="btn btn-dark btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
@@ -83,20 +125,24 @@ impl Component for CVEQuery {
             </ul>
           </ul>
           <input class="form-control form-control-sm" style="height: min-content;" readonly=true ref={severity_input} value={query.severity.clone()}/>
+          <button class="btn btn-secondary" onclick={clean.clone()} value="severity_input" type="button" style="height: min-content;"><i class="bi bi-backspace"></i></button>
           </div>
           <div class="col input-group input-group-sm text-muted" style="height: min-content;">
             <span class="input-group-text bg-info">{"Vendor"}</span>
             <input type="text" class="form-control"  aria-label="vendor" ref={vendor_input} value={query.vendor.clone()}/>
+            <button class="btn btn-secondary" onclick={clean.clone()} value="vendor_input" type="button" style="height: min-content;"><i class="bi bi-backspace"></i></button>
           </div>
           <div class="col input-group input-group-sm text-muted" style="height: min-content;">
             <span class="input-group-text bg-success">{"Product"}</span>
             <input type="text" class="form-control" aria-label="product" ref={product_input} value={query.product.clone()}/>
+            <button class="btn btn-secondary" onclick={clean.clone()} value="product_input" type="button" style="height: min-content;"><i class="bi bi-backspace"></i></button>
           </div>
           <div class="col d-flex">
           <div class="input-group input-group-sm text-muted" style="height: min-content;">
             <span class="input-group-text">{"Search"}</span>
             <input type="text" class="form-control form-control-sm" aria-label="Search invoice" ref={search_input} value={query.id.clone()}/>
-            <button class="btn btn-secondary" type="submit"><i class="bi bi-search"></i></button>
+            <button class="btn btn-secondary" onclick={clean.clone()} value="search_input" type="button" style="height: min-content;"><i class="bi bi-backspace"></i></button>
+            <button class="btn btn-secondary" type="submit" ref={submit_button}><i class="bi bi-search"></i></button>
           </div>
           </div>
         </form>

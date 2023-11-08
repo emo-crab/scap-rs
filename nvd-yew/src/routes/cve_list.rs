@@ -112,9 +112,12 @@ impl Component for CveInfoList {
   }
   fn view(&self, ctx: &Context<Self>) -> Html {
     let set_vendor = ctx.link().callback(|event: MouseEvent| {
-      let target: EventTarget = event.target().unwrap();
       let target = event.target_unchecked_into::<HtmlButtonElement>();
       Msg::QueryMsg(QueryMsg::Vendor(target.get_attribute("value").unwrap()))
+    });
+    let set_product = ctx.link().callback(|event: MouseEvent| {
+      let target = event.target_unchecked_into::<HtmlButtonElement>();
+      Msg::QueryMsg(QueryMsg::Product(target.get_attribute("value").unwrap()))
     });
     html! {
       <div class="card">
@@ -135,7 +138,7 @@ impl Component for CveInfoList {
             <tbody>
             {
               self.result.iter().map(|item| {
-              let p = CveProps{props:item.clone(),set_vendor:set_vendor.clone()};
+              let p = CveProps{props:item.clone(),set_vendor:set_vendor.clone(),set_product:set_product.clone()};
               html!{<>{html!( <CVERow ..p/>) }</>}
                 }).collect::<Html>()
               }

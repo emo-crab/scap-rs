@@ -1,10 +1,8 @@
-use crate::console_log;
 use crate::modules::cve::Cve;
 use crate::routes::Route;
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use std::collections::HashSet;
 use wasm_bindgen::JsCast;
-use web_sys::{EventTarget, HtmlButtonElement, HtmlElement, HtmlInputElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -12,6 +10,7 @@ use yew_router::prelude::*;
 pub struct CveProps {
   pub props: Cve,
   pub set_vendor: Callback<MouseEvent>,
+  pub set_product: Callback<MouseEvent>,
 }
 pub struct CVERow;
 impl Component for CVERow {
@@ -25,6 +24,7 @@ impl Component for CVERow {
   fn view(&self, ctx: &Context<Self>) -> Html {
     let c = ctx.props().props.clone();
     let set_vendor = ctx.props().set_vendor.clone();
+    let set_product = ctx.props().set_product.clone();
     let cve_id = c.id;
     let description = c
       .description
@@ -72,8 +72,8 @@ impl Component for CVERow {
           {
             vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
-              <button data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-success"  key={value.product.clone()} title={value.product.clone()}>
-              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;">{ value.product }</b>
+              <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
+              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;" value={value.product.clone()}>{ value.product }</b>
               </button>
               }
             }).collect::<Html>()
