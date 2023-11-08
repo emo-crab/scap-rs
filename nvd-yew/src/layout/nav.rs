@@ -3,7 +3,6 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 pub struct Nav {
   navbar_active: bool,
-  expanded: bool,
 }
 pub enum Msg {
   ToggleNavbar,
@@ -16,7 +15,6 @@ impl Component for Nav {
   fn create(_ctx: &Context<Self>) -> Self {
     Self {
       navbar_active: true,
-      expanded: true,
     }
   }
 
@@ -29,7 +27,7 @@ impl Component for Nav {
     }
   }
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let Self {  .. } = *self;
+    let Self { .. } = *self;
 
     html! {
     <header>

@@ -4,7 +4,7 @@ mod cvss;
 mod home;
 mod page_not_found;
 
-use crate::modules::cve::{CveInfoList, QueryCve};
+use crate::modules::cve::CveInfoList;
 use cve::CVELDetails;
 use cvss::CVSS;
 use home::Home;
@@ -27,9 +27,6 @@ pub enum Route {
 }
 
 impl Route {
-  pub(crate) fn recognize_path(pathname: &str) -> Option<Self> {
-    Self::recognize(pathname)
-  }
   pub(crate) fn switch(routes: Route) -> Html {
     match routes {
       Route::Home => {

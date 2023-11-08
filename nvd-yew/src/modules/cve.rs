@@ -30,7 +30,7 @@ pub struct CveInfoList {
   #[serde(skip)]
   pub query: QueryCve,
 }
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]
 pub struct QueryCve {
   // 精准CVE编号
   pub id: Option<String>,
