@@ -5,7 +5,7 @@ mod home;
 mod page_not_found;
 
 use crate::modules::cve::CveInfoList;
-use cve::CVELDetails;
+use cve::CVEDetails;
 use cvss::CVSS;
 use home::Home;
 use page_not_found::PageNotFound;
@@ -36,7 +36,7 @@ impl Route {
         html! {<CveInfoList/>}
       }
       Route::Cve { id } => {
-        html! {<CVELDetails id={id}/ >}
+        html! {<CVEDetails id={id}/ >}
       }
       Route::CVSS => {
         html! { <CVSS /> }

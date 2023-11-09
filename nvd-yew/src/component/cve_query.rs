@@ -112,9 +112,9 @@ impl Component for CVEQuery {
     <div class="card-body border-bottom py-1">
       <div class="d-flex">
         <form class="row g-1 d-flex" onsubmit={on_submit}>
-          <div class="col input-group">
+          <div class="col input-group input-group-flat">
           <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               {"Severity"}
             </button>
             <ul class="dropdown-menu">
@@ -125,24 +125,24 @@ impl Component for CVEQuery {
               <li><button onclick={query_severity.clone()} type="button" class="dropdown-item btn text-light bg-dark btn-sm" value="critical">{"critical (9.0-10.0)"}</button></li>
             </ul>
           </div>
-          <input class="form-control form-control-sm" readonly=true ref={severity_input} value={query.severity.clone()}/>
-          <button class="btn btn-outline-secondary" onclick={clean.clone()} value="severity_input" type="button"><i class="ti ti-backspace"></i></button>
+          <input class="form-control" readonly=true ref={severity_input} value={query.severity.clone()}/>
+          <button class="input-group-text" onclick={clean.clone()} value="severity_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
-          <div class="col input-group text-muted">
-            <label class="input-group-text text-info">{"Vendor"}</label>
-            <input type="text" class="form-control form-control-sm"  aria-label="vendor" ref={vendor_input} value={query.vendor.clone()}/>
-            <button class="btn btn-outline-secondary" onclick={clean.clone()} value="vendor_input" type="button"><i class="ti ti-backspace"></i></button>
+          <div class="col input-group input-group-flat text-muted">
+            <span class="input-group-text text-info">{"Vendor"}</span>
+            <input type="text" class="form-control"  aria-label="vendor" ref={vendor_input} value={query.vendor.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
-          <div class="col input-group text-muted">
-            <label class="input-group-text text-success">{"Product"}</label>
-            <input type="text" class="form-control form-control-sm" aria-label="product" ref={product_input} value={query.product.clone()}/>
-            <button class="btn btn-outline-secondary" onclick={clean.clone()} value="product_input" type="button"><i class="ti ti-backspace"></i></button>
+          <div class="col input-group input-group-flat text-muted">
+            <span class="input-group-text text-success">{"Product"}</span>
+            <input type="text" class="form-control" aria-label="product" ref={product_input} value={query.product.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
           <div class="col d-flex">
-          <div class="input-group text-muted">
+          <div class="input-group input-group-flat text-muted">
             <span class="input-group-text">{"Search"}</span>
-            <input type="text" class="form-control form-control-sm" aria-label="Search invoice" ref={search_input} value={query.id.clone()}/>
-            <button class="btn btn-outline-secondary" onclick={clean.clone()} value="search_input" type="button"><i class="ti ti-backspace"></i></button>
+            <input type="text" class="form-control" aria-label="Search invoice" ref={search_input} value={query.id.clone()}/>
+            <button class="input-group-text bg-outline-danger" onclick={clean.clone()} value="search_input"><i class="ti ti-backspace link-danger"></i></button>
             <button class="btn" type="submit" ref={submit_button}><i class="ti ti-search"></i></button>
           </div>
           </div>
