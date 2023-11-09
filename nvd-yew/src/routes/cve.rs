@@ -122,7 +122,7 @@ impl CVEDetails {
       <>
       <div class="card-tabs">
       <ul class="nav nav-tabs" role="tablist">
-      if let Some(v3) = cvss_v3{
+      if let Some(v3) = cvss_v3.clone(){
         <li class="nav-item">
           <a href="#tabs-cvss3" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())}</a>
         </li>
@@ -132,9 +132,11 @@ impl CVEDetails {
         </li>
       </ul>
         <div class="tab-content">
+        if let Some(v3) = cvss_v3.clone(){
           <div class="tab-pane show active" id="tabs-cvss3">
-            <CVSS3 vector={cve.cvss3_vector}/>
+            <CVSS3 v3={Some(v3)}/>
           </div>
+        }
           <div class="tab-pane" id="tabs-cvss2">
             <div>{"cvss v2"}</div>
           </div>

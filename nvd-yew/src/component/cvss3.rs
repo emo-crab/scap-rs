@@ -1,11 +1,10 @@
 use cvss::v3::ImpactMetricV3;
-use std::str::FromStr;
 use yew::prelude::*;
 #[derive(Default)]
 pub struct CVSS3;
-#[derive(Clone, Debug, PartialEq, Eq, Properties)]
+#[derive(Clone, Debug, PartialEq, Properties)]
 pub struct Props {
-  pub vector: String,
+  pub v3: Option<ImpactMetricV3>,
 }
 impl Component for CVSS3 {
   type Message = ();
@@ -16,7 +15,7 @@ impl Component for CVSS3 {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let v3 = ImpactMetricV3::from_str(&ctx.props().vector).unwrap();
+    let v3 = ctx.props().v3.clone().unwrap();
     let cvss_v3 = v3.cvss_v3.clone();
     let score = v3.cvss_v3.base_score;
     let version = v3.cvss_v3.version;
@@ -32,7 +31,7 @@ impl Component for CVSS3 {
                 <h3>{score}<sup style="font-size: 20px"> {"/10"}</sup></h3>
                 <p class="card-text">{"CVSS v"}{version}{": "}<span class="badge text-bg-danger">{base_severity}</span></p>
             <div class="progress" role="progressbar" aria-label="score" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
-              <div class="progress-bar bg-danger shadow-lg" style="width: 100%">{score}</div>
+              <div class="progress-bar bg-danger">{score}</div>
             </div>
               </div>
               <div class="card-footer text-bg-light text-center text-muted">
@@ -51,7 +50,7 @@ impl Component for CVSS3 {
             </div>
           </div>
           <div class="col-md-4">
-            <div class="grid gap-3">
+            <div class="">
             <li class="p-3 list-group-item d-flex justify-content-between align-items-start list-group-item-danger" style="margin-bottom: 10px;">
               {"Attack Vector"}
               <span class="badge text-bg-danger">{format!("{:#?}",cvss_v3.exploit_ability.attack_vector)}</span>
@@ -71,7 +70,7 @@ impl Component for CVSS3 {
           </div>
           </div>
           <div class="col-md-4">
-            <div class="grid gap-3">
+            <div class="">
             <li class="p-3 list-group-item d-flex justify-content-between align-items-start list-group-item-danger" style="margin-bottom: 10px;">
               {"Scope"}
               <span class="badge text-bg-danger">{format!("{:#?}",cvss_v3.scope)}</span>
