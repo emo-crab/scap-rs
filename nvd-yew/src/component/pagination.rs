@@ -1,5 +1,5 @@
 use yew::prelude::*;
-
+// 通用分页组件
 #[derive(PartialEq, Clone, Properties)]
 pub struct PaginationProps {
   pub limit: i64,
@@ -59,13 +59,13 @@ impl Component for Pagination {
       page_lists.insert(2, ("...".to_string(), vec!["disabled".to_string()]));
     }
     html! {
-        <div class="card-footer d-flex align-items-center">
+        <div class="card-footer card-footer-sm d-flex align-items-center">
           <p class="m-0 text-muted">{"展示"} <span>{offset+1}</span> {"到"} <span>{offset+limit}</span> {"条"} <span>{"总数"}</span>{total} </p>
-          <ul class="pagination pagination-sm m-0 ms-auto">
+          <ul class="pagination m-0 ms-auto">
             <li class={classes!(["page-item",if offset == 0 { "disabled" } else { "" }])}>
-              <button class="btn btn-sm page-link" onclick={prev_page}>
+              <button class="btn page-link" onclick={prev_page}>
                 {"prev"}
-                <i class="bi bi-chevron-left"></i>
+                <i class="ti ti-chevron-left"></i>
               </button>
             </li>
             {
@@ -74,9 +74,9 @@ impl Component for Pagination {
             }).collect::<Html>()
             }
             <li class={classes!(["page-item",if offset+10>=total { "disabled" } else { "" }])}>
-              <button class="btn btn-sm page-link" onclick={next_page}>
+              <button class="btn page-link" onclick={next_page}>
                 {"next"}
-                <i class="bi bi-chevron-right"></i>
+                <i class="ti ti-chevron-right"></i>
               </button>
             </li>
           </ul>

@@ -5,7 +5,7 @@ use std::collections::HashSet;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
-
+// 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
 pub struct CveProps {
   pub props: Cve,
@@ -51,7 +51,7 @@ impl Component for CVERow {
         <tr class="table-group-divider">
           <td>
           <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{cve_id.clone()}}}>
-             <i class="bi bi-arrow-up-left"></i>
+             <i class="ti ti-external-link"></i>
               {cve_id.clone()}
           </Link<Route>>
           </td>
@@ -59,8 +59,8 @@ impl Component for CVERow {
           {
             vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
-              <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
-              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;" value={value.clone()}>{ value }</b>
+              <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
+              <b class="text-truncate" value={value.clone()}>{ value }</b>
               </button>
               }
             }).collect::<Html>()
@@ -72,8 +72,8 @@ impl Component for CVERow {
           {
             vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
-              <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" style="--bs-btn-font-weight:0; --bs-btn-padding-y: .1rem; --bs-btn-padding-x: .5rem; --bs-btn-font-size: .65rem;" type="button" class="btn btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
-              <b class="text-truncate" style="font-size:larger; max-width: 10rem; display: block;" value={value.product.clone()}>{ value.product }</b>
+              <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
+              <b class="text-truncate" product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
               </button>
               }
             }).collect::<Html>()

@@ -31,8 +31,8 @@ impl Component for Nav {
 
     html! {
     <header>
-      <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-        <div class="container-fluid">
+      <nav class="navbar navbar-expand-md navbar-dark fixed-top" data-bs-theme="dark">
+        <div class="container-xl">
           <button class="navbar-toggler" type="button" onclick={ctx.link().callback(|_|Msg::ToggleNavbar)} data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -47,9 +47,6 @@ impl Component for Nav {
               <li class="nav-item">
                 <Link<Route> classes={classes!("nav-link")} to={Route::CveList}><b>{"CVE"}</b></Link<Route>>
               </li>
-              // <li class="nav-item">
-              //   <Link<Route> classes={classes!("nav-link")} to={Route::CveList}>{"Products"}</Link<Route>>
-              // </li>
             </ul>
             <div class="nav-item d-none d-md-flex me-3">
               <div class="btn-list">

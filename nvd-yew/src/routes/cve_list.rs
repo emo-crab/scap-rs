@@ -23,7 +23,7 @@ pub enum PageMsg {
 pub enum QueryMsg {
   Severity(String),
   Vendor(String),
-  Product(String),
+  Product(String, String),
   Query(QueryCve),
 }
 impl Component for CveInfoList {
@@ -55,7 +55,7 @@ impl Component for CveInfoList {
         let q = self.query.clone();
         ctx.link().send_future(async {
           match cve_list(q).await {
-            Ok(md) => Msg::SetFetchState(FetchState::Success(md)),
+            Ok(data) => Msg::SetFetchState(FetchState::Success(data)),
             Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
           }
         });
@@ -90,7 +90,8 @@ impl Component for CveInfoList {
           QueryMsg::Vendor(vendor) => {
             self.query.vendor = Some(vendor);
           }
-          QueryMsg::Product(product) => {
+          QueryMsg::Product(vendor, product) => {
+            self.query.vendor = Some(vendor);
             self.query.product = Some(product);
           }
           QueryMsg::Query(query) => {
@@ -115,7 +116,9 @@ impl Component for CveInfoList {
     });
     let set_product = ctx.link().callback(|event: MouseEvent| {
       let target = event.target_unchecked_into::<HtmlButtonElement>();
-      Msg::QueryMsg(QueryMsg::Product(target.get_attribute("value").unwrap()))
+      let vendor = target.get_attribute("vendor").unwrap();
+      let product = target.get_attribute("product").unwrap();
+      Msg::QueryMsg(QueryMsg::Product(vendor, product))
     });
     html! {
       <div class="card">
