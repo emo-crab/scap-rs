@@ -2,7 +2,7 @@ use crate::modules::cve::Cve;
 use crate::routes::Route;
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use std::collections::HashSet;
-use wasm_bindgen::JsCast;
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 

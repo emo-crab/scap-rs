@@ -44,9 +44,6 @@ impl Route {
       Route::NotFound => {
         html! { <PageNotFound /> }
       }
-      _ => {
-        html! { <PageNotFound /> }
-      }
     }
   }
 }

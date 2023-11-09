@@ -72,7 +72,7 @@ where
 {
   request(reqwest::Method::GET, url, query, ()).await
 }
-
+#[allow(dead_code)]
 pub async fn request_post<B, Q, T>(url: String, query: Q, body: B) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
@@ -81,7 +81,7 @@ where
 {
   request(reqwest::Method::POST, url, query, body).await
 }
-
+#[allow(dead_code)]
 pub async fn request_put<B, Q, T>(url: String, query: Q, body: B) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
@@ -90,7 +90,7 @@ where
 {
   request(reqwest::Method::PUT, url, query, body).await
 }
-
+#[allow(dead_code)]
 pub async fn request_delete<B, Q, T>(url: String) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,

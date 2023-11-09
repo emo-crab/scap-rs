@@ -12,7 +12,6 @@ use yew_router::prelude::*;
 pub enum Msg {
   SetFetchState(FetchState<CveInfoList>),
   Send,
-  GetError,
   PageMsg(PageMsg),
   QueryMsg(QueryMsg),
 }
@@ -61,7 +60,6 @@ impl Component for CveInfoList {
           }
         });
       }
-      Msg::GetError => {}
       Msg::PageMsg(page) => {
         match page {
           PageMsg::NextPage => {
