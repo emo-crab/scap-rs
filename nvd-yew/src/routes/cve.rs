@@ -158,14 +158,15 @@ impl CVEDetails {
   }
   fn references(&self, reference: Vec<cve::Reference>) -> Html {
     html! {
-      <div class="accordion" id="accordion-example" role="tablist" aria-multiselectable="true">
+      <div>
+      <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
         <div class="accordion-item">
           <h2 class="accordion-header" role="tab">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-references" aria-expanded="true">
               {"References"}
             </button>
           </h2>
-          <div id="collapse-1" class="accordion-collapse collapse show" data-bs-parent="#accordion-example" style="">
+          <div id="collapse-references" class="accordion-collapse collapse show" data-bs-parent="#accordion-references" style="">
             <div class="accordion-body pt-0">
             <div class="table-responsive">
               <table class="table table-vcenter card-table table-striped">
@@ -198,6 +199,7 @@ impl CVEDetails {
             </div>
           </div>
         </div>
+      </div>
       </div>
     }
   }
