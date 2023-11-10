@@ -27,6 +27,7 @@ use std::str::FromStr;
 // https://nvd.nist.gov/vuln-metrics/cvss/v2-calculator
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
+use crate::severity::SeverityTypeV2;
 use crate::v2::access_complexity::AccessComplexityType;
 use crate::v2::access_vector::AccessVectorType;
 use crate::v2::authentication::AuthenticationType;
@@ -35,7 +36,6 @@ use crate::v2::impact_metrics::{
 };
 use crate::version::Version;
 use serde::{Deserialize, Serialize};
-use crate::severity::SeverityTypeV2;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 #[serde(rename_all(deserialize = "camelCase"))]
@@ -160,4 +160,29 @@ pub struct ImpactMetricV2 {
   pub obtain_other_privilege: bool,
   // 用户交互
   pub user_interaction_required: Option<bool>,
+}
+impl FromStr for ImpactMetricV2 {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    match CVSS::from_str(s) {
+      Ok(c) => {
+        let exploitability_score = c.exploit_ability_score();
+        let impact_score = c.impact_score();
+        let severity = SeverityTypeV2::from(c.base_score);
+        Ok(Self {
+          cvss_v2: c,
+          exploitability_score,
+          impact_score,
+          severity,
+          ac_insuf_info: None,
+          obtain_all_privilege: false,
+          obtain_user_privilege: false,
+          obtain_other_privilege: false,
+          user_interaction_required: None,
+        })
+      }
+      Err(err) => Err(err),
+    }
+  }
 }

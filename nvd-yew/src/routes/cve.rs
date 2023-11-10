@@ -1,9 +1,12 @@
+use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::CVSS3;
 use crate::console_log;
 use crate::modules::cve::Cve;
 use crate::routes::Route;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
+use cve::configurations::Operator;
+use cvss::v2::ImpactMetricV2;
 use cvss::v3::ImpactMetricV3;
 use std::str::FromStr;
 use yew::prelude::*;
@@ -67,21 +70,12 @@ impl Component for CVEDetails {
       };
     }
     let cve = self.cve.clone().unwrap();
-    let description = cve
-      .description
-      .description_data
-      .iter()
-      .map(|d| d.value.clone())
-      .collect::<String>();
-    let mut description = description.chars();
     html! {
       <>
       <div class="row g-2 align-items-center">
       <div class="col">
-          <h2 class="page-title">
-            {cve.id.clone()}
-          </h2>
-        </div>
+          <h2 class="page-title">{cve.id.clone()}</h2>
+      </div>
         <div class="col-auto ms-auto d-print-none">
           <div class="d-flex">
             <ol class="breadcrumb breadcrumb-arrows" aria-label="breadcrumbs">
@@ -95,9 +89,11 @@ impl Component for CVEDetails {
       </div>
       <div class="card card-lg">
       <div class="card-header">
-      <h3 class="card-title"><span style="float: left;line-height: 85%;width: .7em;font-size: 400%;font-family: georgia;">{description.next().unwrap_or_default()}</span><p>{description.collect::<String>()}</p></h3>
+      {self.description(cve.description.description_data.clone())}
       </div>
       {self.cvss(cve.clone())}
+      {self.references(cve.references.reference_data)}
+      {self.configurations(cve.configurations)}
       <div class="card-body">
 
       </div>
@@ -118,18 +114,24 @@ impl CVEDetails {
       Ok(v3) => Some(v3),
       Err(_) => None,
     };
+    let cvss_v2 = match ImpactMetricV2::from_str(&cve.cvss2_vector) {
+      Ok(v2) => Some(v2),
+      Err(_) => None,
+    };
     html! {
       <>
-      <div class="card-tabs">
-      <ul class="nav nav-tabs" role="tablist">
+      <div class="card-tabs p-1">
+      <ul class="nav nav-tabs p-1" role="tablist">
       if let Some(v3) = cvss_v3.clone(){
         <li class="nav-item">
-          <a href="#tabs-cvss3" class="nav-link active" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())}</a>
+          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cve.cvss3_score.clone())}</a>
         </li>
       }
+      if let Some(v2) = cvss_v2.clone(){
         <li class="nav-item">
-          <a href="#tabs-cvss2" class="nav-link" data-bs-toggle="tab">{"CVSS v2"}</a>
+          <a href="#tabs-cvss2" class="nav-link" data-bs-toggle="tab">{format!("CVSS v{}",v2.cvss_v2.version.to_string())} {cvss2(cve.cvss2_score.clone())}</a>
         </li>
+      }
       </ul>
         <div class="tab-content">
         if let Some(v3) = cvss_v3.clone(){
@@ -144,5 +146,134 @@ impl CVEDetails {
       </div>
     </>
     }
+  }
+  fn description(&self, description_data: Vec<cve::DescriptionData>) -> Html {
+    let description = description_data
+      .iter()
+      .map(|d| d.value.clone())
+      .collect::<String>();
+    let mut description = description.chars();
+    html! {
+      <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
+    }
+  }
+  fn references(&self, reference: Vec<cve::Reference>) -> Html {
+    html! {
+      <div class="accordion" id="accordion-example" role="tablist" aria-multiselectable="true">
+        <div class="accordion-item">
+          <h2 class="accordion-header" role="tab">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true">
+              {"References"}
+            </button>
+          </h2>
+          <div id="collapse-1" class="accordion-collapse collapse show" data-bs-parent="#accordion-example" style="">
+            <div class="accordion-body pt-0">
+            <div class="table-responsive">
+              <table class="table table-vcenter card-table table-striped">
+                <thead>
+                  <tr>
+                    <th>{"Link"}</th>
+                    <th>{"Resource"}</th>
+                    <th>{"Tags"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {reference.into_iter().map(|r|{
+                  html!{
+                    <tr>
+                    <td><i class="ti ti-external-link"></i><a href={r.url} target="_blank">{r.name}</a></td>
+                    <td class="text-dark">
+                      {r.refsource}
+                    </td>
+                    <td class="text-secondary">
+                    <div class="badges-list">
+                      {r.tags.into_iter().map(|t|{html!(<span class="badge bg-blue text-blue-fg">{t}</span>)}).collect::<Html>()}
+                    </div>
+                    </td>
+                  </tr>
+                  }
+                }).collect::<Html>()}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+  fn configurations(&self, configuration: cve::configurations::Configurations) -> Html {
+    html! {
+      <div class="accordion" id="accordion-example" role="tablist" aria-multiselectable="true">
+        <div class="accordion-item">
+          <h2 class="accordion-header" role="tab">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-1" aria-expanded="true">
+              {"Configurations"}
+            </button>
+          </h2>
+          <div id="collapse-1" class="accordion-collapse collapse show" data-bs-parent="#accordion-example" style="">
+            <div class="accordion-body pt-0">
+            {format!("{:?}",configuration)}
+            <div class="table-responsive">
+              <table class="table table-vcenter card-table table-striped">
+                <thead>
+                  <tr>
+                    <th>{"Operator"}</th>
+                    <th>{"Match"}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {configuration.nodes.into_iter().map(|node|{
+                  html!{
+                    <tr>
+                    <td class="col-md-1"><i class={classes!( ["ti",operator(node.operator.clone())])}></i>{format!("{:?}",node.operator)}</td>
+                    <td class="col-md-11">
+                      {
+                        node.children.into_iter().map(|node|{
+                        {node.cpe_match.into_iter().map(|m|{
+                          html!{
+                          <table class="table table-vcenter card-table table-striped">
+                            <thead>
+                              <tr>
+                                <th>{"Vulnerable"}</th>
+                                <th>{"Vendor"}</th>
+                                <th>{"Product"}</th>
+                                <th>{"CPE"}</th>
+                                <th>{"Version"}</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                              <td class="col-md-1">{m.vulnerable.to_string()}</td>
+                              <td class="col-md-2">{m.cpe_uri.cpe23_uri.vendor.to_string()}</td>
+                              <td class="col-md-2">{m.cpe_uri.cpe23_uri.product.to_string()}</td>
+                              <td class="col-md-6">{m.cpe_uri.cpe23_uri.to_string()}</td>
+                              <td class="col-md-1">{m.cpe_uri.cpe23_uri.version.to_string()}</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        }
+                        }).collect::<Html>()}
+                      }).collect::<Html>()
+                      }
+                    </td>
+                  </tr>
+                  }
+                }).collect::<Html>()}
+                </tbody>
+              </table>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  }
+}
+
+fn operator(o: Operator) -> &'static str {
+  match o {
+    Operator::And => "ti-logic-and",
+    Operator::Or => "ti-logic-or",
   }
 }

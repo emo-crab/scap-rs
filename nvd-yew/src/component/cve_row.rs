@@ -1,6 +1,6 @@
+use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::modules::cve::Cve;
 use crate::routes::Route;
-use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use std::collections::HashSet;
 
 use yew::prelude::*;
@@ -99,35 +99,4 @@ impl Component for CVERow {
     </>
     }
   }
-}
-fn cvss2(score: f32) -> Html {
-  let severity = cvss::severity::SeverityTypeV2::from(score);
-  let severity_class = match severity {
-    SeverityTypeV2::None => "bg-secondary",
-    SeverityTypeV2::Low => "bg-info",
-    SeverityTypeV2::Medium => "bg-warning",
-    SeverityTypeV2::High => "bg-danger",
-  };
-  let score_str = if score == 0.0 {
-    String::from("N/A")
-  } else {
-    score.to_string()
-  };
-  html!(<span class={classes!(["badge",severity_class])}><b style="font-size:larger">{score_str}</b></span>)
-}
-fn cvss3(score: f32) -> Html {
-  let severity = cvss::severity::SeverityTypeV3::from(score);
-  let severity_class = match severity {
-    SeverityTypeV3::None => "bg-secondary",
-    SeverityTypeV3::Low => "bg-info",
-    SeverityTypeV3::Medium => "bg-warning",
-    SeverityTypeV3::High => "bg-danger",
-    SeverityTypeV3::Critical => "bg-dark",
-  };
-  let score_str = if score == 0.0 {
-    String::from("N/A")
-  } else {
-    format!("{} {}", score, severity)
-  };
-  html!(<span class={classes!(["badge",severity_class])}><b style="font-size:larger">{score_str}</b></span>)
 }
