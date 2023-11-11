@@ -54,19 +54,18 @@ fn operator(o: Operator) -> &'static str {
 
 impl CVEConfiguration {
   fn cpe_match(&self, m: cve::configurations::Match) -> Html {
-      let vendor = m.cpe_uri.cpe23_uri.vendor.to_string();
-      let product = m.cpe_uri.cpe23_uri.product.to_string();
+    let vendor = m.cpe_uri.cpe23_uri.vendor.to_string();
+    let product = m.cpe_uri.cpe23_uri.product.to_string();
     html! {
           <tr>
-          <td class="col-md-1">{m.vulnerable.to_string()}</td>
           <td class="col-md-2">
             <button data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-info" value={vendor.clone()} key={vendor.clone()} title={vendor.clone()}>
-              <b class="text-truncate" style="max-width: 50px;" value={vendor.clone()}>{ vendor.clone() }</b>
+              <b class="text-truncate" value={vendor.clone()}>{ vendor.clone() }</b>
             </button>
           </td>
           <td class="col-md-2">
             <button data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={product.clone()} key={product.clone()} title={product.clone()}>
-              <b class="text-truncate" style="max-width: 50px;" product={product.clone()} vendor={vendor.clone()}>{ product }</b>
+              <b class="text-truncate" product={product.clone()} vendor={vendor.clone()}>{ product }</b>
             </button>
           </td>
           <td class="col-md-6">{m.cpe_uri.cpe23_uri.to_string()}</td>
@@ -79,7 +78,6 @@ impl CVEConfiguration {
       html! {
           <thead>
             <tr>
-              <th>{"Vulnerable"}</th>
               <th>{"Vendor"}</th>
               <th>{"Product"}</th>
               <th>{"CPE"}</th>
@@ -91,11 +89,26 @@ impl CVEConfiguration {
       html!()
     }
   }
+  fn operator_vulnerable(
+    &self,
+    cpe_match: Vec<cve::configurations::Match>,
+    operator: Operator,
+  ) -> Html {
+    if cpe_match.len() == 1 && matches!(operator, cve::configurations::Operator::Or) {
+      if !cpe_match.first().unwrap().vulnerable {
+        return html!(<i class={classes!( ["ti","ti-stack-2"])}></i>);
+      }
+    }
+    html!()
+  }
   fn node(&self, nodes: Vec<cve::configurations::Node>) -> Html {
     nodes.into_iter().map(|node|{
       html!{
             <tr>
-            <td class="col-md-1"><i class={classes!( ["ti",operator(node.operator.clone())])}></i>{format!("{:?}",node.operator)}</td>
+            <td class="col-md-1">
+                <i class={classes!( ["ti",operator(node.operator.clone())])}></i>{format!("{:?}",node.operator)}
+                {self.operator_vulnerable(node.cpe_match.clone(),node.operator.clone())}
+            </td>
             <td class="col-md-11">
               {self.node(node.children)}
               {html!{

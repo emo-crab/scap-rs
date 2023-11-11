@@ -51,68 +51,73 @@ pub enum V3Card {
   ScopeType(ScopeType),
 }
 pub fn cvss_v3_card(value: V3Card) -> Html {
-  let (name, value, class_str) = match value {
+  let (name, value, class_str, icon) = match value {
     V3Card::AttackVectorType(av) => {
-      let class_str = match av {
-        AttackVectorType::Network => "bg-danger",
-        AttackVectorType::AdjacentNetwork => "bg-warning",
-        AttackVectorType::Local => "bg-info",
-        AttackVectorType::Physical => "bg-secondary",
+      let (class_str, icon) = match av {
+        AttackVectorType::Network => ("bg-danger", "ti-network"),
+        AttackVectorType::AdjacentNetwork => ("bg-warning", "ti-cloud-network"),
+        AttackVectorType::Local => ("bg-info", "ti-current-location"),
+        AttackVectorType::Physical => ("bg-secondary", "ti-body-scan"),
       };
-      ("Attack Vector", format!("{:?}", av), class_str)
+      ("Attack Vector", format!("{:?}", av), class_str, icon)
     }
     V3Card::AttackComplexityType(ac) => {
-      let class_str = match ac {
-        AttackComplexityType::High => "bg-warning",
-        AttackComplexityType::Low => "bg-danger",
+      let (class_str, icon) = match ac {
+        AttackComplexityType::High => ("bg-warning", "ti-mood-unamused"),
+        AttackComplexityType::Low => ("bg-danger", "ti-mood-smile"),
       };
-      ("Attack Complexity", format!("{:?}", ac), class_str)
+      ("Attack Complexity", format!("{:?}", ac), class_str, icon)
     }
     V3Card::PrivilegesRequiredType(pr) => {
-      let class_str = match pr {
-        PrivilegesRequiredType::High => "bg-info",
-        PrivilegesRequiredType::Low => "bg-warning",
-        PrivilegesRequiredType::None => "bg-danger",
+      let (class_str, icon) = match pr {
+        PrivilegesRequiredType::High => ("bg-info", "ti-lock-check"),
+        PrivilegesRequiredType::Low => ("bg-warning", "ti-lock-pause"),
+        PrivilegesRequiredType::None => ("bg-danger", "ti-lock-open"),
       };
-      ("Privileges Required", format!("{:?}", pr), class_str)
+      ("Privileges Required", format!("{:?}", pr), class_str, icon)
     }
     V3Card::UserInteractionType(ui) => {
-      let class_str = match ui {
-        UserInteractionType::Required => "bg-warning",
-        UserInteractionType::None => "bg-danger",
+      let (class_str, icon) = match ui {
+        UserInteractionType::Required => ("bg-warning", "ti-user-plus"),
+        UserInteractionType::None => ("bg-danger", "ti-user-check"),
       };
-      ("User Interaction", format!("{:?}", ui), class_str)
+      ("User Interaction", format!("{:?}", ui), class_str, icon)
     }
     V3Card::ConfidentialityImpactType(c) => {
-      let class_str = match c {
-        ConfidentialityImpactType::High => "bg-danger",
-        ConfidentialityImpactType::Low => "bg-warning",
-        ConfidentialityImpactType::None => "bg-info",
+      let (class_str, icon) = match c {
+        ConfidentialityImpactType::High => ("bg-danger", "ti-eye"),
+        ConfidentialityImpactType::Low => ("bg-warning", "ti-eye-x"),
+        ConfidentialityImpactType::None => ("bg-info", "ti-eye-closed"),
       };
-      ("Confidentiality Impact", format!("{:?}", c), class_str)
+      (
+        "Confidentiality Impact",
+        format!("{:?}", c),
+        class_str,
+        icon,
+      )
     }
     V3Card::IntegrityImpactType(i) => {
-      let class_str = match i {
-        IntegrityImpactType::High => "bg-danger",
-        IntegrityImpactType::Low => "bg-warning",
-        IntegrityImpactType::None => "bg-info",
+      let (class_str, icon) = match i {
+        IntegrityImpactType::High => ("bg-danger", "ti-menu-2"),
+        IntegrityImpactType::Low => ("bg-warning", "ti-menu-deep"),
+        IntegrityImpactType::None => ("bg-info", "ti-menu"),
       };
-      ("Integrity Impact", format!("{:?}", i), class_str)
+      ("Integrity Impact", format!("{:?}", i), class_str, icon)
     }
     V3Card::AvailabilityImpactType(a) => {
-      let class_str = match a {
-        AvailabilityImpactType::High => "bg-danger",
-        AvailabilityImpactType::Low => "bg-warning",
-        AvailabilityImpactType::None => "bg-info",
+      let (class_str, icon) = match a {
+        AvailabilityImpactType::High => ("bg-danger", "ti-lock-access-off"),
+        AvailabilityImpactType::Low => ("bg-warning", "ti-lock-x"),
+        AvailabilityImpactType::None => ("bg-info", "ti-lock-access"),
       };
-      ("Availability Impact", format!("{:?}", a), class_str)
+      ("Availability Impact", format!("{:?}", a), class_str, icon)
     }
     V3Card::ScopeType(s) => {
-      let class_str = match s {
-        ScopeType::Unchanged => "bg-warning",
-        ScopeType::Changed => "bg-danger",
+      let (class_str, icon) = match s {
+        ScopeType::Unchanged => ("bg-warning", "ti-replace-off"),
+        ScopeType::Changed => ("bg-danger", "ti-replace"),
       };
-      ("Scope", format!("{:?}", s), class_str)
+      ("Scope", format!("{:?}", s), class_str, icon)
     }
   };
   html! {
@@ -121,7 +126,7 @@ pub fn cvss_v3_card(value: V3Card) -> Html {
           <div class={classes!(["card-status-start",class_str])}></div>
           <div class="card-header p-2"><h5 class="card-title">{name}</h5>
           <div class="card-actions">
-            <span class={classes!(["badge",class_str])}>{value}</span>
+            <span class={classes!(["badge",class_str])}><i class={classes!( ["ti",icon])}></i>{value}</span>
           </div>
           </div>
         </li>
