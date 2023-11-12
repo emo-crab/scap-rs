@@ -19,8 +19,7 @@ impl Configurations {
     self
       .nodes
       .iter()
-      .map(|node| node.vendor_product())
-      .flatten()
+      .flat_map(|node| node.vendor_product())
       .collect()
   }
 }

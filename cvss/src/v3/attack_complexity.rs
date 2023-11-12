@@ -12,7 +12,7 @@
 //! _Scoring Guidance_: When deciding between Network and Adjacent, if an attack can be launched over a wide area network or from outside the logically adjacent administrative network domain, use Network. Network should be used even if the attacker is required to be on the same intranet to exploit the vulnerable system (e.g., the attacker can only exploit the vulnerability from inside a corporate network).
 //!
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV3};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -45,6 +45,13 @@ impl Display for AttackComplexityType {
 }
 impl Metric for AttackComplexityType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::AC);
+
+  fn help(&self) -> Help {
+    match self {
+      AttackComplexityType::High => {Help{ worth: Worth::Worst, des: " A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.".to_string() }}
+      AttackComplexityType::Low => {Help{ worth: Worth::Bad, des: " Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.".to_string() }}
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

@@ -10,7 +10,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV3};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -172,6 +172,14 @@ impl Display for ConfidentialityImpactType {
 impl Metric for ConfidentialityImpactType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::C);
 
+  fn help(&self) -> Help {
+    match self {
+      ConfidentialityImpactType::High => {Help{ worth: Worth::Worst, des: " There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator's password, or private encryption keys of a web server.".to_string() }}
+      ConfidentialityImpactType::Low => {Help{ worth: Worth::Worst, des: " There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.".to_string() }}
+      ConfidentialityImpactType::None => {Help{ worth: Worth::Worst, des: " There is no loss of confidentiality within the impacted component.".to_string() }}
+    }
+  }
+
   fn score(&self) -> f32 {
     match self {
       ConfidentialityImpactType::None => 0.0,
@@ -198,6 +206,14 @@ impl Display for IntegrityImpactType {
 impl Metric for IntegrityImpactType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::I);
 
+  fn help(&self) -> Help {
+    match self {
+      IntegrityImpactType::High => {Help{ worth: Worth::Worst, des: " There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.".to_string() }}
+      IntegrityImpactType::Low => {Help{ worth: Worth::Bad, des: " Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.".to_string() }}
+      IntegrityImpactType::None => {Help{ worth: Worth::Good, des: " There is no loss of integrity within the impacted component.".to_string() }}
+    }
+  }
+
   fn score(&self) -> f32 {
     match self {
       IntegrityImpactType::None => 0.0,
@@ -223,6 +239,14 @@ impl Display for AvailabilityImpactType {
 
 impl Metric for AvailabilityImpactType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::A);
+
+  fn help(&self) -> Help {
+    match self {
+      AvailabilityImpactType::High => {Help{ worth: Worth::Worst, des: " There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).".to_string() }}
+      AvailabilityImpactType::Low => {Help{ worth: Worth::Worst, des: " Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.".to_string() }}
+      AvailabilityImpactType::None => {Help{ worth: Worth::Worst, des: " There is no impact to availability within the impacted component.".to_string() }}
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

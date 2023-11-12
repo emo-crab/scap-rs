@@ -1,10 +1,10 @@
+mod component;
+mod debug;
+mod error;
 mod layout;
+mod modules;
 mod routes;
 mod services;
-mod component;
-mod error;
-mod modules;
-mod debug;
 
 use layout::{Footer, Main, Nav};
 use yew::prelude::*;

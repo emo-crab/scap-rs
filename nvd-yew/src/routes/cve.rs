@@ -204,7 +204,9 @@ impl CVEDetails {
     }
   }
   fn configurations(&self, configuration: cve::configurations::Configurations) -> Html {
-    let p = CVEConfigurationProps{props:configuration.clone()};
+    let p = CVEConfigurationProps {
+      props: configuration.clone(),
+    };
     html! {<CVEConfiguration ..p.clone()/>}
   }
 }

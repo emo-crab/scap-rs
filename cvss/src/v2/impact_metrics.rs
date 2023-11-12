@@ -3,7 +3,7 @@
 //! The three impact metrics measure how a vulnerability, if exploited, will directly affect an IT asset, where the impacts are independently defined as the degree of loss of confidentiality, integrity, and availability. For example, a vulnerability could cause a partial loss of integrity and availability, but no loss of confidentiality.
 //!
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV2};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV2, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -155,6 +155,23 @@ impl Display for ConfidentialityImpactType {
 impl Metric for ConfidentialityImpactType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::C);
 
+  fn help(&self) -> Help {
+    match self {
+      ConfidentialityImpactType::None => Help {
+        worth: Worth::Good,
+        des: "".to_string(),
+      },
+      ConfidentialityImpactType::Partial => Help {
+        worth: Worth::Bad,
+        des: "".to_string(),
+      },
+      ConfidentialityImpactType::Complete => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
+
   fn score(&self) -> f32 {
     match self {
       ConfidentialityImpactType::None => 0.0,
@@ -181,6 +198,23 @@ impl Display for IntegrityImpactType {
 impl Metric for IntegrityImpactType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::I);
 
+  fn help(&self) -> Help {
+    match self {
+      IntegrityImpactType::None => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      IntegrityImpactType::Partial => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      IntegrityImpactType::Complete => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
+
   fn score(&self) -> f32 {
     match self {
       IntegrityImpactType::None => 0.0,
@@ -206,6 +240,23 @@ impl Display for AvailabilityImpactType {
 
 impl Metric for AvailabilityImpactType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::A);
+
+  fn help(&self) -> Help {
+    match self {
+      AvailabilityImpactType::None => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      AvailabilityImpactType::Partial => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      AvailabilityImpactType::Complete => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

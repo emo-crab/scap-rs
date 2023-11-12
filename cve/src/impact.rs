@@ -1,7 +1,7 @@
 //! impact
-use serde::{Deserialize, Serialize};
 use cvss::v2::ImpactMetricV2;
 use cvss::v3::ImpactMetricV3;
+use serde::{Deserialize, Serialize};
 
 /// This is impact type information (e.g. a text description, CVSSv2, CVSSv3, etc.).
 ///
@@ -18,4 +18,3 @@ pub struct Impact {
   pub base_metric_v3: Option<ImpactMetricV3>,
   // TODO: Implement V4?
 }
-

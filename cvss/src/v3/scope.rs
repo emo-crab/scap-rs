@@ -17,7 +17,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV3};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -61,6 +61,13 @@ impl Display for ScopeType {
 
 impl Metric for ScopeType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::S);
+
+  fn help(&self) -> Help {
+    match self {
+      ScopeType::Unchanged => {Help{ worth: Worth::Worst, des: " An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.".to_string() }}
+      ScopeType::Changed => {Help{ worth: Worth::Worst, des: " An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.".to_string() }}
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

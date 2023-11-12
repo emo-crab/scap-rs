@@ -24,7 +24,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV3};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -48,6 +48,23 @@ impl Display for AccessComplexityType {
 
 impl Metric for AccessComplexityType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::AC);
+
+  fn help(&self) -> Help {
+    match self {
+      AccessComplexityType::High => Help {
+        worth: Worth::Good,
+        des: "".to_string(),
+      },
+      AccessComplexityType::Medium => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      AccessComplexityType::Low => Help {
+        worth: Worth::Bad,
+        des: "".to_string(),
+      },
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

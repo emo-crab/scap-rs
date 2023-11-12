@@ -12,7 +12,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV2};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV2, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -37,6 +37,23 @@ impl Display for AuthenticationType {
 
 impl Metric for AuthenticationType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::Au);
+
+  fn help(&self) -> Help {
+    match self {
+      AuthenticationType::Multiple => Help {
+        worth: Worth::Bad,
+        des: "".to_string(),
+      },
+      AuthenticationType::Single => Help {
+        worth: Worth::Worse,
+        des: "".to_string(),
+      },
+      AuthenticationType::None => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
 
   fn score(&self) -> f32 {
     match self {

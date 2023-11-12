@@ -43,7 +43,18 @@
 use crate::error::{CVSSError, Result};
 use std::fmt::{Debug, Display};
 use std::str::FromStr;
-
+#[derive(Debug, Clone)]
+pub struct Help {
+  pub worth: Worth,
+  pub des: String,
+}
+#[derive(Debug, Clone)]
+pub enum Worth {
+  Worst, //最严重的
+  Worse, //比较严重的
+  Bad,   //坏
+  Good,  //还好
+}
 pub trait Metric: Clone + Debug + FromStr + Display {
   const TYPE: MetricType;
   fn name() -> &'static str {
@@ -52,6 +63,7 @@ pub trait Metric: Clone + Debug + FromStr + Display {
       MetricType::V3(v3) => v3.name(),
     }
   }
+  fn help(&self) -> Help;
   fn score(&self) -> f32;
   fn as_str(&self) -> &'static str;
 }

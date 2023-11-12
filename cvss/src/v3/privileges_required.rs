@@ -14,7 +14,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Metric, MetricType, MetricTypeV3};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -49,6 +49,14 @@ impl Display for PrivilegesRequiredType {
 
 impl Metric for PrivilegesRequiredType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::PR);
+
+  fn help(&self) -> Help {
+    match self {
+      PrivilegesRequiredType::High => {Help{ worth: Worth::Worst, des: " The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.".to_string() }}
+      PrivilegesRequiredType::Low => {Help{ worth: Worth::Worst, des: " The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.".to_string() }}
+      PrivilegesRequiredType::None => {Help{ worth: Worth::Worst, des: " The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the the vulnerable system to carry out an attack.".to_string() }}
+    }
+  }
 
   fn score(&self) -> f32 {
     self.scoped_score(false)
