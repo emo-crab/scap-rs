@@ -1,4 +1,4 @@
-use crate::component::cvss_tags::{cvss_v3_card, V3Card};
+use crate::component::cvss_tags::V3Card;
 use cvss::v3::ImpactMetricV3;
 use yew::prelude::*;
 
@@ -50,16 +50,16 @@ impl Component for CVSS3 {
         </div>
         </div>
         <div class="col-md-4">
-          {cvss_v3_card(V3Card::AttackVectorType(cvss_v3.exploit_ability.attack_vector))}
-          {cvss_v3_card(V3Card::AttackComplexityType(cvss_v3.exploit_ability.attack_complexity))}
-          {cvss_v3_card(V3Card::PrivilegesRequiredType(cvss_v3.exploit_ability.privileges_required))}
-          {cvss_v3_card(V3Card::UserInteractionType(cvss_v3.exploit_ability.user_interaction))}
+          {V3Card::AttackVectorType(cvss_v3.exploit_ability.attack_vector)}
+          {V3Card::AttackComplexityType(cvss_v3.exploit_ability.attack_complexity)}
+          {V3Card::PrivilegesRequiredType(cvss_v3.exploit_ability.privileges_required)}
+          {V3Card::UserInteractionType(cvss_v3.exploit_ability.user_interaction)}
         </div>
         <div class="col-md-4">
-          {cvss_v3_card(V3Card::ScopeType(cvss_v3.scope))}
-          {cvss_v3_card(V3Card::ConfidentialityImpactType(cvss_v3.impact.confidentiality_impact))}
-          {cvss_v3_card(V3Card::IntegrityImpactType(cvss_v3.impact.integrity_impact))}
-          {cvss_v3_card(V3Card::AvailabilityImpactType(cvss_v3.impact.availability_impact))}
+          {V3Card::ScopeType(cvss_v3.scope)}
+          {V3Card::ConfidentialityImpactType(cvss_v3.impact.confidentiality_impact)}
+          {V3Card::IntegrityImpactType(cvss_v3.impact.integrity_impact)}
+          {V3Card::AvailabilityImpactType(cvss_v3.impact.availability_impact)}
         </div>
       </div>
       </>

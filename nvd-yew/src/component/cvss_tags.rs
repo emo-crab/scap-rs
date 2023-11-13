@@ -52,6 +52,11 @@ pub enum V3Card {
   ScopeType(ScopeType),
 }
 
+impl From<V3Card> for yew::virtual_dom::VNode {
+  fn from(value: V3Card) -> Self {
+    value.to_html()
+  }
+}
 impl V3Card {
   fn help(&self) -> Help {
     match self {
@@ -65,7 +70,7 @@ impl V3Card {
       V3Card::ScopeType(s) => s.metric_help(),
     }
   }
-  fn color(&self, worth: &Worth) -> &str {
+  fn color(&self, worth: &Worth) -> &'static str {
     match worth {
       Worth::Worst => "bg-danger",
       Worth::Worse => "bg-warning",
@@ -73,19 +78,35 @@ impl V3Card {
       Worth::Good => "bg-secondary",
     }
   }
-  fn name(&self) -> &str {
-    match self {
-      V3Card::AttackVectorType(_) => "Attack Vector",
-      V3Card::AttackComplexityType(_) => "Attack Complexity",
-      V3Card::PrivilegesRequiredType(_) => "Privileges Required",
-      V3Card::UserInteractionType(_) => "User Interaction",
-      V3Card::ConfidentialityImpactType(_) => "Confidentiality Impact",
-      V3Card::IntegrityImpactType(_) => "Integrity Impact",
-      V3Card::AvailabilityImpactType(_) => "Availability Impact",
-      V3Card::ScopeType(_) => "Scope",
+  pub fn to_html(&self) -> Html {
+    let (name, value) = match self {
+      V3Card::AttackVectorType(v) => ("Attack Vector", format!("{:?}", v)),
+      V3Card::AttackComplexityType(v) => ("Attack Complexity", format!("{:?}", v)),
+      V3Card::PrivilegesRequiredType(v) => ("Privileges Required", format!("{:?}", v)),
+      V3Card::UserInteractionType(v) => ("User Interaction", format!("{:?}", v)),
+      V3Card::ConfidentialityImpactType(v) => ("Confidentiality Impact", format!("{:?}", v)),
+      V3Card::IntegrityImpactType(v) => ("Integrity Impact", format!("{:?}", v)),
+      V3Card::AvailabilityImpactType(v) => ("Availability Impact", format!("{:?}", v)),
+      V3Card::ScopeType(v) => ("Scope", format!("{:?}", v)),
+    };
+    let h = self.help();
+    let icon = self.icon();
+    let class_str = self.color(&h.worth);
+    let des = h.des;
+    html! {
+        <div class="justify-content-between align-items-start">
+          <li class="card card-sm card-link card-link-pop">
+            <div class={classes!(["card-status-start",class_str])}></div>
+            <div class="card-header p-2"><h5 class="card-title">{name}</h5>
+            <div class="card-actions">
+              <span class={classes!(["badge",class_str])} data-bs-trigger="hover" data-bs-container="body" content={des.clone()} title={des.clone()} data-bs-toggle="popover" data-bs-placement="top" data-bs-html="false" data-bs-content={des.clone()}><i class={classes!( ["ti",icon])}></i>{value}</span>
+            </div>
+            </div>
+          </li>
+        </div>
     }
   }
-  fn icon(&self) -> &str {
+  fn icon(&self) -> &'static str {
     match self {
       V3Card::AttackVectorType(av) => match av {
         AttackVectorType::Network => "ti-network",
@@ -126,90 +147,5 @@ impl V3Card {
         ScopeType::Changed => "ti-replace",
       },
     }
-  }
-}
-
-pub fn cvss_v3_card(value: V3Card) -> Html {
-  let (name, value, class_str, icon) = match value {
-    V3Card::AttackVectorType(av) => {
-      let help = av.metric_help();
-      let (class_str, icon) = match av {
-        AttackVectorType::Network => ("bg-danger", "ti-network"),
-        AttackVectorType::AdjacentNetwork => ("bg-warning", "ti-cloud-network"),
-        AttackVectorType::Local => ("bg-info", "ti-current-location"),
-        AttackVectorType::Physical => ("bg-secondary", "ti-body-scan"),
-      };
-      ("Attack Vector", format!("{:?}", av), class_str, icon)
-    }
-    V3Card::AttackComplexityType(ac) => {
-      let (class_str, icon) = match ac {
-        AttackComplexityType::High => ("bg-warning", "ti-mood-unamused"),
-        AttackComplexityType::Low => ("bg-danger", "ti-mood-smile"),
-      };
-      ("Attack Complexity", format!("{:?}", ac), class_str, icon)
-    }
-    V3Card::PrivilegesRequiredType(pr) => {
-      let (class_str, icon) = match pr {
-        PrivilegesRequiredType::High => ("bg-info", "ti-lock-check"),
-        PrivilegesRequiredType::Low => ("bg-warning", "ti-lock-pause"),
-        PrivilegesRequiredType::None => ("bg-danger", "ti-lock-open"),
-      };
-      ("Privileges Required", format!("{:?}", pr), class_str, icon)
-    }
-    V3Card::UserInteractionType(ui) => {
-      let (class_str, icon) = match ui {
-        UserInteractionType::Required => ("bg-warning", "ti-user-plus"),
-        UserInteractionType::None => ("bg-danger", "ti-user-check"),
-      };
-      ("User Interaction", format!("{:?}", ui), class_str, icon)
-    }
-    V3Card::ConfidentialityImpactType(c) => {
-      let (class_str, icon) = match c {
-        ConfidentialityImpactType::High => ("bg-danger", "ti-eye"),
-        ConfidentialityImpactType::Low => ("bg-warning", "ti-eye-x"),
-        ConfidentialityImpactType::None => ("bg-info", "ti-eye-closed"),
-      };
-      (
-        "Confidentiality Impact",
-        format!("{:?}", c),
-        class_str,
-        icon,
-      )
-    }
-    V3Card::IntegrityImpactType(i) => {
-      let (class_str, icon) = match i {
-        IntegrityImpactType::High => ("bg-danger", "ti-menu-2"),
-        IntegrityImpactType::Low => ("bg-warning", "ti-menu-deep"),
-        IntegrityImpactType::None => ("bg-info", "ti-menu"),
-      };
-      ("Integrity Impact", format!("{:?}", i), class_str, icon)
-    }
-    V3Card::AvailabilityImpactType(a) => {
-      let (class_str, icon) = match a {
-        AvailabilityImpactType::High => ("bg-danger", "ti-lock-access-off"),
-        AvailabilityImpactType::Low => ("bg-warning", "ti-lock-x"),
-        AvailabilityImpactType::None => ("bg-info", "ti-lock-access"),
-      };
-      ("Availability Impact", format!("{:?}", a), class_str, icon)
-    }
-    V3Card::ScopeType(s) => {
-      let (class_str, icon) = match s {
-        ScopeType::Unchanged => ("bg-warning", "ti-replace-off"),
-        ScopeType::Changed => ("bg-danger", "ti-replace"),
-      };
-      ("Scope", format!("{:?}", s), class_str, icon)
-    }
-  };
-  html! {
-      <div class="justify-content-between align-items-start">
-        <li class="card card-sm card-link card-link-pop">
-          <div class={classes!(["card-status-start",class_str])}></div>
-          <div class="card-header p-2"><h5 class="card-title">{name}</h5>
-          <div class="card-actions">
-            <span class={classes!(["badge",class_str])}><i class={classes!( ["ti",icon])}></i>{value}</span>
-          </div>
-          </div>
-        </li>
-      </div>
   }
 }
