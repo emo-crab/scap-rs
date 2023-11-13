@@ -50,10 +50,14 @@ pub struct Help {
 }
 #[derive(Debug, Clone)]
 pub enum Worth {
-  Worst, //最严重的
-  Worse, //比较严重的
-  Bad,   //坏
-  Good,  //还好
+  /// 最严重的
+  Worst,
+  /// 比较严重的
+  Worse,
+  /// 坏
+  Bad,
+  /// 还好
+  Good,
 }
 pub trait Metric: Clone + Debug + FromStr + Display {
   const TYPE: MetricType;

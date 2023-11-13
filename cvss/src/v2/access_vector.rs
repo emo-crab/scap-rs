@@ -36,14 +36,19 @@ impl Display for AccessVectorType {
   }
 }
 
+impl AccessVectorType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for AccessVectorType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::AV);
 
   fn help(&self) -> Help {
     match self {
-      AccessVectorType::Network => {Help{ worth: Worth::Worst, des: " The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet. Such a vulnerability is often termed “remotely exploitable” and can be thought of as an attack being exploitable at the protocol level one or more network hops away (e.g., across one or more routers).".to_string() }}
-      AccessVectorType::AdjacentNetwork => {Help{ worth: Worth::Worse, des: " The vulnerable component is bound to the network stack, but the attack is limited at the protocol level to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone). One example of an Adjacent attack would be an ARP (IPv4) or neighbor discovery (IPv6) flood leading to a denial of service on the local LAN segment.".to_string() }}
-      AccessVectorType::Local => {Help{ worth: Worth::Bad, des: " The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: ".to_string() }}
+      AccessVectorType::Network => {Help{ worth: Worth::Worst, des: "A vulnerability exploitable with network access means the vulnerable software is bound to the network stack and the attacker does not require local network access or local access. Such a vulnerability is often termed \"remotely exploitable\". An example of a network attack is an RPC buffer overflow.".to_string() }}
+      AccessVectorType::AdjacentNetwork => {Help{ worth: Worth::Worse, des: "A vulnerability exploitable with adjacent network access requires the attacker to have access to either the broadcast or collision domain of the vulnerable software.  Examples of local networks include local IP subnet, Bluetooth, IEEE 802.11, and local Ethernet segment.".to_string() }}
+      AccessVectorType::Local => {Help{ worth: Worth::Bad, des: "A vulnerability exploitable with only local access requires the attacker to have either physical access to the vulnerable system or a local (shell) account. Examples of locally exploitable vulnerabilities are peripheral attacks such as Firewire/USB DMA attacks, and local privilege escalations (e.g., sudo).".to_string() }}
     }
   }
 

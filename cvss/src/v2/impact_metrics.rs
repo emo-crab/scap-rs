@@ -159,15 +159,15 @@ impl Metric for ConfidentialityImpactType {
     match self {
       ConfidentialityImpactType::None => Help {
         worth: Worth::Good,
-        des: "".to_string(),
+        des: "There is no impact to the confidentiality of the system.".to_string(),
       },
       ConfidentialityImpactType::Partial => Help {
         worth: Worth::Bad,
-        des: "".to_string(),
+        des: "There is considerable informational disclosure. Access to some system files is possible, but the attacker does not have control over what is obtained, or the scope of the loss is constrained. An example is a vulnerability that divulges only certain tables in a database.".to_string(),
       },
       ConfidentialityImpactType::Complete => Help {
         worth: Worth::Worst,
-        des: "".to_string(),
+        des: "There is total information disclosure, resulting in all system files being revealed. The attacker is able to read all of the system's data (memory, files, etc.)".to_string(),
       },
     }
   }
@@ -201,16 +201,16 @@ impl Metric for IntegrityImpactType {
   fn help(&self) -> Help {
     match self {
       IntegrityImpactType::None => Help {
-        worth: Worth::Worst,
-        des: "".to_string(),
+        worth: Worth::Good,
+        des: "There is no impact to the integrity of the system.".to_string(),
       },
       IntegrityImpactType::Partial => Help {
-        worth: Worth::Worst,
-        des: "".to_string(),
+        worth: Worth::Bad,
+        des: "Modification of some system files or information is possible, but the attacker does not have control over what can be modified, or the scope of what the attacker can affect is limited. For example, system or application files may be overwritten or modified, but either the attacker has no control over which files are affected or the attacker can modify files within only a limited context or scope.".to_string(),
       },
       IntegrityImpactType::Complete => Help {
         worth: Worth::Worst,
-        des: "".to_string(),
+        des: "There is a total compromise of system integrity. There is a complete loss of system protection, resulting in the entire system being compromised. The attacker is able to modify any files on the target system.".to_string(),
       },
     }
   }
@@ -232,6 +232,11 @@ impl Metric for IntegrityImpactType {
   }
 }
 
+impl AvailabilityImpactType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Display for AvailabilityImpactType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}:{}", Self::name(), self.as_str())
@@ -244,16 +249,16 @@ impl Metric for AvailabilityImpactType {
   fn help(&self) -> Help {
     match self {
       AvailabilityImpactType::None => Help {
-        worth: Worth::Worst,
-        des: "".to_string(),
+        worth: Worth::Good,
+        des: "There is no impact to the availability of the system.".to_string(),
       },
       AvailabilityImpactType::Partial => Help {
-        worth: Worth::Worst,
-        des: "".to_string(),
+        worth: Worth::Bad,
+        des: "There is reduced performance or interruptions in resource availability. An example is a network-based flood attack that permits a limited number of successful connections to an Internet service.".to_string(),
       },
       AvailabilityImpactType::Complete => Help {
         worth: Worth::Worst,
-        des: "".to_string(),
+        des: "There is a total shutdown of the affected resource. The attacker can render the resource completely unavailable.".to_string(),
       },
     }
   }

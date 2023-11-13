@@ -105,10 +105,9 @@ impl actix_web::error::ResponseError for NVDApiError {
 impl actix_web::error::ResponseError for DBError {
   fn status_code(&self) -> StatusCode {
     match self {
-      DBError::DieselError { source } => match source {
-        Error::NotFound => StatusCode::NOT_FOUND,
-        _ => StatusCode::INTERNAL_SERVER_ERROR,
-      },
+      DBError::DieselError {
+        source: Error::NotFound,
+      } => StatusCode::NOT_FOUND,
       _ => StatusCode::INTERNAL_SERVER_ERROR,
     }
   }

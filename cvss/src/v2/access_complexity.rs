@@ -46,22 +46,27 @@ impl Display for AccessComplexityType {
   }
 }
 
+impl AccessComplexityType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for AccessComplexityType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::AC);
 
   fn help(&self) -> Help {
     match self {
       AccessComplexityType::High => Help {
-        worth: Worth::Good,
-        des: "".to_string(),
+        worth: Worth::Bad,
+        des: "In most configurations, the attacking party must already have elevated privileges or spoof additional systems in addition to the attacking system (e.g., DNS hijacking).".to_string(),
       },
       AccessComplexityType::Medium => Help {
-        worth: Worth::Worst,
-        des: "".to_string(),
+        worth: Worth::Worse,
+        des: "The attacking party is limited to a group of systems or users at some level of authorization, possibly untrusted.".to_string(),
       },
       AccessComplexityType::Low => Help {
-        worth: Worth::Bad,
-        des: "".to_string(),
+        worth: Worth::Worst,
+        des: "The affected product typically requires access to a wide range of systems and users, possibly anonymous and untrusted (e.g., Internet-facing web or mail server).".to_string(),
       },
     }
   }

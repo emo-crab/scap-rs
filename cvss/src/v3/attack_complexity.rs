@@ -38,6 +38,12 @@ pub enum AttackComplexityType {
   /// 攻击者可以随意攻击，不存在惩罚机制。
   Low,
 }
+
+impl AttackComplexityType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Display for AttackComplexityType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}:{}", Self::name(), self.as_str())
@@ -48,8 +54,8 @@ impl Metric for AttackComplexityType {
 
   fn help(&self) -> Help {
     match self {
-      AttackComplexityType::High => {Help{ worth: Worth::Worst, des: " A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.".to_string() }}
-      AttackComplexityType::Low => {Help{ worth: Worth::Bad, des: " Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.".to_string() }}
+      AttackComplexityType::High => {Help{ worth: Worth::Bad, des: "A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.".to_string() }}
+      AttackComplexityType::Low => {Help{ worth: Worth::Worst, des: "Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.".to_string() }}
     }
   }
 

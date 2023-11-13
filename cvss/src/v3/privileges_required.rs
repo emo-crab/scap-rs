@@ -47,14 +47,19 @@ impl Display for PrivilegesRequiredType {
   }
 }
 
+impl PrivilegesRequiredType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for PrivilegesRequiredType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::PR);
 
   fn help(&self) -> Help {
     match self {
-      PrivilegesRequiredType::High => {Help{ worth: Worth::Worst, des: " The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.".to_string() }}
-      PrivilegesRequiredType::Low => {Help{ worth: Worth::Worst, des: " The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.".to_string() }}
-      PrivilegesRequiredType::None => {Help{ worth: Worth::Worst, des: " The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the the vulnerable system to carry out an attack.".to_string() }}
+      PrivilegesRequiredType::High => {Help{ worth: Worth::Bad, des: "The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.".to_string() }}
+      PrivilegesRequiredType::Low => {Help{ worth: Worth::Worse, des: "The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.".to_string() }}
+      PrivilegesRequiredType::None => {Help{ worth: Worth::Worst, des: "The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack.".to_string() }}
     }
   }
 

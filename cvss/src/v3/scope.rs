@@ -59,13 +59,18 @@ impl Display for ScopeType {
   }
 }
 
+impl ScopeType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for ScopeType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::S);
 
   fn help(&self) -> Help {
     match self {
-      ScopeType::Unchanged => {Help{ worth: Worth::Worst, des: " An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.".to_string() }}
-      ScopeType::Changed => {Help{ worth: Worth::Worst, des: " An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.".to_string() }}
+      ScopeType::Unchanged => {Help{ worth: Worth::Bad, des: "An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.".to_string() }}
+      ScopeType::Changed => {Help{ worth: Worth::Worst, des: "An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.".to_string() }}
     }
   }
 

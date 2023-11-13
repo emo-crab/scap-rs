@@ -43,13 +43,18 @@ impl Display for UserInteractionType {
   }
 }
 
+impl UserInteractionType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for UserInteractionType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::UI);
 
   fn help(&self) -> Help {
     match self {
-      UserInteractionType::Required => {Help{ worth: Worth::Bad, des: " Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
-      UserInteractionType::None => {Help{ worth: Worth::Worst, des: " The vulnerable system can be exploited without interaction from any user.".to_string() }}
+      UserInteractionType::Required => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
+      UserInteractionType::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any user.".to_string() }}
     }
   }
 

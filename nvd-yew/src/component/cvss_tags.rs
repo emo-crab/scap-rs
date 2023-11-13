@@ -1,3 +1,4 @@
+use cvss::metric::{Help, Worth};
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use cvss::v3::attack_complexity::AttackComplexityType;
 use cvss::v3::attack_vector::AttackVectorType;
@@ -50,9 +51,88 @@ pub enum V3Card {
   AvailabilityImpactType(AvailabilityImpactType),
   ScopeType(ScopeType),
 }
+
+impl V3Card {
+  fn help(&self) -> Help {
+    match self {
+      V3Card::AttackVectorType(av) => av.metric_help(),
+      V3Card::AttackComplexityType(ac) => ac.metric_help(),
+      V3Card::PrivilegesRequiredType(pr) => pr.metric_help(),
+      V3Card::UserInteractionType(ui) => ui.metric_help(),
+      V3Card::ConfidentialityImpactType(c) => c.metric_help(),
+      V3Card::IntegrityImpactType(i) => i.metric_help(),
+      V3Card::AvailabilityImpactType(a) => a.metric_help(),
+      V3Card::ScopeType(s) => s.metric_help(),
+    }
+  }
+  fn color(&self, worth: &Worth) -> &str {
+    match worth {
+      Worth::Worst => "bg-danger",
+      Worth::Worse => "bg-warning",
+      Worth::Bad => "bg-info",
+      Worth::Good => "bg-secondary",
+    }
+  }
+  fn name(&self) -> &str {
+    match self {
+      V3Card::AttackVectorType(_) => "Attack Vector",
+      V3Card::AttackComplexityType(_) => "Attack Complexity",
+      V3Card::PrivilegesRequiredType(_) => "Privileges Required",
+      V3Card::UserInteractionType(_) => "User Interaction",
+      V3Card::ConfidentialityImpactType(_) => "Confidentiality Impact",
+      V3Card::IntegrityImpactType(_) => "Integrity Impact",
+      V3Card::AvailabilityImpactType(_) => "Availability Impact",
+      V3Card::ScopeType(_) => "Scope",
+    }
+  }
+  fn icon(&self) -> &str {
+    match self {
+      V3Card::AttackVectorType(av) => match av {
+        AttackVectorType::Network => "ti-network",
+        AttackVectorType::AdjacentNetwork => "ti-cloud-network",
+        AttackVectorType::Local => "ti-current-location",
+        AttackVectorType::Physical => "ti-body-scan",
+      },
+      V3Card::AttackComplexityType(ac) => match ac {
+        AttackComplexityType::High => "ti-mood-unamused",
+        AttackComplexityType::Low => "ti-mood-smile",
+      },
+      V3Card::PrivilegesRequiredType(pr) => match pr {
+        PrivilegesRequiredType::High => "ti-lock-check",
+        PrivilegesRequiredType::Low => "ti-lock-pause",
+        PrivilegesRequiredType::None => "ti-lock-open",
+      },
+      V3Card::UserInteractionType(ui) => match ui {
+        UserInteractionType::Required => "ti-user-plus",
+        UserInteractionType::None => "ti-user-check",
+      },
+      V3Card::ConfidentialityImpactType(c) => match c {
+        ConfidentialityImpactType::High => "ti-eye",
+        ConfidentialityImpactType::Low => "ti-eye-x",
+        ConfidentialityImpactType::None => "ti-eye-closed",
+      },
+      V3Card::IntegrityImpactType(i) => match i {
+        IntegrityImpactType::High => "ti-menu-2",
+        IntegrityImpactType::Low => "ti-menu-deep",
+        IntegrityImpactType::None => "ti-menu",
+      },
+      V3Card::AvailabilityImpactType(a) => match a {
+        AvailabilityImpactType::High => "ti-lock-access-off",
+        AvailabilityImpactType::Low => "ti-lock-x",
+        AvailabilityImpactType::None => "ti-lock-access",
+      },
+      V3Card::ScopeType(s) => match s {
+        ScopeType::Unchanged => "ti-replace-off",
+        ScopeType::Changed => "ti-replace",
+      },
+    }
+  }
+}
+
 pub fn cvss_v3_card(value: V3Card) -> Html {
   let (name, value, class_str, icon) = match value {
     V3Card::AttackVectorType(av) => {
+      let help = av.metric_help();
       let (class_str, icon) = match av {
         AttackVectorType::Network => ("bg-danger", "ti-network"),
         AttackVectorType::AdjacentNetwork => ("bg-warning", "ti-cloud-network"),

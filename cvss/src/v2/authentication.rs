@@ -35,6 +35,11 @@ impl Display for AuthenticationType {
   }
 }
 
+impl AuthenticationType {
+  pub fn metric_help(&self) -> Help {
+    self.help()
+  }
+}
 impl Metric for AuthenticationType {
   const TYPE: MetricType = MetricType::V2(MetricTypeV2::Au);
 
@@ -42,15 +47,15 @@ impl Metric for AuthenticationType {
     match self {
       AuthenticationType::Multiple => Help {
         worth: Worth::Bad,
-        des: "".to_string(),
+        des: "Exploiting the vulnerability requires that the attacker authenticate two or more times, even if the same credentials are used each time. An example is an attacker authenticating to an operating system in addition to providing credentials to access an application hosted on that system.".to_string(),
       },
       AuthenticationType::Single => Help {
         worth: Worth::Worse,
-        des: "".to_string(),
+        des: "The vulnerability requires an attacker to be logged into the system (such as at a command line or via a desktop session or web interface).".to_string(),
       },
       AuthenticationType::None => Help {
         worth: Worth::Worst,
-        des: "".to_string(),
+        des: "Authentication is not required to exploit the vulnerability.".to_string(),
       },
     }
   }

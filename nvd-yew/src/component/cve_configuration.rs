@@ -94,10 +94,14 @@ impl CVEConfiguration {
     cpe_match: Vec<cve::configurations::Match>,
     operator: Operator,
   ) -> Html {
-    if cpe_match.len() == 1 && matches!(operator, cve::configurations::Operator::Or) {
-      if !cpe_match.first().unwrap().vulnerable {
-        return html!(<i class={classes!( ["ti","ti-stack-2"])}></i>);
-      }
+    if cpe_match.len() == 1
+      && matches!(operator, cve::configurations::Operator::Or)
+      && !cpe_match.first().unwrap().vulnerable
+    {
+      return html! {
+          <span class="form-help" tabindex="0" data-bs-trigger="hover" data-bs-container="body" content="Running On/With" title="Running On/With" data-bs-toggle="popover" data-bs-placement="top" data-bs-html="false" data-bs-content="Running On/With">
+          <i class={classes!( ["ti","ti-stack-2"])}></i></span>
+      };
     }
     html!()
   }
