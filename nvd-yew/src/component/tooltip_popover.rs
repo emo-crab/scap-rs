@@ -1,5 +1,5 @@
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
-use web_sys::{Element, HtmlButtonElement, HtmlElement};
+use web_sys::{Element, HtmlElement};
 use yew::prelude::*;
 // https://github.com/orgs/twbs/discussions/39197#discussioncomment-7034624
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call
@@ -9,6 +9,12 @@ pub enum TooltipPopoverType {
   Toggle,
   Popover,
 }
+
+impl Default for TooltipPopoverType {
+  fn default() -> Self {
+    TooltipPopoverType::Popover
+  }
+}
 #[derive(PartialEq, Clone)]
 pub enum Placement {
   Top,
@@ -17,6 +23,11 @@ pub enum Placement {
   Left,
 }
 
+impl Default for Placement {
+  fn default() -> Self {
+    Placement::Top
+  }
+}
 impl ToString for Placement {
   fn to_string(&self) -> String {
     match self {
@@ -35,12 +46,13 @@ impl ToString for TooltipPopoverType {
     }
   }
 }
-#[derive(PartialEq, Clone, Properties)]
+#[derive(PartialEq, Clone, Default, Properties)]
 pub struct TooltipPopoverProp {
   pub toggle: TooltipPopoverType,
   pub placement: Placement,
   pub html: bool,
   pub content: String,
+  pub class: Option<Classes>,
   pub children: Html,
 }
 pub struct TooltipPopover;
@@ -53,6 +65,7 @@ impl Component for TooltipPopover {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
+    let class = ctx.props().class.clone();
     let content = ctx.props().content.clone();
     let html = ctx.props().html;
     let placement = ctx.props().placement.to_string();
@@ -83,12 +96,13 @@ impl Component for TooltipPopover {
           let popover_bootstrap = popover_bootstrap.clone();
           let show_popover = show_popover.clone();
           Closure::wrap(Box::new(move |_: MouseEvent| {
-          show_popover
-            .clone()
-            .unchecked_into::<js_sys::Function>()
-            .call0(&popover_bootstrap)
-            .expect("Error! Failed to call function show");
-        }) as Box<dyn FnMut(_)>)};
+            show_popover
+              .clone()
+              .unchecked_into::<js_sys::Function>()
+              .call0(&popover_bootstrap)
+              .expect("Error! Failed to call function show");
+          }) as Box<dyn FnMut(_)>)
+        };
         let hide_callback = {
           let popover_bootstrap = popover_bootstrap.clone();
           let hide_popover = hide_popover.clone();
@@ -115,7 +129,7 @@ impl Component for TooltipPopover {
       })
     };
     html! {
-      <div class="justify-content-between align-items-start">
+      <div class={classes!([class])}>
         <span
           tabindex=0
           onmouseenter={on_mouse_enter}

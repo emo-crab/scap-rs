@@ -1,4 +1,4 @@
-use crate::component::{Placement, TooltipPopover, TooltipPopoverProp, TooltipPopoverType};
+use crate::component::{Placement, TooltipPopover, TooltipPopoverType};
 use cvss::metric::{Help, Worth};
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use cvss::v3::attack_complexity::AttackComplexityType;
@@ -102,6 +102,7 @@ impl V3Card {
             <div class="card-actions">
             <TooltipPopover
               html={false}
+              class={None}
               toggle={TooltipPopoverType::Toggle}
               placement={Placement::Top}
               content={des}>

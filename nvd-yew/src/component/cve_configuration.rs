@@ -1,3 +1,4 @@
+use crate::component::{Placement, TooltipPopover, TooltipPopoverType};
 use cve::configurations::Operator;
 use yew::prelude::*;
 #[derive(PartialEq, Clone, Properties)]
@@ -99,8 +100,13 @@ impl CVEConfiguration {
       && !cpe_match.first().unwrap().vulnerable
     {
       return html! {
-          <span class="form-help" tabindex="0" data-bs-trigger="hover" data-bs-container="body" content="Running On/With" title="Running On/With" data-bs-toggle="popover" data-bs-placement="top" data-bs-html="false" data-bs-content="Running On/With">
-          <i class={classes!( ["ti","ti-stack-2"])}></i></span>
+          <TooltipPopover
+          html={false}
+          class={Some(classes!(["form-help"]))}
+          toggle={TooltipPopoverType::Popover}
+          placement={Placement::Left}
+          content={"Running On/With"}>
+          <i class={classes!( ["ti","ti-stack-2"])}></i></TooltipPopover>
       };
     }
     html!()
