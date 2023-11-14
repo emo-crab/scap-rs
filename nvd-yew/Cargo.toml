@@ -14,12 +14,13 @@ web-sys = { version = "0.3.63", features = [
     "Element",
     "Node",
     "Window",
+    "HtmlSpanElement",
     "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
 cvss = { path = "../cvss" }
 cve = { path = "../cve" }
-chrono = { version = "0.4", default-features = false, features = ["serde"] }
-js-sys = "0.3.64"
+chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
+js-sys = "0.3.65"
 reqwest = { version = "0.11", features = ["json", "cookies"] }
 serde = "1"
 thiserror = "1.0"

@@ -1,3 +1,4 @@
+use crate::component::{Placement, TooltipPopover, TooltipPopoverProp, TooltipPopoverType};
 use cvss::metric::{Help, Worth};
 use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
 use cvss::v3::attack_complexity::AttackComplexityType;
@@ -99,7 +100,15 @@ impl V3Card {
             <div class={classes!(["card-status-start",class_str])}></div>
             <div class="card-header p-2"><h5 class="card-title">{name}</h5>
             <div class="card-actions">
-              <span class={classes!(["badge",class_str])} data-bs-trigger="hover" data-bs-container="body" content={des.clone()} title={des.clone()} data-bs-toggle="popover" data-bs-placement="top" data-bs-html="false" data-bs-content={des.clone()}><i class={classes!( ["ti",icon])}></i>{value}</span>
+            <TooltipPopover
+              html={false}
+              toggle={TooltipPopoverType::Toggle}
+              placement={Placement::Top}
+              content={des}>
+              <span class={classes!(["badge",class_str])}>
+                <i class={classes!( ["ti",icon])}></i>{value}
+              </span>
+            </TooltipPopover>
             </div>
             </div>
           </li>
