@@ -6,7 +6,7 @@ mod modules;
 mod routes;
 mod services;
 
-use layout::{Footer, Main, Nav};
+use layout::{Main, Nav};
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub struct App;
@@ -20,13 +20,12 @@ impl Component for App {
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
-    <>
+    <div class="page">
         <BrowserRouter>
         <Nav />
         <Main />
-        <Footer/>
         </BrowserRouter>
-    </>
+    </div>
     }
   }
 }

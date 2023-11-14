@@ -10,7 +10,7 @@ impl Component for Footer {
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
-      <footer class="footer footer-transparent mt-auto py-3 bg-light">
+      <footer class="footer footer-transparent mt-auto py-3">
         <div class="container">
           <div class="row text-center align-items-center flex-row-reverse">
             <div class="col-lg-auto ms-lg-auto">

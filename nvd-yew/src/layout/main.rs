@@ -1,4 +1,5 @@
 use crate::routes::Route;
+use crate::layout::Footer;
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub struct Main;
@@ -12,11 +13,14 @@ impl Component for Main {
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
-      <main role="main">
-        <div class="container" style="padding: 60px 15px 0;">
+      <div class="page-wrapper">
+      <div class="page-body">
+        <div class="container">
         <Switch<Route> render={Route::switch} />
+        </div>
       </div>
-      </main>
+      <Footer/>
+      </div>
     }
   }
 }
