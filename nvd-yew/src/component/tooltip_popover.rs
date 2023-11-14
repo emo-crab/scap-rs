@@ -69,71 +69,50 @@ impl Component for TooltipPopover {
           .expect("Error! Failed to get property bootstrap");
         let popover = js_sys::Reflect::get(&bootstrap, &JsValue::from("Popover"))
           .expect("Error! Failed to get property Popover");
-        let get_or_create_instance =js_sys::Reflect::get(&popover, &JsValue::from("getOrCreateInstance"))
+        let get_or_create_instance =
+          js_sys::Reflect::get(&popover, &JsValue::from("getOrCreateInstance"))
             .expect("Error! Failed to get property getOrCreateInstance");
-        let popover_bootstrap = get_or_create_instance.clone().unchecked_into::<js_sys::Function>().call1(&popover,&target).expect("Error! Failed to call function getOrCreateInstance");
-        console_log!("{:?}", popover_bootstrap);
+        let popover_bootstrap = get_or_create_instance
+          .clone()
+          .unchecked_into::<js_sys::Function>()
+          .call1(&popover, &target)
+          .expect("Error! Failed to call function getOrCreateInstance");
         let show_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("show"))
-            .expect("Error! Failed to get property show");
+          .expect("Error! Failed to get property show");
         let callback = Closure::wrap(Box::new(move |_: MouseEvent| {
           show_popover
-              .clone()
-              .unchecked_into::<js_sys::Function>()
-              .call0(&popover_bootstrap)
-              .expect("Error! Failed to call function show");
+            .clone()
+            .unchecked_into::<js_sys::Function>()
+            .call0(&popover_bootstrap)
+            .expect("Error! Failed to call function show");
         }) as Box<dyn FnMut(_)>);
         target
-            .unchecked_into::<Element>()
-            .add_event_listener_with_callback("click", callback.as_ref().unchecked_ref())
-            .expect("Error! Failed to add event listener");
+          .unchecked_into::<Element>()
+          .add_event_listener_with_callback("click", callback.as_ref().unchecked_ref())
+          .expect("Error! Failed to add event listener");
         callback.forget();
-        // // let target = target.parent_element().unwrap();
-        // let document = target.owner_document().unwrap();
-        // let id = format!("popover{}", chrono::Utc::now().timestamp());
-        // target.set_attribute("aria-describedby", &id).unwrap();
-        // let mut div = document.create_element("div").unwrap();
-        // div.set_id(&id);
-        // div.set_class_name("popover bs-popover-auto fade show");
-        // div.set_attribute("role", role.as_str()).unwrap();
-        // div
-        //     .set_attribute(
-        //       "style",
-        //       &format!("position: fixed; top: 0; inset: 0px auto auto 0px; margin: 0px; transform: translate(0px, 0px); z-index:999;"),
-        //     )
-        //     .unwrap();
-        // div.set_attribute("data-popper-placement", "top").unwrap();
-        // let doc = div.owner_document().unwrap();
-        // let mut arrow = doc.create_element("div").unwrap();
-        // let mut body = doc.create_element("div").unwrap();
-        // arrow.set_class_name("popover-arrow bg-info");
-        // arrow
-        //   .set_attribute("style", "position: fixed; top: 0;")
-        //   .unwrap();
-        // body.set_class_name("popover-body bg-info");
-        // body.set_inner_html("Top popover");
-        // div.append_child(&arrow).unwrap();
-        // div.append_child(&body).unwrap();
-        // target.append_child(&div).unwrap();
-        // console_log!("{:?}", target.get_attribute_names());
       })
     };
     let on_mouse_leave = Callback::from(|event: MouseEvent| {
       event.stop_propagation();
       let target = event.target_unchecked_into::<HtmlButtonElement>();
-      let target = target.parent_element().unwrap();
-      // match target.get_attribute("aria-describedby") {
-      //   None => {}
-      //   Some(id) => {
-      //     let el = target
-      //       .owner_document()
-      //       .unwrap()
-      //       .query_selector(&format!("#{}", id))
-      //       .unwrap();
-      //     if let Some(e) = el {
-      //       e.remove();
-      //     }
-      //   }
-      // };
+      match target.get_attribute("aria-describedby") {
+        None => {}
+        Some(id) => {
+          console_log!("{}", id);
+          let el = web_sys::window()
+            .unwrap()
+            .document()
+            .unwrap()
+            .body()
+            .unwrap()
+            .query_selector(&format!("#{}", id))
+            .unwrap();
+          if let Some(e) = el {
+            e.remove();
+          }
+        }
+      };
     });
     html! {
       <div class="justify-content-between align-items-start">
