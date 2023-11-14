@@ -1,4 +1,3 @@
-use crate::console_log;
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 use web_sys::{Element, HtmlButtonElement, HtmlElement};
 use yew::prelude::*;
@@ -60,7 +59,6 @@ impl Component for TooltipPopover {
     let toggle = ctx.props().toggle.to_string();
     let children = ctx.props().children.clone();
     let on_mouse_enter = {
-      let role = toggle.clone();
       Callback::from(move |event: MouseEvent| {
         event.stop_propagation();
         let target = event.target_unchecked_into::<HtmlElement>();
@@ -79,47 +77,48 @@ impl Component for TooltipPopover {
           .expect("Error! Failed to call function getOrCreateInstance");
         let show_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("show"))
           .expect("Error! Failed to get property show");
-        let callback = Closure::wrap(Box::new(move |_: MouseEvent| {
+        let hide_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("hide"))
+          .expect("Error! Failed to get property hide");
+        let show_callback = {
+          let popover_bootstrap = popover_bootstrap.clone();
+          let show_popover = show_popover.clone();
+          Closure::wrap(Box::new(move |_: MouseEvent| {
           show_popover
             .clone()
             .unchecked_into::<js_sys::Function>()
             .call0(&popover_bootstrap)
             .expect("Error! Failed to call function show");
-        }) as Box<dyn FnMut(_)>);
+        }) as Box<dyn FnMut(_)>)};
+        let hide_callback = {
+          let popover_bootstrap = popover_bootstrap.clone();
+          let hide_popover = hide_popover.clone();
+          Closure::wrap(Box::new(move |_: MouseEvent| {
+            hide_popover
+              .clone()
+              .unchecked_into::<js_sys::Function>()
+              .call0(&popover_bootstrap)
+              .expect("Error! Failed to call function show");
+          }) as Box<dyn FnMut(_)>)
+        };
         target
+          .clone()
           .unchecked_into::<Element>()
-          .add_event_listener_with_callback("click", callback.as_ref().unchecked_ref())
+          .add_event_listener_with_callback("click", show_callback.as_ref().unchecked_ref())
           .expect("Error! Failed to add event listener");
-        callback.forget();
+        target
+          .clone()
+          .unchecked_into::<Element>()
+          .add_event_listener_with_callback("onmouseleave", hide_callback.as_ref().unchecked_ref())
+          .expect("Error! Failed to add event listener");
+        show_callback.forget();
+        hide_callback.forget();
       })
     };
-    let on_mouse_leave = Callback::from(|event: MouseEvent| {
-      event.stop_propagation();
-      let target = event.target_unchecked_into::<HtmlButtonElement>();
-      match target.get_attribute("aria-describedby") {
-        None => {}
-        Some(id) => {
-          console_log!("{}", id);
-          let el = web_sys::window()
-            .unwrap()
-            .document()
-            .unwrap()
-            .body()
-            .unwrap()
-            .query_selector(&format!("#{}", id))
-            .unwrap();
-          if let Some(e) = el {
-            e.remove();
-          }
-        }
-      };
-    });
     html! {
       <div class="justify-content-between align-items-start">
         <span
           tabindex=0
           onmouseenter={on_mouse_enter}
-          onmouseleave={on_mouse_leave}
           data-bs-toggle={toggle.clone()}
           data-bs-container="body"
           data-bs-placement={placement}
