@@ -48,15 +48,17 @@ impl Component for Nav {
                 <Link<Route> classes={classes!("nav-link")} to={Route::CveList}><b>{"CVE"}</b></Link<Route>>
               </li>
             </ul>
+            <div class="flex-row">
             <div class="nav-item d-none d-md-flex me-3">
               <div class="btn-list">
                 <a href="https://blog.kali-team.cn/donate" class="btn btn-outline-light" target="_blank" rel="noreferrer">
-                  <i class="bi bi-suit-heart" style="color: red;"></i>{"Sponsor"}
+                  <i class="ti ti-shield-heart text-pink"></i>{"Sponsor"}
                 </a>
                 <a href="https://github.com/emo-cat/nvd-rs" class="btn btn-outline-light" target="_blank" rel="noreferrer">
-                  <i class="bi-github" style="color: light;">{"Source code"}</i>
+                  <i class="ti ti-brand-github" style="color: light;"></i>{"Source code"}
                 </a>
               </div>
+            </div>
             </div>
           </div>
         </div>
