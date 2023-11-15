@@ -1,4 +1,4 @@
-use crate::component::{Placement, TooltipPopover, TooltipPopoverType};
+use crate::component::TooltipPopover;
 use cve::configurations::Operator;
 use yew::prelude::*;
 #[derive(PartialEq, Clone, Properties)]
@@ -101,10 +101,9 @@ impl CVEConfiguration {
     {
       return html! {
           <TooltipPopover
-          html={false}
-          class={Some(classes!(["form-help"]))}
-          toggle={TooltipPopoverType::Popover}
-          placement={Placement::Left}
+          class={classes!(["form-help"])}
+          toggle={"popover"}
+          placement={"left"}
           content={"Running On/With"}>
           <i class={classes!( ["ti","ti-stack-2"])}></i></TooltipPopover>
       };

@@ -11,4 +11,4 @@ pub use cve_query::{CVEQuery, CVEQueryProps};
 pub use cve_row::{CVERow, CveProps};
 pub use cvss3::CVSS3;
 pub use pagination::{Pagination, PaginationProps};
-pub use tooltip_popover::{Placement, TooltipPopover, TooltipPopoverProp, TooltipPopoverType};
+pub use tooltip_popover::TooltipPopover;

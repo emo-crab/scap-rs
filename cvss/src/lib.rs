@@ -15,3 +15,4 @@ pub mod severity;
 pub mod v2;
 pub mod v3;
 pub mod version;
+pub mod v4;

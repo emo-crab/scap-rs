@@ -1,66 +1,43 @@
 use wasm_bindgen::{prelude::Closure, JsCast, JsValue};
 use web_sys::{Element, HtmlElement};
 use yew::prelude::*;
+
 // https://github.com/orgs/twbs/discussions/39197#discussioncomment-7034624
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/call
 // https://getbootstrap.com/docs/5.3/components/popovers/#methods
-#[derive(PartialEq, Clone)]
-pub enum TooltipPopoverType {
-  Toggle,
-  Popover,
-}
-
-impl Default for TooltipPopoverType {
-  fn default() -> Self {
-    TooltipPopoverType::Popover
-  }
-}
-#[derive(PartialEq, Clone)]
-pub enum Placement {
-  Top,
-  Right,
-  Bottom,
-  Left,
-}
-
-impl Default for Placement {
-  fn default() -> Self {
-    Placement::Top
-  }
-}
-impl ToString for Placement {
-  fn to_string(&self) -> String {
-    match self {
-      Placement::Top => "top".to_string(),
-      Placement::Right => "right".to_string(),
-      Placement::Bottom => "bottom".to_string(),
-      Placement::Left => "left".to_string(),
-    }
-  }
-}
-impl ToString for TooltipPopoverType {
-  fn to_string(&self) -> String {
-    match self {
-      TooltipPopoverType::Toggle => "toggle".to_string(),
-      TooltipPopoverType::Popover => "popover".to_string(),
-    }
-  }
-}
 #[derive(PartialEq, Clone, Default, Properties)]
 pub struct TooltipPopoverProp {
-  pub toggle: TooltipPopoverType,
-  pub placement: Placement,
+  #[prop_or_else(default_toggle)]
+  pub toggle: AttrValue,
+  #[prop_or_else(default_trigger)]
+  pub trigger: AttrValue,
+  #[prop_or_else(default_placement)]
+  pub placement: AttrValue,
+  #[prop_or(false)]
   pub html: bool,
-  pub content: String,
-  pub class: Option<Classes>,
+  #[prop_or_default]
+  pub content: AttrValue,
+  #[prop_or_default]
+  pub class: Classes,
+  #[prop_or_default]
   pub children: Html,
+}
+
+fn default_toggle() -> AttrValue {
+  AttrValue::from("popover")
+}
+fn default_trigger() -> AttrValue {
+  AttrValue::from("hover")
+}
+fn default_placement() -> AttrValue {
+  AttrValue::from("top")
 }
 pub struct TooltipPopover;
 impl Component for TooltipPopover {
   type Message = ();
   type Properties = TooltipPopoverProp;
 
-  fn create(ctx: &Context<Self>) -> Self {
+  fn create(_ctx: &Context<Self>) -> Self {
     Self
   }
 
@@ -68,8 +45,9 @@ impl Component for TooltipPopover {
     let class = ctx.props().class.clone();
     let content = ctx.props().content.clone();
     let html = ctx.props().html;
-    let placement = ctx.props().placement.to_string();
-    let toggle = ctx.props().toggle.to_string();
+    let placement = ctx.props().placement.clone();
+    let toggle = ctx.props().toggle.clone();
+    let trigger = ctx.props().trigger.clone();
     let children = ctx.props().children.clone();
     let on_mouse_enter = {
       Callback::from(move |event: MouseEvent| {
@@ -90,48 +68,27 @@ impl Component for TooltipPopover {
           .expect("Error! Failed to call function getOrCreateInstance");
         let show_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("show"))
           .expect("Error! Failed to get property show");
-        let hide_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("hide"))
-          .expect("Error! Failed to get property hide");
-        let show_callback = {
-          let popover_bootstrap = popover_bootstrap.clone();
-          let show_popover = show_popover.clone();
+        let show_callback =
           Closure::wrap(Box::new(move |_: MouseEvent| {
             show_popover
               .clone()
               .unchecked_into::<js_sys::Function>()
               .call0(&popover_bootstrap)
               .expect("Error! Failed to call function show");
-          }) as Box<dyn FnMut(_)>)
-        };
-        let hide_callback = {
-          let popover_bootstrap = popover_bootstrap.clone();
-          let hide_popover = hide_popover.clone();
-          Closure::wrap(Box::new(move |_: MouseEvent| {
-            hide_popover
-              .clone()
-              .unchecked_into::<js_sys::Function>()
-              .call0(&popover_bootstrap)
-              .expect("Error! Failed to call function show");
-          }) as Box<dyn FnMut(_)>)
-        };
+          }) as Box<dyn FnMut(_)>);
         target
           .clone()
           .unchecked_into::<Element>()
           .add_event_listener_with_callback("click", show_callback.as_ref().unchecked_ref())
           .expect("Error! Failed to add event listener");
-        target
-          .clone()
-          .unchecked_into::<Element>()
-          .add_event_listener_with_callback("onmouseleave", hide_callback.as_ref().unchecked_ref())
-          .expect("Error! Failed to add event listener");
         show_callback.forget();
-        hide_callback.forget();
       })
     };
     html! {
       <div class={classes!([class])}>
         <span
           tabindex=0
+          data-bs-trigger={trigger}
           onmouseenter={on_mouse_enter}
           data-bs-toggle={toggle.clone()}
           data-bs-container="body"
