@@ -20,7 +20,7 @@ impl Component for Nav {
         </button>
         <h1 class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
           <Link<Route> classes={classes!("navbar-brand")} to={Route::Home}>
-            <img src="https://avatars.githubusercontent.com/u/30642514?v=4" width="110" height="32" alt="Tabler" class="navbar-brand-image"/>
+            <img src="https://avatars.githubusercontent.com/u/30642514?v=4" width="110" height="32" class="navbar-brand-image"/>
           </Link<Route>>
         </h1>
         <div class="navbar-nav flex-row order-md-last">
