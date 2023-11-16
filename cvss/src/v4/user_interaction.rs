@@ -1,13 +1,14 @@
-//! ### 2.1.4. User Interaction (UI)
+//! ### User Interaction (UI)
 //!
-//! This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable component. This metric determines whether the vulnerability can be exploited solely at the will of the attacker, or whether a separate user (or user-initiated process) must participate in some manner. The Base Score is greatest when no user interaction is required. The list of possible values is presented in Table 4.
+//! This metric captures the requirement for a human user, other than the attacker, to participate in the successful compromise of the vulnerable system. This metric determines whether the vulnerability can be exploited solely at the will of the attacker, or whether a separate user (or user-initiated process) must participate in some manner. The resulting score is greatest when no user interaction is required. The list of possible values is presented in Table 5.
 //!
-//! **Table 4: User Interaction**
+//! **Table 5: User Interaction**
 //!
-//! | Metric Value | Description |
+//! | **Metric Value** | **Description** |
 //! | --- | --- |
-//! | None (N) | The vulnerable system can be exploited without interaction from any user. |
-//! | Required (R) | Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator. |[](#body)
+//! | None (N) | The vulnerable system can be exploited without interaction from any human user, other than the attacker. Examples include: a remote attacker is able to send packets to a target system a locally authenticated attacker executes code to elevate privileges |
+//! | Passive (P) | Successful exploitation of this vulnerability requires limited interaction by the targeted user with the vulnerable system and the attacker’s payload. These interactions would be considered involuntary and do not require that the user actively subvert protections built into the vulnerable system. Examples include: utilizing a website that has been modified to display malicious content when the page is rendered (most stored XSS or CSRF) running an application that calls a malicious binary that has been planted on the system using an application which generates traffic over an untrusted or compromised network (vulnerabilities requiring an on-path attacker) |
+//! | Active (A) | Successful exploitation of this vulnerability requires a targeted user to perform specific, conscious interactions with the vulnerable system and the attacker’s payload, or the user’s interactions would actively subvert protection mechanisms which would lead to exploitation of the vulnerability. Examples include: importing a file into a vulnerable system in a specific manner placing files into a specific directory prior to executing code submitting a specific string into a web application (e.g. reflected or self XSS) dismiss or accept prompts or security warnings prior to taking an action (e.g. opening/editing a file, connecting a device). |
 //!
 
 use crate::error::{CVSSError, Result};
@@ -45,6 +46,7 @@ impl Display for UserInteractionType {
 }
 
 impl UserInteractionType {
+  #[allow(dead_code)]
   pub fn metric_help(&self) -> Help {
     self.help()
   }

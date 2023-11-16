@@ -1,16 +1,18 @@
-//! ### 2.1.3. Privileges Required (PR)
+//! ### Privileges Required (PR)
 //!
-//! This metric describes the level of privileges an attacker must possess _before_ successfully exploiting the vulnerability. The Base Score is greatest if no privileges are required. The list of possible values is presented in Table 3.
+//! This metric describes the level of privileges an attacker must possess _prior to_ successfully exploiting the vulnerability. The method by which the attacker obtains privileged credentials prior to the attack (e.g., free trial accounts), is outside the scope of this metric. Generally, self-service provisioned accounts do not constitute a privilege requirement if the attacker can grant themselves privileges as part of the attack.
 //!
-//! **Table 3: Privileges Required**
+//! The resulting score is greatest if no privileges are required. The list of possible values is presented in Table 4.
 //!
-//! | Metric Value | Description |
+//! **Table 4: Privileges Required**
+//!
+//! | **Metric Value** | **Description** |
 //! | --- | --- |
-//! | None (N) | The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack. |
-//! | Low (L) | The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources. |
-//! | High (H) | The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files. |
+//! | None (N) | The attacker is unauthenticated prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack. |
+//! | Low (L) | The attacker requires privileges that provide basic capabilities that are typically limited to settings and resources owned by a single low-privileged user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources. |
+//! | High (H) | The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable system allowing full access to the vulnerable system’s settings and files. |
 //!
-//! Scoring Guidance: Privileges Required is usually None for hard-coded credential vulnerabilities or vulnerabilities requiring social engineering (e.g., reflected cross-site scripting, cross-site request forgery, or file parsing vulnerability in a PDF reader).
+//! **Assessment Guidance:** Privileges Required is usually None for hard-coded credential vulnerabilities or vulnerabilities requiring social engineering (e.g., reflected cross-site scripting, cross-site request forgery, or file parsing vulnerability in a PDF reader). Default credentials that have not been changed or are not unique across each environment should be treated similarly to hard-coded credentials.
 //!
 
 use crate::error::{CVSSError, Result};
@@ -48,6 +50,7 @@ impl Display for PrivilegesRequiredType {
 }
 
 impl PrivilegesRequiredType {
+  #[allow(dead_code)]
   pub fn metric_help(&self) -> Help {
     self.help()
   }

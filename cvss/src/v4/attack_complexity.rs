@@ -1,16 +1,16 @@
-//! ### 2.1.2. Attack Complexity (AC)
+//! ### Attack Complexity (AC)
+//! This metric captures measurable actions that must be taken by the attacker to actively evade or circumvent **existing built-in security-enhancing conditions** in order to obtain a working exploit. These are conditions whose primary purpose is to increase security and/or increase exploit engineering complexity. A vulnerability exploitable without a target-specific variable has a lower complexity than a vulnerability that would require non-trivial customization. This metric is meant to capture security mechanisms utilized by the vulnerable system, and does not relate to the amount of time or attempts it would take for an attacker to succeed, e.g. a race condition. If the attacker does not take action to overcome these conditions, the attack will always fail.
 //!
-//! This metric describes the conditions beyond the attacker’s control that must exist in order to exploit the vulnerability. As described below, such conditions may require the collection of more information about the target, or computational exceptions. Importantly, the assessment of this metric excludes any requirements for user interaction in order to exploit the vulnerability (such conditions are captured in the User Interaction metric). If a specific configuration is required for an attack to succeed, the Base metrics should be scored assuming the vulnerable component is in that configuration. The Base Score is greatest for the least complex attacks. The list of possible values is presented in Table 2.
+//! The evasion or satisfaction of authentication mechanisms or requisites is included in the Privileges Required assessment and is **not** considered here as a factor of relevance for Attack Complexity.
 //!
 //! **Table 2: Attack Complexity**
 //!
-//! | Metric Value | Description |
+//! | **Metric Value** | **Description** |
 //! | --- | --- |
-//! | Low (L) | Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component. |
-//! | High (H) | A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.\[^2\] For example, a successful attack may depend on an attacker overcoming any of the following conditions:<br>*   The attacker must gather knowledge about the environment in which the vulnerable target/component exists. For example, a requirement to collect details on target configuration settings, sequence numbers, or shared secrets.<br>*   The attacker must prepare the target environment to improve exploit reliability. For example, repeated exploitation to win a race condition, or overcoming advanced exploit mitigation techniques.<br>*   The attacker must inject themselves into the logical network path between the target and the resource requested by the victim in order to read and/or modify network communications (e.g., a man in the middle attack).|
+//! | Low (L) | The attacker must take no measurable action to exploit the vulnerability. The attack requires no target-specific circumvention to exploit the vulnerability. An attacker can expect repeatable success against the vulnerable system. |
+//! | High (H) | The successful attack depends on the evasion or circumvention of security-enhancing techniques in place that would otherwise hinder the attack. These include: Evasion of exploit mitigation techniques. The attacker must have additional methods available to bypass security measures in place. For example, circumvention of **address space randomization (ASLR) or data execution prevention (DEP)** must be performed for the attack to be successful. Obtaining target-specific secrets. The attacker must gather some **target-specific secret** before the attack can be successful. A secret is any piece of information that cannot be obtained through any amount of reconnaissance. To obtain the secret the attacker must perform additional attacks or break otherwise secure measures (e.g. knowledge of a secret key may be needed to break a crypto channel). This operation must be performed for each attacked target. |
 //!
-//! _Scoring Guidance_: When deciding between Network and Adjacent, if an attack can be launched over a wide area network or from outside the logically adjacent administrative network domain, use Network. Network should be used even if the attacker is required to be on the same intranet to exploit the vulnerable system (e.g., the attacker can only exploit the vulnerability from inside a corporate network).
-//!
+//! As described in Section 2.1, detailed knowledge of the vulnerable system is outside the scope of Attack Complexity. Refer to that section for additional guidance when scoring Attack Complexity when target-specific attack mitigation is present.
 use crate::error::{CVSSError, Result};
 use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 use serde::{Deserialize, Serialize};
@@ -40,6 +40,7 @@ pub enum AttackComplexityType {
 }
 
 impl AttackComplexityType {
+  #[allow(dead_code)]
   pub fn metric_help(&self) -> Help {
     self.help()
   }
