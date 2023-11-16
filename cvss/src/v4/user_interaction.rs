@@ -28,10 +28,13 @@ use std::str::FromStr;
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
 pub enum UserInteractionType {
-  Active,
-  /// Require(R) 有需求
+  /// Active(A) 主动
   ///
-  /// 需要用户采取一些措施才能成功攻击此脆弱组件，例如说服用户单击电子邮件中的链接。
+  /// 成功利用此漏洞需要目标用户与易受攻击的系统和攻击者的有效负载执行特定的、有意识的交互，或者用户的交互会主动破坏保护机制，从而导致漏洞被利用。示例：明确忽略 Excel 关于电子表格中可能包含潜在恶意脚本的警告。
+  Active,
+  /// Passive(P) 被动
+  ///
+  /// 成功利用此漏洞需要目标用户与易受攻击的系统和攻击者的有效负载进行有限的交互。这些交互将被视为非自愿的，并且不需要用户主动破坏易受攻击的系统中内置的保护措施。示例：打开Outlook预览页导致攻击。
   Passive,
   /// None(N) 无需求
   ///

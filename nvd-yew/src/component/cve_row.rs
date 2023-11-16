@@ -22,24 +22,27 @@ impl Component for CVERow {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let c = ctx.props().props.clone();
-    let set_vendor = ctx.props().set_vendor.clone();
-    let set_product = ctx.props().set_product.clone();
-    let cve_id = c.id;
-    let description = c
+    let CveProps {
+      props,
+      set_vendor,
+      set_product,
+      ..
+    } = ctx.props().clone();
+    let cve_id = props.id;
+    let description = props
       .description
       .description_data
       .iter()
       .map(|d| d.value.clone())
       .collect::<Vec<String>>();
-    let update = c.created_at.to_string();
-    let cwe: Vec<String> = c
+    let update = props.created_at.to_string();
+    let cwe: Vec<String> = props
       .problem_type
       .problem_type_data
       .iter()
       .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
       .collect();
-    let vendor_product = c.configurations.unique_vendor_product();
+    let vendor_product = props.configurations.unique_vendor_product();
     let vendor: HashSet<String> = HashSet::from_iter(
       vendor_product
         .iter()
@@ -84,10 +87,10 @@ impl Component for CVERow {
             {cwe}
           </td>
           <td>
-            {cvss2(c.cvss2_score)}
+            {cvss2(props.cvss2_score)}
           </td>
           <td>
-            {cvss3(c.cvss3_score)}
+            {cvss3(props.cvss3_score)}
           </td>
           <td>
             {update}

@@ -42,13 +42,16 @@ impl Component for TooltipPopover {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let class = ctx.props().class.clone();
-    let content = ctx.props().content.clone();
-    let html = ctx.props().html;
-    let placement = ctx.props().placement.clone();
-    let toggle = ctx.props().toggle.clone();
-    let trigger = ctx.props().trigger.clone();
-    let children = ctx.props().children.clone();
+    let TooltipPopoverProp {
+      class,
+      content,
+      html,
+      placement,
+      toggle,
+      children,
+      trigger,
+      ..
+    } = ctx.props();
     let on_mouse_enter = {
       Callback::from(move |event: MouseEvent| {
         event.stop_propagation();
@@ -68,14 +71,13 @@ impl Component for TooltipPopover {
           .expect("Error! Failed to call function getOrCreateInstance");
         let show_popover = js_sys::Reflect::get(&popover_bootstrap, &JsValue::from("show"))
           .expect("Error! Failed to get property show");
-        let show_callback =
-          Closure::wrap(Box::new(move |_: MouseEvent| {
-            show_popover
-              .clone()
-              .unchecked_into::<js_sys::Function>()
-              .call0(&popover_bootstrap)
-              .expect("Error! Failed to call function show");
-          }) as Box<dyn FnMut(_)>);
+        let show_callback = Closure::wrap(Box::new(move |_: MouseEvent| {
+          show_popover
+            .clone()
+            .unchecked_into::<js_sys::Function>()
+            .call0(&popover_bootstrap)
+            .expect("Error! Failed to call function show");
+        }) as Box<dyn FnMut(_)>);
         target
           .clone()
           .unchecked_into::<Element>()
@@ -85,7 +87,7 @@ impl Component for TooltipPopover {
       })
     };
     html! {
-      <div class={classes!([class])}>
+      <div class={class.clone()}>
         <span
           tabindex=0
           data-bs-trigger={trigger}
@@ -96,7 +98,7 @@ impl Component for TooltipPopover {
           data-bs-html={html.to_string()}
           data-bs-content={content.clone()}
         >
-        {children}
+        {children.clone()}
         </span>
       </div>
     }

@@ -13,7 +13,8 @@ pub enum Version {
   V3_0,
   #[serde(rename = "3.1")]
   V3_1,
-  // todo V4
+  #[serde(rename = "4.0")]
+  V4_0,
 }
 
 impl FromStr for Version {
@@ -28,6 +29,7 @@ impl FromStr for Version {
       "2.0" => Ok(Self::V2_0),
       "3.0" => Ok(Self::V3_0),
       "3.1" => Ok(Self::V3_1),
+      "4.0" => Ok(Self::V4_0),
       _ => Ok(Self::None),
     }
   }
@@ -40,6 +42,7 @@ impl std::fmt::Display for Version {
       Version::V2_0 => write!(f, "2.0"),
       Version::V3_0 => write!(f, "3.0"),
       Version::V3_1 => write!(f, "3.1"),
+      Version::V4_0 => write!(f, "4.0"),
     }
   }
 }
