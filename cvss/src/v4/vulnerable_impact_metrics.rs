@@ -318,3 +318,65 @@ impl VulnerableAvailabilityImpactType {
     self.help()
   }
 }
+/// 2.3. Impact Metrics
+///
+/// The Impact metrics refer to the properties of the impacted component. Whether a successfully exploited vulnerability affects one or more components, the impact metrics are scored according to the component that suffers the worst outcome that is most directly and predictably associated with a successful attack. That is, analysts should constrain impacts to a reasonable, final outcome which they are confident an attacker is able to achieve.
+///
+/// If a scope change has not occurred, the Impact metrics should reflect the confidentiality, integrity, and availability (CIA) impact to the vulnerable component. However, if a scope change has occurred, then the Impact metrics should reflect the CIA impact to either the vulnerable component, or the impacted component, whichever suffers the most severe outcome.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all(deserialize = "camelCase"))]
+pub struct VulnerableImpact {
+  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  pub confidentiality_impact: VulnerableConfidentialityImpactType,
+  /// [`IntegrityImpactType`] 完整性影响（I）
+  pub integrity_impact: VulnerableIntegrityImpactType,
+  /// [`AvailabilityImpactType`] 可用性影响（A）
+  pub availability_impact: VulnerableAvailabilityImpactType,
+}
+
+impl VulnerableImpact {
+  pub(crate) fn all_none(&self) -> bool {
+    matches!(
+      self.confidentiality_impact,
+      VulnerableConfidentialityImpactType::None
+    ) && matches!(self.integrity_impact, VulnerableIntegrityImpactType::None)
+      && matches!(
+        self.availability_impact,
+        VulnerableAvailabilityImpactType::None
+      )
+  }
+  pub(crate)fn eq3(&self) -> Option<i32> {
+    if matches!(
+      self.confidentiality_impact,
+      VulnerableConfidentialityImpactType::High
+    ) && matches!(self.integrity_impact, VulnerableIntegrityImpactType::High)
+    {
+      return Some(0);
+    } else if !(matches!(
+      self.confidentiality_impact,
+      VulnerableConfidentialityImpactType::High
+    ) && matches!(self.integrity_impact, VulnerableIntegrityImpactType::High))
+      && (matches!(
+        self.confidentiality_impact,
+        VulnerableConfidentialityImpactType::High
+      ) || matches!(self.integrity_impact, VulnerableIntegrityImpactType::High)
+        || matches!(
+          self.availability_impact,
+          VulnerableAvailabilityImpactType::High
+        ))
+    {
+      return Some(1);
+    } else if !(matches!(
+      self.confidentiality_impact,
+      VulnerableConfidentialityImpactType::High
+    ) || matches!(self.integrity_impact, VulnerableIntegrityImpactType::High)
+      || matches!(
+        self.availability_impact,
+        VulnerableAvailabilityImpactType::High
+      ))
+    {
+      return Some(2);
+    }
+    return None;
+  }
+}

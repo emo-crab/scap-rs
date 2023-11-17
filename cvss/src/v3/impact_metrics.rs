@@ -302,3 +302,29 @@ impl AvailabilityImpactType {
     self.help()
   }
 }
+
+/// 2.3. Impact Metrics
+///
+/// The Impact metrics refer to the properties of the impacted component. Whether a successfully exploited vulnerability affects one or more components, the impact metrics are scored according to the component that suffers the worst outcome that is most directly and predictably associated with a successful attack. That is, analysts should constrain impacts to a reasonable, final outcome which they are confident an attacker is able to achieve.
+///
+/// If a scope change has not occurred, the Impact metrics should reflect the confidentiality, integrity, and availability (CIA) impact to the vulnerable component. However, if a scope change has occurred, then the Impact metrics should reflect the CIA impact to either the vulnerable component, or the impacted component, whichever suffers the most severe outcome.
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all(deserialize = "camelCase"))]
+pub struct Impact {
+  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  pub confidentiality_impact: ConfidentialityImpactType,
+  /// [`IntegrityImpactType`] 完整性影响（I）
+  pub integrity_impact: IntegrityImpactType,
+  /// [`AvailabilityImpactType`] 可用性影响（A）
+  pub availability_impact: AvailabilityImpactType,
+}
+
+impl Impact {
+  /// 𝐼𝑆𝐶𝐵𝑎𝑠𝑒 = 1 − [(1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐶𝑜𝑛𝑓) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐼𝑛𝑡𝑒𝑔) × (1 − 𝐼𝑚𝑝𝑎𝑐𝑡𝐴𝑣𝑎𝑖𝑙)]
+  pub(crate) fn impact_sub_score_base(&self) -> f32 {
+    let c_score = self.confidentiality_impact.score();
+    let i_score = self.integrity_impact.score();
+    let a_score = self.availability_impact.score();
+    1.0 - ((1.0 - c_score) * (1.0 - i_score) * (1.0 - a_score)).abs()
+  }
+}

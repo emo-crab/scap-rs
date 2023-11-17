@@ -11,14 +11,16 @@ use crate::severity::SeverityType;
 use crate::v4::attack_complexity::AttackComplexityType;
 use crate::v4::attack_requirements::AttackRequirementsType;
 use crate::v4::attack_vector::AttackVectorType;
+use crate::v4::environmental::Environmental;
+use crate::v4::exploit_maturity::ExploitMaturity;
 use crate::v4::privileges_required::PrivilegesRequiredType;
 use crate::v4::subsequent_impact_metrics::{
-  SubsequentAvailabilityImpactType, SubsequentConfidentialityImpactType,
+  SubsequentAvailabilityImpactType, SubsequentConfidentialityImpactType, SubsequentImpact,
   SubsequentIntegrityImpactType,
 };
 use crate::v4::user_interaction::UserInteractionType;
 use crate::v4::vulnerable_impact_metrics::{
-  VulnerableAvailabilityImpactType, VulnerableConfidentialityImpactType,
+  VulnerableAvailabilityImpactType, VulnerableConfidentialityImpactType, VulnerableImpact,
   VulnerableIntegrityImpactType,
 };
 use crate::version::Version;
@@ -29,6 +31,8 @@ use std::str::FromStr;
 mod attack_complexity;
 mod attack_requirements;
 mod attack_vector;
+mod environmental;
+mod exploit_maturity;
 mod privileges_required;
 mod subsequent_impact_metrics;
 mod user_interaction;
@@ -62,32 +66,46 @@ impl ExploitAbility {
       * self.user_interaction.score()
       * self.privileges_required.score()
   }
+  fn eq1(&self) -> Option<i32> {
+    if matches!(self.attack_vector, AttackVectorType::Network)
+      && matches!(self.privileges_required, PrivilegesRequiredType::None)
+      && matches!(self.user_interaction, UserInteractionType::None)
+    {
+      // 0: ["AV:N/PR:N/UI:N/"],
+      return Some(0);
+    } else if (matches!(self.attack_vector, AttackVectorType::Network)
+      || matches!(self.privileges_required, PrivilegesRequiredType::None)
+      || matches!(self.user_interaction, UserInteractionType::None))
+      && !(matches!(self.attack_vector, AttackVectorType::Network)
+        && matches!(self.privileges_required, PrivilegesRequiredType::None)
+        && matches!(self.user_interaction, UserInteractionType::None))
+      && !(matches!(self.attack_vector, AttackVectorType::Physical))
+    {
+      // 1: ["AV:A/PR:N/UI:N/", "AV:N/PR:L/UI:N/", "AV:N/PR:N/UI:P/"],
+      return Some(1);
+    } else if matches!(self.attack_vector, AttackVectorType::Physical)
+      || !(matches!(self.attack_vector, AttackVectorType::Network)
+        || matches!(self.privileges_required, PrivilegesRequiredType::None)
+        || matches!(self.user_interaction, UserInteractionType::None))
+    {
+      // 2: ["AV:P/PR:N/UI:N/", "AV:A/PR:L/UI:P/"]
+      return Some(2);
+    }
+    return None;
+  }
+  fn eq2(&self) -> Option<i32> {
+    if matches!(self.attack_complexity, AttackComplexityType::Low)
+      && matches!(self.attack_requirements, AttackRequirementsType::None)
+    {
+      return Some(0);
+    } else if !(matches!(self.attack_complexity, AttackComplexityType::Low)
+      && matches!(self.attack_requirements, AttackRequirementsType::None))
+    {
+    }
+    return None;
+  }
 }
-/// 2.3. Impact Metrics
-///
-/// The Impact metrics refer to the properties of the impacted component. Whether a successfully exploited vulnerability affects one or more components, the impact metrics are scored according to the component that suffers the worst outcome that is most directly and predictably associated with a successful attack. That is, analysts should constrain impacts to a reasonable, final outcome which they are confident an attacker is able to achieve.
-///
-/// If a scope change has not occurred, the Impact metrics should reflect the confidentiality, integrity, and availability (CIA) impact to the vulnerable component. However, if a scope change has occurred, then the Impact metrics should reflect the CIA impact to either the vulnerable component, or the impacted component, whichever suffers the most severe outcome.
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(rename_all(deserialize = "camelCase"))]
-pub struct VulnerableImpact {
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
-  pub confidentiality_impact: VulnerableConfidentialityImpactType,
-  /// [`IntegrityImpactType`] 完整性影响（I）
-  pub integrity_impact: VulnerableIntegrityImpactType,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
-  pub availability_impact: VulnerableAvailabilityImpactType,
-}
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(rename_all(deserialize = "camelCase"))]
-pub struct SubsequentImpact {
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
-  pub confidentiality_impact: SubsequentConfidentialityImpactType,
-  /// [`IntegrityImpactType`] 完整性影响（I）
-  pub integrity_impact: SubsequentIntegrityImpactType,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
-  pub availability_impact: SubsequentAvailabilityImpactType,
-}
+
 ///
 /// The Common Vulnerability Scoring System (CVSS) captures the principal technical characteristics of software, hardware and firmware vulnerabilities. Its outputs include numerical scores indicating the severity of a vulnerability relative to other vulnerabilities.
 ///
@@ -110,6 +128,9 @@ pub struct CVSS {
   pub vulnerable_impact: VulnerableImpact,
   #[serde(flatten)]
   pub subsequent_impact: SubsequentImpact,
+  pub exploit: ExploitMaturity,
+  #[serde(flatten)]
+  pub environmental: Environmental,
   /// 基础评分
   pub base_score: f32,
   /// [`SeverityType`] 基础评级
@@ -214,8 +235,10 @@ impl FromStr for CVSS {
       vulnerable_impact,
       base_score: 0.0,
       base_severity: SeverityType::None,
+      exploit: ExploitMaturity::NotDefined,
+      environmental: Environmental::default(),
     };
-    // cvss.base_score = cvss.base_score();
+    cvss.base_score = cvss.base_score();
     cvss.base_severity = SeverityType::from(cvss.base_score);
     cvss.vector_string = cvss.to_string();
     Ok(cvss)
@@ -259,16 +282,34 @@ impl CVSSBuilder {
       exploit_ability,
       vulnerable_impact,
       subsequent_impact,
+      exploit: ExploitMaturity::NotDefined,
+      environmental: Environmental::default(),
       base_score: 0.0,
       base_severity: SeverityType::None,
     };
     cvss.vector_string = cvss.to_string();
-    // cvss.base_score = cvss.base_score();
+    cvss.base_score = cvss.base_score();
     cvss.base_severity = SeverityType::from(cvss.base_score);
     cvss
   }
 }
 
+impl CVSS {
+  fn base_score(&self) -> f32 {
+    if self.subsequent_impact.all_none() && self.vulnerable_impact.all_none() {
+      return 0.0;
+    }
+    self.macro_vector();
+    0.0
+  }
+  fn macro_vector(&self) {
+    let (eq1, eq2) = (self.exploit_ability.eq1(), self.exploit_ability.eq2());
+    let (eq3, eq4) = (self.vulnerable_impact.eq3(), self.subsequent_impact.eq4());
+    let eq5 = self.exploit.eq5();
+  }
+}
+
+impl CVSS {}
 #[cfg(test)]
 mod tests {
   use crate::v4::CVSS;

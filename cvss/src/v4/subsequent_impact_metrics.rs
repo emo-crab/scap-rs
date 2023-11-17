@@ -319,3 +319,52 @@ impl SubsequentAvailabilityImpactType {
     self.help()
   }
 }
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(rename_all(deserialize = "camelCase"))]
+pub struct SubsequentImpact {
+  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  pub confidentiality_impact: SubsequentConfidentialityImpactType,
+  /// [`IntegrityImpactType`] 完整性影响（I）
+  pub integrity_impact: SubsequentIntegrityImpactType,
+  /// [`AvailabilityImpactType`] 可用性影响（A）
+  pub availability_impact: SubsequentAvailabilityImpactType,
+}
+
+impl SubsequentImpact {
+  pub(crate) fn all_none(&self) -> bool {
+    matches!(
+      self.confidentiality_impact,
+      SubsequentConfidentialityImpactType::None
+    ) && matches!(self.integrity_impact, SubsequentIntegrityImpactType::None)
+      && matches!(
+        self.availability_impact,
+        SubsequentAvailabilityImpactType::None
+      )
+  }
+  pub(crate)fn eq4(&self) -> Option<i32> {
+    // TODO: MSI,MSA
+    if matches!(
+      self.confidentiality_impact,
+      SubsequentConfidentialityImpactType::High
+    ) || matches!(self.integrity_impact, SubsequentIntegrityImpactType::High)
+      || matches!(
+        self.availability_impact,
+        SubsequentAvailabilityImpactType::High
+      )
+    {
+      return Some(1);
+    } else if !(matches!(
+      self.confidentiality_impact,
+      SubsequentConfidentialityImpactType::High
+    ) || matches!(self.integrity_impact, SubsequentIntegrityImpactType::High)
+      || matches!(
+        self.availability_impact,
+        SubsequentAvailabilityImpactType::High
+      ))
+    {
+      return Some(2);
+    }
+    return None;
+  }
+}
