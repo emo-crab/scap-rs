@@ -67,7 +67,11 @@ impl Metric for PrivilegesRequiredType {
   }
 
   fn score(&self) -> f32 {
-    self.scoped_score(false)
+    match self {
+      PrivilegesRequiredType::High => 0.2,
+      PrivilegesRequiredType::Low => 0.1,
+      PrivilegesRequiredType::None => 0.0,
+    }
   }
 
   fn as_str(&self) -> &'static str {
@@ -83,41 +87,30 @@ impl FromStr for PrivilegesRequiredType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::name()) {
+    let name = Self::name();
+    if s.starts_with(name) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::None),
       'L' => Ok(Self::Low),
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,L,H".to_string(),
       }),
-    }
-  }
-}
-
-impl PrivilegesRequiredType {
-  pub fn scoped_score(&self, scope_change: bool) -> f32 {
-    if scope_change {
-      match self {
-        PrivilegesRequiredType::High => 0.5,
-        PrivilegesRequiredType::Low => 0.68,
-        PrivilegesRequiredType::None => 0.85,
-      }
-    } else {
-      match self {
-        PrivilegesRequiredType::High => 0.27,
-        PrivilegesRequiredType::Low => 0.62,
-        PrivilegesRequiredType::None => 0.85,
-      }
     }
   }
 }

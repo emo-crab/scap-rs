@@ -82,7 +82,9 @@ impl FromStr for CVSS {
     let mut vector = vectors.split('/');
     // "CVSS:2.0/AV:L/AC:M/Au:N/C:C/I:C/A:C"
     let error = CVSSError::InvalidCVSS {
+      key: "CVSS:2.0".to_string(),
       value: vector_string.to_string(),
+      expected: "".to_string(),
     };
     let mut cvss = CVSS {
       version,

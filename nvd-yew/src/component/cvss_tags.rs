@@ -1,6 +1,6 @@
 use crate::component::TooltipPopover;
 use cvss::metric::{Help, Worth};
-use cvss::severity::{SeverityTypeV2, SeverityTypeV3};
+use cvss::severity::{SeverityTypeV2, SeverityType};
 use cvss::v3::attack_complexity::AttackComplexityType;
 use cvss::v3::attack_vector::AttackVectorType;
 use cvss::v3::impact_metrics::{
@@ -27,13 +27,13 @@ pub fn cvss2(score: f32) -> Html {
   html!(<span class={classes!(["badge",severity_class])}><b style="font-size:larger">{score_str}</b></span>)
 }
 pub fn cvss3(score: f32) -> Html {
-  let severity = cvss::severity::SeverityTypeV3::from(score);
+  let severity = cvss::severity::SeverityType::from(score);
   let severity_class = match severity {
-    SeverityTypeV3::None => "bg-secondary",
-    SeverityTypeV3::Low => "bg-info",
-    SeverityTypeV3::Medium => "bg-warning",
-    SeverityTypeV3::High => "bg-danger",
-    SeverityTypeV3::Critical => "bg-dark",
+    SeverityType::None => "bg-secondary",
+    SeverityType::Low => "bg-info",
+    SeverityType::Medium => "bg-warning",
+    SeverityType::High => "bg-danger",
+    SeverityType::Critical => "bg-dark",
   };
   let score_str = if score == 0.0 {
     String::from("N/A")

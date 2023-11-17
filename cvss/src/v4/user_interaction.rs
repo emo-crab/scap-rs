@@ -67,16 +67,16 @@ impl Metric for UserInteractionType {
 
   fn score(&self) -> f32 {
     match self {
-      UserInteractionType::Passive => 0.62,
-      UserInteractionType::None => 0.85,
-      UserInteractionType::Active => 0.0,
+      UserInteractionType::None => 0.0,
+      UserInteractionType::Passive => 0.1,
+      UserInteractionType::Active => 0.2,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      UserInteractionType::Passive => "P",
       UserInteractionType::None => "N",
+      UserInteractionType::Passive => "P",
       UserInteractionType::Active => "A",
     }
   }
@@ -87,6 +87,7 @@ impl FromStr for UserInteractionType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
+    let name = Self::name();
     if s.starts_with(Self::name()) {
       s = s
         .strip_prefix(&format!("{}:", Self::name()))
@@ -95,14 +96,20 @@ impl FromStr for UserInteractionType {
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::None),
       'P' => Ok(Self::Passive),
       'A' => Ok(Self::Active),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,P,A".to_string(),
       }),
     }
   }

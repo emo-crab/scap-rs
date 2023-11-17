@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-  use cvss::severity::SeverityTypeV3;
+  use cvss::severity::SeverityType;
   use cvss::v3::attack_complexity::AttackComplexityType;
   use cvss::v3::attack_vector::AttackVectorType;
   use cvss::v3::impact_metrics::{
@@ -54,7 +54,7 @@ mod tests {
       "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H"
     );
     assert_eq!(cvss_v3.base_score, 10.0);
-    assert_eq!(cvss_v3.base_severity, SeverityTypeV3::Critical);
+    assert_eq!(cvss_v3.base_severity, SeverityType::Critical);
   }
   #[test]
   fn test_cvss_scope() {
@@ -62,11 +62,11 @@ mod tests {
       cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:L/A:H").unwrap();
     println!("{cvss_v3_unchanged:?}");
     assert_eq!(cvss_v3_unchanged.base_score, 7.1);
-    assert_eq!(cvss_v3_unchanged.base_severity, SeverityTypeV3::High);
+    assert_eq!(cvss_v3_unchanged.base_severity, SeverityType::High);
     let cvss_v3_changed =
       cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:L/A:H").unwrap();
     assert_eq!(cvss_v3_changed.base_score, 8.2);
-    assert_eq!(cvss_v3_changed.base_severity, SeverityTypeV3::High);
+    assert_eq!(cvss_v3_changed.base_severity, SeverityType::High);
   }
 
   #[test]

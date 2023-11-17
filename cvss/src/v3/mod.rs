@@ -16,7 +16,7 @@
 
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
-use crate::severity::SeverityTypeV3;
+use crate::severity::SeverityType;
 use crate::v3::attack_complexity::AttackComplexityType;
 use crate::v3::attack_vector::AttackVectorType;
 use crate::v3::impact_metrics::{
@@ -115,7 +115,7 @@ pub struct CVSS {
   /// 基础评分
   pub base_score: f32,
   /// [`SeverityType`] 基础评级
-  pub base_severity: SeverityTypeV3,
+  pub base_severity: SeverityType,
 }
 
 impl CVSS {
@@ -214,7 +214,9 @@ impl FromStr for CVSS {
     let mut vector = vectors.split('/');
     // "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
     let error = CVSSError::InvalidCVSS {
+      key: "CVSS:3.1".to_string(),
       value: vector_string.to_string(),
+      expected: "".to_string(),
     };
     let exploit_ability = ExploitAbility {
       attack_vector: AttackVectorType::from_str(vector.next().ok_or(&error)?)?,
@@ -235,10 +237,10 @@ impl FromStr for CVSS {
       scope,
       impact,
       base_score: 0.0,
-      base_severity: SeverityTypeV3::None,
+      base_severity: SeverityType::None,
     };
     cvss.base_score = cvss.base_score();
-    cvss.base_severity = SeverityTypeV3::from(cvss.base_score);
+    cvss.base_severity = SeverityType::from(cvss.base_score);
     cvss.vector_string = cvss.to_string();
     Ok(cvss)
   }
@@ -302,11 +304,11 @@ impl CVSSBuilder {
       scope,
       impact,
       base_score: 0.0,
-      base_severity: SeverityTypeV3::None,
+      base_severity: SeverityType::None,
     };
     cvss.vector_string = cvss.to_string();
     cvss.base_score = cvss.base_score();
-    cvss.base_severity = SeverityTypeV3::from(cvss.base_score);
+    cvss.base_severity = SeverityType::from(cvss.base_score);
     cvss
   }
 }

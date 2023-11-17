@@ -21,7 +21,7 @@ use std::str::FromStr;
 /// 定性严重程度
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "UPPERCASE")]
-pub enum SeverityTypeV3 {
+pub enum SeverityType {
   /// 未校正 | None | 0.0 |
   None,
   /// 低危 | Low | 0.1 - 3.9 |
@@ -34,41 +34,41 @@ pub enum SeverityTypeV3 {
   Critical,
 }
 
-impl Display for SeverityTypeV3 {
+impl Display for SeverityType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}", self.as_str())
   }
 }
 
-impl SeverityTypeV3 {
+impl SeverityType {
   fn as_str(&self) -> &'static str {
     match self {
-      SeverityTypeV3::None => "None",
-      SeverityTypeV3::Low => "Low",
-      SeverityTypeV3::Medium => "Medium",
-      SeverityTypeV3::High => "High",
-      SeverityTypeV3::Critical => "Critical",
+      SeverityType::None => "None",
+      SeverityType::Low => "Low",
+      SeverityType::Medium => "Medium",
+      SeverityType::High => "High",
+      SeverityType::Critical => "Critical",
     }
   }
 }
 
-impl From<f32> for SeverityTypeV3 {
+impl From<f32> for SeverityType {
   fn from(value: f32) -> Self {
     if value < 0.1 {
-      SeverityTypeV3::None
+      SeverityType::None
     } else if value < 4.0 {
-      SeverityTypeV3::Low
+      SeverityType::Low
     } else if value < 7.0 {
-      SeverityTypeV3::Medium
+      SeverityType::Medium
     } else if value < 9.0 {
-      SeverityTypeV3::High
+      SeverityType::High
     } else {
-      SeverityTypeV3::Critical
+      SeverityType::Critical
     }
   }
 }
 
-impl FromStr for SeverityTypeV3 {
+impl FromStr for SeverityType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
@@ -79,7 +79,9 @@ impl FromStr for SeverityTypeV3 {
       "High" => Ok(Self::High),
       "Critical" => Ok(Self::Critical),
       _ => Err(CVSSError::InvalidCVSS {
+        key: "SeverityType".to_string(),
         value: s.to_string(),
+        expected: "None,Low,Medium,High,Critical".to_string(),
       }),
     }
   }
@@ -139,7 +141,9 @@ impl FromStr for SeverityTypeV2 {
       "Medium" => Ok(Self::Medium),
       "High" => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
+        key: "SeverityTypeV2".to_string(),
         value: s.to_string(),
+        expected: "None,Low,Medium,High".to_string(),
       }),
     }
   }
@@ -147,21 +151,21 @@ impl FromStr for SeverityTypeV2 {
 
 #[cfg(test)]
 mod tests {
-  use crate::severity::SeverityTypeV3;
+  use crate::severity::SeverityType;
 
   #[test]
   fn severity_type_test() {
-    assert_eq!(SeverityTypeV3::from(0.0), SeverityTypeV3::None);
-    assert_eq!(SeverityTypeV3::from(0.1), SeverityTypeV3::Low);
-    assert_eq!(SeverityTypeV3::from(0.3), SeverityTypeV3::Low);
-    assert_eq!(SeverityTypeV3::from(1.0), SeverityTypeV3::Low);
-    assert_eq!(SeverityTypeV3::from(1.6), SeverityTypeV3::Low);
-    assert_eq!(SeverityTypeV3::from(4.0), SeverityTypeV3::Medium);
-    assert_eq!(SeverityTypeV3::from(5.0), SeverityTypeV3::Medium);
-    assert_eq!(SeverityTypeV3::from(6.0), SeverityTypeV3::Medium);
-    assert_eq!(SeverityTypeV3::from(6.9), SeverityTypeV3::Medium);
-    assert_eq!(SeverityTypeV3::from(7.0), SeverityTypeV3::High);
-    assert_eq!(SeverityTypeV3::from(9.0), SeverityTypeV3::Critical);
-    assert_eq!(SeverityTypeV3::from(10.0), SeverityTypeV3::Critical);
+    assert_eq!(SeverityType::from(0.0), SeverityType::None);
+    assert_eq!(SeverityType::from(0.1), SeverityType::Low);
+    assert_eq!(SeverityType::from(0.3), SeverityType::Low);
+    assert_eq!(SeverityType::from(1.0), SeverityType::Low);
+    assert_eq!(SeverityType::from(1.6), SeverityType::Low);
+    assert_eq!(SeverityType::from(4.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(5.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(6.0), SeverityType::Medium);
+    assert_eq!(SeverityType::from(6.9), SeverityType::Medium);
+    assert_eq!(SeverityType::from(7.0), SeverityType::High);
+    assert_eq!(SeverityType::from(9.0), SeverityType::Critical);
+    assert_eq!(SeverityType::from(10.0), SeverityType::Critical);
   }
 }

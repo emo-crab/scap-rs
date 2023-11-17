@@ -11,7 +11,7 @@
 //!
 
 use crate::error::{CVSSError, Result};
-use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV4, Worth};
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
@@ -50,7 +50,7 @@ impl Display for AttackRequirementsType {
   }
 }
 impl Metric for AttackRequirementsType {
-  const TYPE: MetricType = MetricType::V3(MetricTypeV3::AC);
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::AT);
 
   fn help(&self) -> Help {
     match self {
@@ -61,8 +61,8 @@ impl Metric for AttackRequirementsType {
 
   fn score(&self) -> f32 {
     match self {
-      AttackRequirementsType::Present => 0.44,
-      AttackRequirementsType::None => 0.77,
+      AttackRequirementsType::Present => 0.1,
+      AttackRequirementsType::None => 0.0,
     }
   }
 
@@ -78,21 +78,28 @@ impl FromStr for AttackRequirementsType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::name()) {
+    let name = Self::name();
+    if s.starts_with(name) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
-      'L' => Ok(Self::None),
-      'H' => Ok(Self::Present),
+      'N' => Ok(Self::None),
+      'P' => Ok(Self::Present),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,P".to_string(),
       }),
     }
   }

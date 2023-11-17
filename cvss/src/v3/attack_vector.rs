@@ -95,15 +95,20 @@ impl FromStr for AttackVectorType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::name()) {
+    let name = Self::name();
+    if s.starts_with(name) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::Network),
@@ -111,7 +116,9 @@ impl FromStr for AttackVectorType {
       'L' => Ok(Self::Local),
       'P' => Ok(Self::Physical),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,A,L,P".to_string(),
       }),
     }
   }

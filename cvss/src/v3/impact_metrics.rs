@@ -92,22 +92,29 @@ impl FromStr for ConfidentialityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
+    let name = Self::name();
     if s.starts_with(Self::name()) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::None),
       'L' => Ok(Self::Low),
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,L,H".to_string(),
       }),
     }
   }
@@ -117,22 +124,29 @@ impl FromStr for IntegrityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::name()) {
+    let name = Self::name();
+    if s.starts_with(name) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::None),
       'L' => Ok(Self::Low),
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,L,H".to_string(),
       }),
     }
   }
@@ -142,22 +156,29 @@ impl FromStr for AvailabilityImpactType {
 
   fn from_str(s: &str) -> Result<Self> {
     let mut s = s.to_uppercase();
-    if s.starts_with(Self::name()) {
+    let name = Self::name();
+    if s.starts_with(name) {
       s = s
-        .strip_prefix(&format!("{}:", Self::name()))
+        .strip_prefix(&format!("{}:", name))
         .unwrap_or_default()
         .to_string();
     }
     let c = {
       let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS { value: s })?
+      c.ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s,
+        expected: name.to_string(),
+      })?
     };
     match c {
       'N' => Ok(Self::None),
       'L' => Ok(Self::Low),
       'H' => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
         value: c.to_string(),
+        expected: "N,L,H".to_string(),
       }),
     }
   }
