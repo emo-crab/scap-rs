@@ -60,6 +60,15 @@ impl AttackVectorType {
     self.help()
   }
 }
+
+impl AttackVectorType {
+  pub(crate) fn is_network(&self) -> bool {
+    matches!(self, Self::Network)
+  }
+  pub(crate) fn is_physical(&self)->bool{
+    matches!(self, Self::Physical)
+  }
+}
 impl Metric for AttackVectorType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::AV);
 

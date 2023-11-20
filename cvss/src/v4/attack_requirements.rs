@@ -44,6 +44,12 @@ impl AttackRequirementsType {
     self.help()
   }
 }
+
+impl AttackRequirementsType {
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
 impl Display for AttackRequirementsType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}:{}", Self::name(), self.as_str())

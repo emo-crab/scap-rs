@@ -55,6 +55,12 @@ impl PrivilegesRequiredType {
     self.help()
   }
 }
+
+impl PrivilegesRequiredType {
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
 impl Metric for PrivilegesRequiredType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::PR);
 

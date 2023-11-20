@@ -45,6 +45,13 @@ impl AttackComplexityType {
     self.help()
   }
 }
+
+impl AttackComplexityType {
+  pub(crate) fn is_low(&self) -> bool {
+    matches!(self, Self::Low)
+  }
+}
+
 impl Display for AttackComplexityType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}:{}", Self::name(), self.as_str())

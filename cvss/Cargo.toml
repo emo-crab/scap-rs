@@ -7,4 +7,5 @@ edition = "2021"
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
+phf = { version = "0.11", features = ["macros"] }
 thiserror = "1.0"

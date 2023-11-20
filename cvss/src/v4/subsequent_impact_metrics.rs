@@ -209,25 +209,25 @@ impl Metric for SubsequentConfidentialityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      SubsequentConfidentialityImpactType::High => {Help{ worth: Worth::Worst, des: "There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator's password, or private encryption keys of a web server.".to_string() }}
-      SubsequentConfidentialityImpactType::Low => {Help{ worth: Worth::Bad, des: "There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.".to_string() }}
-      SubsequentConfidentialityImpactType::None => {Help{ worth: Worth::Good, des: "There is no loss of confidentiality within the impacted component.".to_string() }}
+      Self::High => {Help{ worth: Worth::Worst, des: "There is a total loss of confidentiality, resulting in all resources within the impacted component being divulged to the attacker. Alternatively, access to only some restricted information is obtained, but the disclosed information presents a direct, serious impact. For example, an attacker steals the administrator's password, or private encryption keys of a web server.".to_string() }}
+      Self::Low => {Help{ worth: Worth::Bad, des: "There is some loss of confidentiality. Access to some restricted information is obtained, but the attacker does not have control over what information is obtained, or the amount or kind of loss is limited. The information disclosure does not cause a direct, serious loss to the impacted component.".to_string() }}
+      Self::None => {Help{ worth: Worth::Good, des: "There is no loss of confidentiality within the impacted component.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      SubsequentConfidentialityImpactType::None => 0.3,
-      SubsequentConfidentialityImpactType::Low => 0.2,
-      SubsequentConfidentialityImpactType::High => 0.1,
+      Self::None => 0.3,
+      Self::Low => 0.2,
+      Self::High => 0.1,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      SubsequentConfidentialityImpactType::None => "N",
-      SubsequentConfidentialityImpactType::Low => "L",
-      SubsequentConfidentialityImpactType::High => "H",
+      Self::None => "N",
+      Self::Low => "L",
+      Self::High => "H",
     }
   }
 }
@@ -243,25 +243,25 @@ impl Metric for SubsequentIntegrityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      SubsequentIntegrityImpactType::High => {Help{ worth: Worth::Worst, des: "There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.".to_string() }}
-      SubsequentIntegrityImpactType::Low => {Help{ worth: Worth::Bad, des: "Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.".to_string() }}
-      SubsequentIntegrityImpactType::None => {Help{ worth: Worth::Good, des: "There is no loss of integrity within the impacted component.".to_string() }}
+      Self::High => {Help{ worth: Worth::Worst, des: "There is a total loss of integrity, or a complete loss of protection. For example, the attacker is able to modify any/all files protected by the impacted component. Alternatively, only some files can be modified, but malicious modification would present a direct, serious consequence to the impacted component.".to_string() }}
+      Self::Low => {Help{ worth: Worth::Bad, des: "Modification of data is possible, but the attacker does not have control over the consequence of a modification, or the amount of modification is limited. The data modification does not have a direct, serious impact on the impacted component.".to_string() }}
+      Self::None => {Help{ worth: Worth::Good, des: "There is no loss of integrity within the impacted component.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      SubsequentIntegrityImpactType::None => 0.3,
-      SubsequentIntegrityImpactType::Low => 0.2,
-      SubsequentIntegrityImpactType::High => 0.1,
+      Self::None => 0.3,
+      Self::Low => 0.2,
+      Self::High => 0.1,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      SubsequentIntegrityImpactType::None => "N",
-      SubsequentIntegrityImpactType::Low => "L",
-      SubsequentIntegrityImpactType::High => "H",
+      Self::None => "N",
+      Self::Low => "L",
+      Self::High => "H",
     }
   }
 }
@@ -277,25 +277,25 @@ impl Metric for SubsequentAvailabilityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      SubsequentAvailabilityImpactType::High => {Help{ worth: Worth::Worst, des: "There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).".to_string() }}
-      SubsequentAvailabilityImpactType::Low => {Help{ worth: Worth::Bad, des: "Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.".to_string() }}
-      SubsequentAvailabilityImpactType::None => {Help{ worth: Worth::Good, des: "There is no impact to availability within the impacted component.".to_string() }}
+      Self::High => {Help{ worth: Worth::Worst, des: "There is a total loss of availability, resulting in the attacker being able to fully deny access to resources in the impacted component; this loss is either sustained (while the attacker continues to deliver the attack) or persistent (the condition persists even after the attack has completed). Alternatively, the attacker has the ability to deny some availability, but the loss of availability presents a direct, serious consequence to the impacted component (e.g., the attacker cannot disrupt existing connections, but can prevent new connections; the attacker can repeatedly exploit a vulnerability that, in each instance of a successful attack, leaks a only small amount of memory, but after repeated exploitation causes a service to become completely unavailable).".to_string() }}
+      Self::Low => {Help{ worth: Worth::Bad, des: "Performance is reduced or there are interruptions in resource availability. Even if repeated exploitation of the vulnerability is possible, the attacker does not have the ability to completely deny service to legitimate users. The resources in the impacted component are either partially available all of the time, or fully available only some of the time, but overall there is no direct, serious consequence to the impacted component.".to_string() }}
+      Self::None => {Help{ worth: Worth::Good, des: "There is no impact to availability within the impacted component.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      SubsequentAvailabilityImpactType::None => 0.3,
-      SubsequentAvailabilityImpactType::Low => 0.2,
-      SubsequentAvailabilityImpactType::High => 0.1,
+      Self::None => 0.3,
+      Self::Low => 0.2,
+      Self::High => 0.1,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      SubsequentAvailabilityImpactType::None => "N",
-      SubsequentAvailabilityImpactType::Low => "L",
-      SubsequentAvailabilityImpactType::High => "H",
+      Self::None => "N",
+      Self::Low => "L",
+      Self::High => "H",
     }
   }
 }
@@ -319,7 +319,30 @@ impl SubsequentAvailabilityImpactType {
     self.help()
   }
 }
-
+impl SubsequentConfidentialityImpactType {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
+impl SubsequentIntegrityImpactType {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
+impl SubsequentAvailabilityImpactType {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct SubsequentImpact {
@@ -333,35 +356,23 @@ pub struct SubsequentImpact {
 
 impl SubsequentImpact {
   pub(crate) fn all_none(&self) -> bool {
-    matches!(
-      self.confidentiality_impact,
-      SubsequentConfidentialityImpactType::None
-    ) && matches!(self.integrity_impact, SubsequentIntegrityImpactType::None)
-      && matches!(
-        self.availability_impact,
-        SubsequentAvailabilityImpactType::None
-      )
+    self.confidentiality_impact.is_none()
+      && self.integrity_impact.is_none()
+      && self.availability_impact.is_none()
   }
-  pub(crate)fn eq4(&self) -> Option<i32> {
+  // EQ4: 0-(MSI:S or MSA:S)
+  //      1-not (MSI:S or MSA:S) and (SC:H or SI:H or SA:H)
+  //      2-not (MSI:S or MSA:S) and not (SC:H or SI:H or SA:H)
+  pub(crate) fn eq4(&self) -> Option<i32> {
     // TODO: MSI,MSA
-    if matches!(
-      self.confidentiality_impact,
-      SubsequentConfidentialityImpactType::High
-    ) || matches!(self.integrity_impact, SubsequentIntegrityImpactType::High)
-      || matches!(
-        self.availability_impact,
-        SubsequentAvailabilityImpactType::High
-      )
+    if self.confidentiality_impact.is_high()
+      || self.integrity_impact.is_high()
+      || self.availability_impact.is_high()
     {
       return Some(1);
-    } else if !(matches!(
-      self.confidentiality_impact,
-      SubsequentConfidentialityImpactType::High
-    ) || matches!(self.integrity_impact, SubsequentIntegrityImpactType::High)
-      || matches!(
-        self.availability_impact,
-        SubsequentAvailabilityImpactType::High
-      ))
+    } else if !(self.confidentiality_impact.is_high()
+      || self.integrity_impact.is_high()
+      || self.availability_impact.is_high())
     {
       return Some(2);
     }

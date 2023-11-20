@@ -54,30 +54,37 @@ impl UserInteractionType {
     self.help()
   }
 }
+
+impl UserInteractionType {
+  pub(crate) fn is_none(&self) -> bool {
+    matches!(self, Self::None)
+  }
+}
+
 impl Metric for UserInteractionType {
   const TYPE: MetricType = MetricType::V3(MetricTypeV3::UI);
 
   fn help(&self) -> Help {
     match self {
-      UserInteractionType::Passive => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
-      UserInteractionType::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any human user, other than the attacker.".to_string() }}
-      UserInteractionType::Active=>{Help{ worth: Worth::Worst, des: "Successful exploitation of this vulnerability requires a targeted user to perform specific, conscious interactions with the vulnerable system and the attacker’s payload, or the user’s interactions would actively subvert protection mechanisms which would lead to exploitation of the vulnerability.".to_string() }}
+      Self::Passive => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
+      Self::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any human user, other than the attacker.".to_string() }}
+      Self::Active=>{Help{ worth: Worth::Worst, des: "Successful exploitation of this vulnerability requires a targeted user to perform specific, conscious interactions with the vulnerable system and the attacker’s payload, or the user’s interactions would actively subvert protection mechanisms which would lead to exploitation of the vulnerability.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      UserInteractionType::None => 0.0,
-      UserInteractionType::Passive => 0.1,
-      UserInteractionType::Active => 0.2,
+      Self::None => 0.0,
+      Self::Passive => 0.1,
+      Self::Active => 0.2,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      UserInteractionType::None => "N",
-      UserInteractionType::Passive => "P",
-      UserInteractionType::Active => "A",
+      Self::None => "N",
+      Self::Passive => "P",
+      Self::Active => "A",
     }
   }
 }

@@ -13,10 +13,11 @@ pub struct Environmental {
 
 impl Default for Environmental {
   fn default() -> Self {
-    Environmental{
-      confidentiality_requirements: ConfidentialityRequirements::NotDefined,
-      integrity_requirements: IntegrityRequirements::NotDefined,
-      availability_requirements: AvailabilityRequirements::NotDefined,
+    // If CR=X, IR=X or AR=X they will default to the worst case (i.e., CR=H, IR=H and AR=H).
+    Environmental {
+      confidentiality_requirements: ConfidentialityRequirements::High,
+      integrity_requirements: IntegrityRequirements::High,
+      availability_requirements: AvailabilityRequirements::High,
     }
   }
 }
@@ -56,4 +57,20 @@ pub enum AvailabilityRequirements {
   Medium,
   /// Low(L) [AvailabilityRequirements]可能对组织或与组织相关的个人（例如，员工、客户）产生有限的不利影响。
   Low,
+}
+
+impl Default for ConfidentialityRequirements {
+  fn default() -> Self {
+    Self::High
+  }
+}
+impl Default for IntegrityRequirements {
+  fn default() -> Self {
+    Self::High
+  }
+}
+impl Default for AvailabilityRequirements {
+  fn default() -> Self {
+    Self::High
+  }
 }

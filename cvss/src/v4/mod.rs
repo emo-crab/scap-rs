@@ -11,8 +11,11 @@ use crate::severity::SeverityType;
 use crate::v4::attack_complexity::AttackComplexityType;
 use crate::v4::attack_requirements::AttackRequirementsType;
 use crate::v4::attack_vector::AttackVectorType;
-use crate::v4::environmental::Environmental;
+use crate::v4::environmental::{
+  AvailabilityRequirements, ConfidentialityRequirements, Environmental, IntegrityRequirements,
+};
 use crate::v4::exploit_maturity::ExploitMaturity;
+use crate::v4::constant::CVSS_LOOKUP;
 use crate::v4::privileges_required::PrivilegesRequiredType;
 use crate::v4::subsequent_impact_metrics::{
   SubsequentAvailabilityImpactType, SubsequentConfidentialityImpactType, SubsequentImpact,
@@ -33,6 +36,7 @@ mod attack_requirements;
 mod attack_vector;
 mod environmental;
 mod exploit_maturity;
+mod constant;
 mod privileges_required;
 mod subsequent_impact_metrics;
 mod user_interaction;
@@ -60,47 +64,48 @@ pub struct ExploitAbility {
 impl ExploitAbility {
   /// 8.22 × 𝐴𝑡𝑡𝑎𝑐𝑘𝑉𝑒𝑐𝑡𝑜𝑟 × 𝐴𝑡𝑡𝑎𝑐𝑘𝐶𝑜𝑚𝑝𝑙𝑒𝑥𝑖𝑡𝑦 × 𝑃𝑟𝑖𝑣𝑖𝑙𝑒𝑔𝑒𝑅𝑒𝑞𝑢𝑖𝑟𝑒𝑑 × 𝑈𝑠𝑒𝑟𝐼𝑛𝑡𝑒𝑟𝑎𝑐𝑡𝑖𝑜𝑛
   pub fn score(&self) -> f32 {
-    8.22
-      * self.attack_vector.score()
-      * self.attack_complexity.score()
-      * self.user_interaction.score()
-      * self.privileges_required.score()
+    self.attack_vector.score()
+      + self.attack_complexity.score()
+      + self.user_interaction.score()
+      + self.privileges_required.score()
   }
+  // EQ1: 0-AV:N and PR:N and UI:N
+  //      1-(AV:N or PR:N or UI:N) and not (AV:N and PR:N and UI:N) and not AV:P
+  //      2-AV:P or not(AV:N or PR:N or UI:N)
   fn eq1(&self) -> Option<i32> {
-    if matches!(self.attack_vector, AttackVectorType::Network)
-      && matches!(self.privileges_required, PrivilegesRequiredType::None)
-      && matches!(self.user_interaction, UserInteractionType::None)
+    if self.attack_vector.is_network()
+      && self.privileges_required.is_none()
+      && self.user_interaction.is_none()
     {
       // 0: ["AV:N/PR:N/UI:N/"],
       return Some(0);
-    } else if (matches!(self.attack_vector, AttackVectorType::Network)
-      || matches!(self.privileges_required, PrivilegesRequiredType::None)
-      || matches!(self.user_interaction, UserInteractionType::None))
-      && !(matches!(self.attack_vector, AttackVectorType::Network)
-        && matches!(self.privileges_required, PrivilegesRequiredType::None)
-        && matches!(self.user_interaction, UserInteractionType::None))
-      && !(matches!(self.attack_vector, AttackVectorType::Physical))
+    } else if (self.attack_vector.is_network()
+      || self.privileges_required.is_none()
+      || self.user_interaction.is_none())
+      && !(self.attack_vector.is_network()
+        && self.privileges_required.is_none()
+        && self.user_interaction.is_none())
+      && !(self.attack_vector.is_physical())
     {
       // 1: ["AV:A/PR:N/UI:N/", "AV:N/PR:L/UI:N/", "AV:N/PR:N/UI:P/"],
       return Some(1);
-    } else if matches!(self.attack_vector, AttackVectorType::Physical)
-      || !(matches!(self.attack_vector, AttackVectorType::Network)
-        || matches!(self.privileges_required, PrivilegesRequiredType::None)
-        || matches!(self.user_interaction, UserInteractionType::None))
+    } else if self.attack_vector.is_physical()
+      || !(self.attack_vector.is_network()
+        || self.privileges_required.is_none()
+        || self.user_interaction.is_none())
     {
       // 2: ["AV:P/PR:N/UI:N/", "AV:A/PR:L/UI:P/"]
       return Some(2);
     }
     return None;
   }
+  // EQ2: 0-(AC:L and AT:N)
+  //      1-(not(AC:L and AT:N))
   fn eq2(&self) -> Option<i32> {
-    if matches!(self.attack_complexity, AttackComplexityType::Low)
-      && matches!(self.attack_requirements, AttackRequirementsType::None)
-    {
+    if self.attack_complexity.is_low() && self.attack_requirements.is_none() {
       return Some(0);
-    } else if !(matches!(self.attack_complexity, AttackComplexityType::Low)
-      && matches!(self.attack_requirements, AttackRequirementsType::None))
-    {
+    } else if !(self.attack_complexity.is_low() && self.attack_requirements.is_none()) {
+      return Some(1);
     }
     return None;
   }
@@ -235,7 +240,7 @@ impl FromStr for CVSS {
       vulnerable_impact,
       base_score: 0.0,
       base_severity: SeverityType::None,
-      exploit: ExploitMaturity::NotDefined,
+      exploit: ExploitMaturity::default(),
       environmental: Environmental::default(),
     };
     cvss.base_score = cvss.base_score();
@@ -282,7 +287,7 @@ impl CVSSBuilder {
       exploit_ability,
       vulnerable_impact,
       subsequent_impact,
-      exploit: ExploitMaturity::NotDefined,
+      exploit: ExploitMaturity::default(),
       environmental: Environmental::default(),
       base_score: 0.0,
       base_severity: SeverityType::None,
@@ -299,13 +304,135 @@ impl CVSS {
     if self.subsequent_impact.all_none() && self.vulnerable_impact.all_none() {
       return 0.0;
     }
-    self.macro_vector();
-    0.0
+    let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
+    let score = self
+      .lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
+      .unwrap_or(0.0)
+      .clone();
+    println!("{:?}", score);
+    let mut lower = 0;
+    let score_eq1_next_lower = if eq1 < 2 {
+      lower = lower + 1;
+      self.lookup(&(eq1 + 1), &eq2, &eq3, &eq4, &eq5, &eq6)
+    } else {
+      None
+    };
+    let score_eq2_next_lower = if eq2 < 1 {
+      lower = lower + 1;
+      self.lookup(&eq1, &(eq2 + 1), &eq3, &eq4, &eq5, &eq6)
+    } else {
+      None
+    };
+    let score_eq4_next_lower = if eq4 < 2 {
+      lower = lower + 1;
+      self.lookup(&eq1, &eq2, &eq3, &(eq4 + 1), &eq5, &eq6)
+    } else {
+      None
+    };
+    let score_eq5_next_lower = if eq5 < 2 {
+      lower = lower + 1;
+      self.lookup(&eq1, &eq2, &eq3, &eq4, &(eq5 + 1), &eq6)
+    } else {
+      None
+    };
+    let score_eq3eq6_next_lower = if (eq3 == 1 && eq6 == 1) || (eq3 == 0 && eq6 == 1) {
+      lower = lower + 1;
+      self.lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
+    } else if eq3 == 1 && eq6 == 0 {
+      lower = lower + 1;
+      self.lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
+    } else if eq3 == 0 && eq6 == 0 {
+      // multiple path take the one with higher score
+      // 如果存在多个分数，取最大的分数
+      lower = lower + 1;
+      let left = self
+        .lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
+        .unwrap_or(0.0);
+      let right = self
+        .lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
+        .unwrap_or(0.0);
+      let max_score = right.max(left);
+      Some(max_score)
+    } else {
+      None
+    };
+    println!(
+      "{:?} {:?} {:?} {:?} {:?}",
+      score_eq1_next_lower,
+      score_eq2_next_lower,
+      score_eq3eq6_next_lower,
+      score_eq4_next_lower,
+      score_eq5_next_lower
+    );
+    let current_severity_distance_eq1 = self.exploit_ability.score();
+    score
   }
-  fn macro_vector(&self) {
-    let (eq1, eq2) = (self.exploit_ability.eq1(), self.exploit_ability.eq2());
-    let (eq3, eq4) = (self.vulnerable_impact.eq3(), self.subsequent_impact.eq4());
-    let eq5 = self.exploit.eq5();
+  // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)
+  //      1-not[(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)]
+  fn eq6(&self) -> Option<i32> {
+    if (matches!(
+      self.environmental.confidentiality_requirements,
+      ConfidentialityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.confidentiality_impact,
+      VulnerableConfidentialityImpactType::High
+    )) || (matches!(
+      self.environmental.integrity_requirements,
+      IntegrityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.integrity_impact,
+      VulnerableIntegrityImpactType::High
+    )) || (matches!(
+      self.environmental.availability_requirements,
+      AvailabilityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.availability_impact,
+      VulnerableAvailabilityImpactType::High
+    )) {
+      return Some(0);
+    } else if !((matches!(
+      self.environmental.confidentiality_requirements,
+      ConfidentialityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.confidentiality_impact,
+      VulnerableConfidentialityImpactType::High
+    )) || (matches!(
+      self.environmental.integrity_requirements,
+      IntegrityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.integrity_impact,
+      VulnerableIntegrityImpactType::High
+    )) || (matches!(
+      self.environmental.availability_requirements,
+      AvailabilityRequirements::High
+    ) && matches!(
+      self.vulnerable_impact.availability_impact,
+      VulnerableAvailabilityImpactType::High
+    ))) {
+      return Some(1);
+    }
+    return None;
+  }
+  fn macro_vector(&self) -> (i32, i32, i32, i32, i32, i32) {
+    let eq1 = self.exploit_ability.eq1().unwrap_or_default();
+    let eq2 = self.exploit_ability.eq2().unwrap_or_default();
+    let eq3 = self.vulnerable_impact.eq3().unwrap_or_default();
+    let eq4 = self.subsequent_impact.eq4().unwrap_or_default();
+    let eq5 = self.exploit.eq5().unwrap_or_default();
+    let eq6 = self.eq6().unwrap_or_default();
+    return (eq1, eq2, eq3, eq4, eq5, eq6);
+  }
+  fn lookup(
+    &self,
+    eq1: &i32,
+    eq2: &i32,
+    eq3: &i32,
+    eq4: &i32,
+    eq5: &i32,
+    eq6: &i32,
+  ) -> Option<f32> {
+    let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
+    CVSS_LOOKUP.get(&mv).and_then(|v| Some(v.clone()))
   }
 }
 
