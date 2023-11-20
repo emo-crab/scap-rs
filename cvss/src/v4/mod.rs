@@ -11,11 +11,9 @@ use crate::severity::SeverityType;
 use crate::v4::attack_complexity::AttackComplexityType;
 use crate::v4::attack_requirements::AttackRequirementsType;
 use crate::v4::attack_vector::AttackVectorType;
-use crate::v4::environmental::{
-  AvailabilityRequirements, ConfidentialityRequirements, Environmental, IntegrityRequirements,
-};
+use crate::v4::constant::{get_eq1245_max_composed, CVSS_LOOKUP, get_eq36_max_composed};
+use crate::v4::environmental::Environmental;
 use crate::v4::exploit_maturity::ExploitMaturity;
-use crate::v4::constant::CVSS_LOOKUP;
 use crate::v4::privileges_required::PrivilegesRequiredType;
 use crate::v4::subsequent_impact_metrics::{
   SubsequentAvailabilityImpactType, SubsequentConfidentialityImpactType, SubsequentImpact,
@@ -34,9 +32,9 @@ use std::str::FromStr;
 mod attack_complexity;
 mod attack_requirements;
 mod attack_vector;
+mod constant;
 mod environmental;
 mod exploit_maturity;
-mod constant;
 mod privileges_required;
 mod subsequent_impact_metrics;
 mod user_interaction;
@@ -72,7 +70,7 @@ impl ExploitAbility {
   // EQ1: 0-AV:N and PR:N and UI:N
   //      1-(AV:N or PR:N or UI:N) and not (AV:N and PR:N and UI:N) and not AV:P
   //      2-AV:P or not(AV:N or PR:N or UI:N)
-  fn eq1(&self) -> Option<i32> {
+  fn eq1(&self) -> Option<u32> {
     if self.attack_vector.is_network()
       && self.privileges_required.is_none()
       && self.user_interaction.is_none()
@@ -101,7 +99,7 @@ impl ExploitAbility {
   }
   // EQ2: 0-(AC:L and AT:N)
   //      1-(not(AC:L and AT:N))
-  fn eq2(&self) -> Option<i32> {
+  fn eq2(&self) -> Option<u32> {
     if self.attack_complexity.is_low() && self.attack_requirements.is_none() {
       return Some(0);
     } else if !(self.attack_complexity.is_low() && self.attack_requirements.is_none()) {
@@ -305,6 +303,7 @@ impl CVSS {
       return 0.0;
     }
     let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
+    let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
     let score = self
       .lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
       .unwrap_or(0.0)
@@ -364,56 +363,43 @@ impl CVSS {
       score_eq4_next_lower,
       score_eq5_next_lower
     );
+    self.max_vectors(mv);
     let current_severity_distance_eq1 = self.exploit_ability.score();
     score
   }
   // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)
   //      1-not[(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)]
-  fn eq6(&self) -> Option<i32> {
-    if (matches!(
-      self.environmental.confidentiality_requirements,
-      ConfidentialityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.confidentiality_impact,
-      VulnerableConfidentialityImpactType::High
-    )) || (matches!(
-      self.environmental.integrity_requirements,
-      IntegrityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.integrity_impact,
-      VulnerableIntegrityImpactType::High
-    )) || (matches!(
-      self.environmental.availability_requirements,
-      AvailabilityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.availability_impact,
-      VulnerableAvailabilityImpactType::High
-    )) {
+  fn eq6(&self) -> Option<u32> {
+    if (self.environmental.confidentiality_requirements.is_high()
+      && self.vulnerable_impact.confidentiality_impact.is_high())
+      || (self.environmental.integrity_requirements.is_high()
+        && self.vulnerable_impact.integrity_impact.is_high())
+      || (self.environmental.availability_requirements.is_high()
+        && self.vulnerable_impact.availability_impact.is_high())
+    {
       return Some(0);
-    } else if !((matches!(
-      self.environmental.confidentiality_requirements,
-      ConfidentialityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.confidentiality_impact,
-      VulnerableConfidentialityImpactType::High
-    )) || (matches!(
-      self.environmental.integrity_requirements,
-      IntegrityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.integrity_impact,
-      VulnerableIntegrityImpactType::High
-    )) || (matches!(
-      self.environmental.availability_requirements,
-      AvailabilityRequirements::High
-    ) && matches!(
-      self.vulnerable_impact.availability_impact,
-      VulnerableAvailabilityImpactType::High
-    ))) {
+    } else if !(self.vulnerable_impact.confidentiality_impact.is_high()
+      || (self.environmental.integrity_requirements.is_high()
+        && self.vulnerable_impact.integrity_impact.is_high())
+      || (self.environmental.availability_requirements.is_high()
+        && self.vulnerable_impact.availability_impact.is_high()))
+    {
       return Some(1);
     }
     return None;
   }
-  fn macro_vector(&self) -> (i32, i32, i32, i32, i32, i32) {
+  fn max_vectors(&self, macro_vector: String) {
+    let mut v = vec![];
+    let mut mv = macro_vector.as_mut_vec().sli
+    for (i, c) in macro_vector.chars().enumerate() {
+      let index = c.to_digit(10).unwrap_or(0);
+      let eq1245_max_composed = get_eq1245_max_composed((i+1) as u32, index);
+      let eq36_max_composed = get_eq36_max_composed((i+1) as u32, index);
+      println!("{:?} {:?}", eq1245_max_composed,eq36_max_composed);
+      v.push(index);
+    }
+  }
+  fn macro_vector(&self) -> (u32, u32, u32, u32, u32, u32) {
     let eq1 = self.exploit_ability.eq1().unwrap_or_default();
     let eq2 = self.exploit_ability.eq2().unwrap_or_default();
     let eq3 = self.vulnerable_impact.eq3().unwrap_or_default();
@@ -424,12 +410,12 @@ impl CVSS {
   }
   fn lookup(
     &self,
-    eq1: &i32,
-    eq2: &i32,
-    eq3: &i32,
-    eq4: &i32,
-    eq5: &i32,
-    eq6: &i32,
+    eq1: &u32,
+    eq2: &u32,
+    eq3: &u32,
+    eq4: &u32,
+    eq5: &u32,
+    eq6: &u32,
   ) -> Option<f32> {
     let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
     CVSS_LOOKUP.get(&mv).and_then(|v| Some(v.clone()))

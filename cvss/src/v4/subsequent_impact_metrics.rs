@@ -363,7 +363,7 @@ impl SubsequentImpact {
   // EQ4: 0-(MSI:S or MSA:S)
   //      1-not (MSI:S or MSA:S) and (SC:H or SI:H or SA:H)
   //      2-not (MSI:S or MSA:S) and not (SC:H or SI:H or SA:H)
-  pub(crate) fn eq4(&self) -> Option<i32> {
+  pub(crate) fn eq4(&self) -> Option<u32> {
     // TODO: MSI,MSA
     if self.confidentiality_impact.is_high()
       || self.integrity_impact.is_high()

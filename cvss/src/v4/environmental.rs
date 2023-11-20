@@ -74,3 +74,19 @@ impl Default for AvailabilityRequirements {
     Self::High
   }
 }
+impl ConfidentialityRequirements {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+}
+
+impl IntegrityRequirements {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+}
+impl AvailabilityRequirements {
+  pub(crate) fn is_high(&self) -> bool {
+    matches!(self, Self::High)
+  }
+}

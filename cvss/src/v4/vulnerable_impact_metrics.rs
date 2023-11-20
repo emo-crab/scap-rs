@@ -368,7 +368,7 @@ impl VulnerableImpact {
   // EQ3: 0-(VC:H and VI:H)
   //      1-(not(VC:H and VI:H) and (VC:H or VI:H or VA:H))
   //      2-not (VC:H or VI:H or VA:H)
-  pub(crate) fn eq3(&self) -> Option<i32> {
+  pub(crate) fn eq3(&self) -> Option<u32> {
     if self.confidentiality_impact.is_high() && self.integrity_impact.is_high() {
       return Some(0);
     } else if !(self.confidentiality_impact.is_high() && self.integrity_impact.is_high())

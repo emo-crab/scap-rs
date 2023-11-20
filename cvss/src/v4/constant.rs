@@ -271,7 +271,8 @@ pub static CVSS_LOOKUP: phf::Map<&'static str, f32> = phf_map! {
 "212211"=>0.3,
 "212221"=>0.1,
 };
-pub(crate) fn get_eq1245_max_composed(eq: i32, index: i32) -> Vec<&'static str> {
+
+pub(crate) fn get_eq1245_max_composed(eq: u32, index: u32) -> Vec<&'static str> {
   match eq {
     1 => match index {
       0 => vec!["AV:N/PR:N/UI:N/"],
@@ -299,7 +300,7 @@ pub(crate) fn get_eq1245_max_composed(eq: i32, index: i32) -> Vec<&'static str> 
     _ => vec![],
   }
 }
-pub(crate) fn get_eq36_max_composed(eq3: i32, eq6: i32) -> Vec<&'static str> {
+pub(crate) fn get_eq36_max_composed(eq3: u32, eq6: u32) -> Vec<&'static str> {
   match eq3 {
     0 => match eq6 {
       0 => vec!["VC:H/VI:H/VA:H/CR:H/IR:H/AR:H/"],
@@ -331,7 +332,7 @@ pub(crate) fn get_eq36_max_composed(eq3: i32, eq6: i32) -> Vec<&'static str> {
   }
 }
 
-pub(crate) fn get_eq1245_max_severity(eq: i32, index: i32) -> Option<i32> {
+pub(crate) fn get_eq1245_max_severity(eq: u32, index: u32) -> Option<u32> {
   match eq {
     1 => match index {
       0 => Some(1),
@@ -359,7 +360,7 @@ pub(crate) fn get_eq1245_max_severity(eq: i32, index: i32) -> Option<i32> {
     _ => None,
   }
 }
-pub(crate) fn get_eq36_max_severity(eq3: i32, eq6: i32) -> Option<i32> {
+pub(crate) fn get_eq36_max_severity(eq3: u32, eq6: u32) -> Option<u32> {
   match eq3 {
     0 => match eq6 {
       0 => Some(7),
