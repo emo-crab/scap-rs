@@ -358,6 +358,6 @@ impl SubsequentImpact {
     {
       return Some(2);
     }
-    return None;
+    None
   }
 }

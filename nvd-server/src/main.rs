@@ -1,7 +1,7 @@
 use actix_cors::Cors;
 use actix_web::{http, middleware, web, App, HttpServer};
-use nvd_api::api::api_route;
-use nvd_api::init_db_pool;
+use nvd_server::api::api_route;
+use nvd_server::init_db_pool;
 
 #[actix_web::main] // or #[tokio::main]
 async fn main() -> std::io::Result<()> {

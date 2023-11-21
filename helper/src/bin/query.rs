@@ -1,9 +1,9 @@
 use helper::init_db_pool;
-use nvd_api::modules::cve_db::QueryCve;
-use nvd_api::modules::cve_product_db::QueryCveProduct;
-use nvd_api::modules::product_db::QueryProduct;
-use nvd_api::modules::vendor_db::QueryVendor;
-use nvd_api::modules::{Cve, CveProduct, Product, Vendor};
+use nvd_server::modules::cve_db::QueryCve;
+use nvd_server::modules::cve_product_db::QueryCveProduct;
+use nvd_server::modules::product_db::QueryProduct;
+use nvd_server::modules::vendor_db::QueryVendor;
+use nvd_server::modules::{Cve, CveProduct, Product, Vendor};
 use std::ops::DerefMut;
 
 fn main() {

@@ -3,13 +3,11 @@ mod tests {
   use cvss::severity::SeverityType;
   use cvss::v3::attack_complexity::AttackComplexityType;
   use cvss::v3::attack_vector::AttackVectorType;
-  use cvss::v3::impact_metrics::{
-    AvailabilityImpactType, ConfidentialityImpactType, IntegrityImpactType,
-  };
+  use cvss::v3::impact_metrics::{AvailabilityImpactType, ConfidentialityImpactType, Impact, IntegrityImpactType};
   use cvss::v3::privileges_required::PrivilegesRequiredType;
   use cvss::v3::scope::ScopeType;
   use cvss::v3::user_interaction::UserInteractionType;
-  use cvss::v3::{ExploitAbility, Impact};
+  use cvss::v3::ExploitAbility;
   use cvss::version::Version;
   use std::collections::HashMap;
   use std::str::FromStr;

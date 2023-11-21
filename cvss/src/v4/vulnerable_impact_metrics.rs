@@ -365,6 +365,6 @@ impl VulnerableImpact {
     {
       return Some(2);
     }
-    return None;
+    None
   }
 }

@@ -100,7 +100,7 @@ impl ExploitAbility {
       // 2: ["AV:P/PR:N/UI:N/", "AV:A/PR:L/UI:P/"]
       return Some(2);
     }
-    return None;
+    None
   }
   // EQ2: 0-(AC:L and AT:N)
   //      1-(not(AC:L and AT:N))
@@ -110,7 +110,7 @@ impl ExploitAbility {
     } else if !(self.attack_complexity.is_low() && self.attack_requirements.is_none()) {
       return Some(1);
     }
-    return None;
+    None
   }
 }
 
@@ -247,43 +247,42 @@ impl CVSS {
     let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
     let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
     let score = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
-      .unwrap_or(0.0)
-      .clone();
+      .unwrap_or(0.0);
     let mut lower = 0;
     let score_eq1_next_lower = if eq1 < 2 {
-      lower = lower + 1;
+      lower += 1;
       lookup(&(eq1 + 1), &eq2, &eq3, &eq4, &eq5, &eq6)
     } else {
       None
     };
     let score_eq2_next_lower = if eq2 < 1 {
-      lower = lower + 1;
+      lower += 1;
       lookup(&eq1, &(eq2 + 1), &eq3, &eq4, &eq5, &eq6)
     } else {
       None
     };
     let score_eq4_next_lower = if eq4 < 2 {
-      lower = lower + 1;
+      lower += 1;
       lookup(&eq1, &eq2, &eq3, &(eq4 + 1), &eq5, &eq6)
     } else {
       None
     };
     let score_eq5_next_lower = if eq5 < 2 {
-      lower = lower + 1;
+      lower += 1;
       lookup(&eq1, &eq2, &eq3, &eq4, &(eq5 + 1), &eq6)
     } else {
       None
     };
-    let score_eq3eq6_next_lower = if (eq3 == 1 && eq6 == 1) || (eq3 == 0 && eq6 == 1) {
-      lower = lower + 1;
+    let score_eq3eq6_next_lower = if  (eq3 == 0 || eq3 == 1) && eq6 == 1 {
+      lower += 1;
       lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
     } else if eq3 == 1 && eq6 == 0 {
-      lower = lower + 1;
+      lower += 1;
       lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
     } else if eq3 == 0 && eq6 == 0 {
       // multiple path take the one with higher score
       // 如果存在多个分数，取最大的分数
-      lower = lower + 1;
+      lower += 1;
       let left = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1)).unwrap_or(0.0);
       let right = lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6).unwrap_or(0.0);
       let max_score = right.max(left);
@@ -348,8 +347,8 @@ impl CVSS {
         + normalized_severity_eq5)
         / lower as f32;
     }
-    let score = roundup(score - mean_distance);
-    score
+    
+    roundup(score - mean_distance)
   }
   // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)
   //      1-not[(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)]
@@ -370,7 +369,7 @@ impl CVSS {
     {
       return Some(1);
     }
-    return None;
+    None
   }
   fn max_vectors(&self, macro_vector: String) -> Vec<String> {
     let mut vectors = vec![];
@@ -402,7 +401,7 @@ impl CVSS {
         }
       }
     }
-    return vectors;
+    vectors
   }
   fn severity_distances(&self, vectors: Vec<String>) -> (f32, f32, f32, f32, f32) {
     // 每个都和self这个cvss的分数比较，返回第一个大于self本身的
@@ -478,13 +477,13 @@ impl CVSS {
     let current_severity_distance_eq3eq6 = vc + vi + va + cr + ir + ar;
     let current_severity_distance_eq4 = sc + si + sa;
     let current_severity_distance_eq5 = 0.0;
-    return (
+    (
       current_severity_distance_eq1,
       current_severity_distance_eq2,
       current_severity_distance_eq3eq6,
       current_severity_distance_eq4,
       current_severity_distance_eq5,
-    );
+    )
   }
   fn macro_vector(&self) -> (u32, u32, u32, u32, u32, u32) {
     let eq1 = self.exploit_ability.eq1().unwrap_or_default();
@@ -493,7 +492,7 @@ impl CVSS {
     let eq4 = self.subsequent_impact.eq4().unwrap_or_default();
     let eq5 = self.exploit.eq5().unwrap_or_default();
     let eq6 = self.eq6().unwrap_or_default();
-    return (eq1, eq2, eq3, eq4, eq5, eq6);
+    (eq1, eq2, eq3, eq4, eq5, eq6)
   }
 }
 /// Roundup保留小数点后一位，小数点后第二位四舍五入。 例如, Roundup(4.02) = 4.0; 或者 Roundup(4.00) = 4.0
