@@ -96,7 +96,7 @@ impl FromStr for ConfidentialityImpactType {
       'C' => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value: format!("{:?}", c),
         expected: "N,P,C".to_string(),
       }),
     }
@@ -128,7 +128,7 @@ impl FromStr for IntegrityImpactType {
       'C' => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value: format!("{:?}", c),
         expected: "N,P,C".to_string(),
       }),
     }
@@ -138,29 +138,23 @@ impl FromStr for AvailabilityImpactType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
+    let s = s.to_uppercase();
+    let (_name, v) = s
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: s,
+        value: s.to_string(),
         expected: name.to_string(),
-      })?
-    };
+      })?;
+    let c = v.chars().next();
     match c {
-      'N' => Ok(Self::None),
-      'P' => Ok(Self::Partial),
-      'C' => Ok(Self::Complete),
+      Some('N') => Ok(Self::None),
+      Some('P') => Ok(Self::Partial),
+      Some('C') => Ok(Self::Complete),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value: format!("{:?}", c),
         expected: "N,P,C".to_string(),
       }),
     }
@@ -178,15 +172,15 @@ impl Metric for ConfidentialityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      ConfidentialityImpactType::None => Help {
+      Self::None => Help {
         worth: Worth::Good,
         des: "There is no impact to the confidentiality of the system.".to_string(),
       },
-      ConfidentialityImpactType::Partial => Help {
+      Self::Partial => Help {
         worth: Worth::Bad,
         des: "There is considerable informational disclosure. Access to some system files is possible, but the attacker does not have control over what is obtained, or the scope of the loss is constrained. An example is a vulnerability that divulges only certain tables in a database.".to_string(),
       },
-      ConfidentialityImpactType::Complete => Help {
+      Self::Complete => Help {
         worth: Worth::Worst,
         des: "There is total information disclosure, resulting in all system files being revealed. The attacker is able to read all of the system's data (memory, files, etc.)".to_string(),
       },
@@ -195,17 +189,17 @@ impl Metric for ConfidentialityImpactType {
 
   fn score(&self) -> f32 {
     match self {
-      ConfidentialityImpactType::None => 0.0,
-      ConfidentialityImpactType::Partial => 0.275,
-      ConfidentialityImpactType::Complete => 0.660,
+      Self::None => 0.0,
+      Self::Partial => 0.275,
+      Self::Complete => 0.660,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      ConfidentialityImpactType::None => "N",
-      ConfidentialityImpactType::Partial => "P",
-      ConfidentialityImpactType::Complete => "C",
+      Self::None => "N",
+      Self::Partial => "P",
+      Self::Complete => "C",
     }
   }
 }
@@ -221,15 +215,15 @@ impl Metric for IntegrityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      IntegrityImpactType::None => Help {
+      Self::None => Help {
         worth: Worth::Good,
         des: "There is no impact to the integrity of the system.".to_string(),
       },
-      IntegrityImpactType::Partial => Help {
+      Self::Partial => Help {
         worth: Worth::Bad,
         des: "Modification of some system files or information is possible, but the attacker does not have control over what can be modified, or the scope of what the attacker can affect is limited. For example, system or application files may be overwritten or modified, but either the attacker has no control over which files are affected or the attacker can modify files within only a limited context or scope.".to_string(),
       },
-      IntegrityImpactType::Complete => Help {
+      Self::Complete => Help {
         worth: Worth::Worst,
         des: "There is a total compromise of system integrity. There is a complete loss of system protection, resulting in the entire system being compromised. The attacker is able to modify any files on the target system.".to_string(),
       },
@@ -238,17 +232,17 @@ impl Metric for IntegrityImpactType {
 
   fn score(&self) -> f32 {
     match self {
-      IntegrityImpactType::None => 0.0,
-      IntegrityImpactType::Partial => 0.275,
-      IntegrityImpactType::Complete => 0.660,
+      Self::None => 0.0,
+      Self::Partial => 0.275,
+      Self::Complete => 0.660,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      IntegrityImpactType::None => "N",
-      IntegrityImpactType::Partial => "P",
-      IntegrityImpactType::Complete => "C",
+      Self::None => "N",
+      Self::Partial => "P",
+      Self::Complete => "C",
     }
   }
 }
@@ -269,15 +263,15 @@ impl Metric for AvailabilityImpactType {
 
   fn help(&self) -> Help {
     match self {
-      AvailabilityImpactType::None => Help {
+      Self::None => Help {
         worth: Worth::Good,
         des: "There is no impact to the availability of the system.".to_string(),
       },
-      AvailabilityImpactType::Partial => Help {
+      Self::Partial => Help {
         worth: Worth::Bad,
         des: "There is reduced performance or interruptions in resource availability. An example is a network-based flood attack that permits a limited number of successful connections to an Internet service.".to_string(),
       },
-      AvailabilityImpactType::Complete => Help {
+      Self::Complete => Help {
         worth: Worth::Worst,
         des: "There is a total shutdown of the affected resource. The attacker can render the resource completely unavailable.".to_string(),
       },
@@ -286,17 +280,17 @@ impl Metric for AvailabilityImpactType {
 
   fn score(&self) -> f32 {
     match self {
-      AvailabilityImpactType::None => 0.0,
-      AvailabilityImpactType::Partial => 0.275,
-      AvailabilityImpactType::Complete => 0.660,
+      Self::None => 0.0,
+      Self::Partial => 0.275,
+      Self::Complete => 0.660,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      AvailabilityImpactType::None => "N",
-      AvailabilityImpactType::Partial => "P",
-      AvailabilityImpactType::Complete => "C",
+      Self::None => "N",
+      Self::Partial => "P",
+      Self::Complete => "C",
     }
   }
 }

@@ -48,8 +48,8 @@ impl ScopeType {
 
   fn as_str(&self) -> &'static str {
     match self {
-      ScopeType::Unchanged => "U",
-      ScopeType::Changed => "C",
+      Self::Unchanged => "U",
+      Self::Changed => "C",
     }
   }
 }
@@ -69,22 +69,22 @@ impl Metric for ScopeType {
 
   fn help(&self) -> Help {
     match self {
-      ScopeType::Unchanged => {Help{ worth: Worth::Bad, des: "An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.".to_string() }}
-      ScopeType::Changed => {Help{ worth: Worth::Worst, des: "An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.".to_string() }}
+      Self::Unchanged => {Help{ worth: Worth::Bad, des: "An exploited vulnerability can only affect resources managed by the same security authority. In this case, the vulnerable component and the impacted component are either the same, or both are managed by the same security authority.".to_string() }}
+      Self::Changed => {Help{ worth: Worth::Worst, des: "An exploited vulnerability can affect resources beyond the security scope managed by the security authority of the vulnerable component. In this case, the vulnerable component and the impacted component are different and managed by different security authorities.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      ScopeType::Unchanged => 6.42,
-      ScopeType::Changed => 7.52,
+      Self::Unchanged => 6.42,
+      Self::Changed => 7.52,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      ScopeType::Unchanged => "U",
-      ScopeType::Changed => "C",
+      Self::Unchanged => "U",
+      Self::Changed => "C",
     }
   }
 }
@@ -92,28 +92,22 @@ impl FromStr for ScopeType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'U' => Ok(Self::Unchanged),
-      'C' => Ok(Self::Changed),
+      Some('U') => Ok(Self::Unchanged),
+      Some('C') => Ok(Self::Changed),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "U,C".to_string(),
       }),
     }

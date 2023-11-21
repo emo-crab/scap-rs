@@ -54,22 +54,22 @@ impl Metric for AttackComplexityType {
 
   fn help(&self) -> Help {
     match self {
-      AttackComplexityType::High => {Help{ worth: Worth::Bad, des: "A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.".to_string() }}
-      AttackComplexityType::Low => {Help{ worth: Worth::Worst, des: "Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.".to_string() }}
+      Self::High => {Help{ worth: Worth::Bad, des: "A successful attack depends on conditions beyond the attacker's control. That is, a successful attack cannot be accomplished at will, but requires the attacker to invest in some measurable amount of effort in preparation or execution against the vulnerable component before a successful attack can be expected.".to_string() }}
+      Self::Low => {Help{ worth: Worth::Worst, des: "Specialized access conditions or extenuating circumstances do not exist. An attacker can expect repeatable success when attacking the vulnerable component.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      AttackComplexityType::High => 0.44,
-      AttackComplexityType::Low => 0.77,
+      Self::High => 0.44,
+      Self::Low => 0.77,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      AttackComplexityType::High => "H",
-      AttackComplexityType::Low => "L",
+      Self::High => "H",
+      Self::Low => "L",
     }
   }
 }
@@ -77,28 +77,22 @@ impl FromStr for AttackComplexityType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'L' => Ok(Self::Low),
-      'H' => Ok(Self::High),
+      Some('L') => Ok(Self::Low),
+      Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "L,H".to_string(),
       }),
     }

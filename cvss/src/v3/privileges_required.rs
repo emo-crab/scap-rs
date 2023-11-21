@@ -57,9 +57,9 @@ impl Metric for PrivilegesRequiredType {
 
   fn help(&self) -> Help {
     match self {
-      PrivilegesRequiredType::High => {Help{ worth: Worth::Bad, des: "The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.".to_string() }}
-      PrivilegesRequiredType::Low => {Help{ worth: Worth::Worse, des: "The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.".to_string() }}
-      PrivilegesRequiredType::None => {Help{ worth: Worth::Worst, des: "The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack.".to_string() }}
+      Self::High => {Help{ worth: Worth::Bad, des: "The attacker requires privileges that provide significant (e.g., administrative) control over the vulnerable component allowing access to component-wide settings and files.".to_string() }}
+      Self::Low => {Help{ worth: Worth::Worse, des: "The attacker requires privileges that provide basic user capabilities that could normally affect only settings and files owned by a user. Alternatively, an attacker with Low privileges has the ability to access only non-sensitive resources.".to_string() }}
+      Self::None => {Help{ worth: Worth::Worst, des: "The attacker is unauthorized prior to attack, and therefore does not require any access to settings or files of the vulnerable system to carry out an attack.".to_string() }}
     }
   }
 
@@ -69,9 +69,9 @@ impl Metric for PrivilegesRequiredType {
 
   fn as_str(&self) -> &'static str {
     match self {
-      PrivilegesRequiredType::High => "H",
-      PrivilegesRequiredType::Low => "L",
-      PrivilegesRequiredType::None => "N",
+      Self::High => "H",
+      Self::Low => "L",
+      Self::None => "N",
     }
   }
 }
@@ -79,29 +79,23 @@ impl FromStr for PrivilegesRequiredType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'N' => Ok(Self::None),
-      'L' => Ok(Self::Low),
-      'H' => Ok(Self::High),
+      Some('N') => Ok(Self::None),
+      Some('L') => Ok(Self::Low),
+      Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "N,L,H".to_string(),
       }),
     }

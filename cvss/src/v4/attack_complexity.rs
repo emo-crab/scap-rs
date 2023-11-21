@@ -62,22 +62,22 @@ impl Metric for AttackComplexityType {
 
   fn help(&self) -> Help {
     match self {
-      AttackComplexityType::High => {Help{ worth: Worth::Bad, des: "The successful attack depends on the evasion or circumvention of security-enhancing techniques in place that would otherwise hinder the attack. These include: Evasion of exploit mitigation techniques, for example, circumvention of address space randomization (ASLR) or data execution prevention (DEP) must be performed for the attack to be successful; Obtaining target-specific secrets. The attacker must gather some target-specific secret before the attack can be successful. A secret is any piece of information that cannot be obtained through any amount of reconnaissance. To obtain the secret the attacker must perform additional attacks or break otherwise secure measures (e.g. knowledge of a secret key may be needed to break a crypto channel). This operation must be performed for each attacked target.".to_string() }}
-      AttackComplexityType::Low => {Help{ worth: Worth::Worst, des: "The attacker must take no measurable action to exploit the vulnerability. The attack requires no target-specific circumvention to exploit the vulnerability. An attacker can expect repeatable success against the vulnerable system.".to_string() }}
+      Self::High => {Help{ worth: Worth::Bad, des: "The successful attack depends on the evasion or circumvention of security-enhancing techniques in place that would otherwise hinder the attack. These include: Evasion of exploit mitigation techniques, for example, circumvention of address space randomization (ASLR) or data execution prevention (DEP) must be performed for the attack to be successful; Obtaining target-specific secrets. The attacker must gather some target-specific secret before the attack can be successful. A secret is any piece of information that cannot be obtained through any amount of reconnaissance. To obtain the secret the attacker must perform additional attacks or break otherwise secure measures (e.g. knowledge of a secret key may be needed to break a crypto channel). This operation must be performed for each attacked target.".to_string() }}
+      Self::Low => {Help{ worth: Worth::Worst, des: "The attacker must take no measurable action to exploit the vulnerability. The attack requires no target-specific circumvention to exploit the vulnerability. An attacker can expect repeatable success against the vulnerable system.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      AttackComplexityType::High => 0.1,
-      AttackComplexityType::Low => 0.0,
+      Self::High => 0.1,
+      Self::Low => 0.0,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      AttackComplexityType::High => "H",
-      AttackComplexityType::Low => "L",
+      Self::High => "H",
+      Self::Low => "L",
     }
   }
 }
@@ -85,28 +85,22 @@ impl FromStr for AttackComplexityType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
+    let s = s.to_uppercase();
+    let (_name, v) = s
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: s,
+        value: s.to_string(),
         expected: name.to_string(),
-      })?
-    };
+      })?;
+    let c = v.chars().next();
     match c {
-      'L' => Ok(Self::Low),
-      'H' => Ok(Self::High),
+      Some('L') => Ok(Self::Low),
+      Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value: format!("{:?}", c),
         expected: "L,H".to_string(),
       }),
     }

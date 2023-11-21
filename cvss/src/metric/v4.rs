@@ -35,6 +35,11 @@ pub enum MetricTypeV4 {
 
   /// User Interaction (UI)
   UI,
+
+  CR,
+  IR,
+  AR,
+  E,
 }
 
 impl MetricTypeV4 {
@@ -52,6 +57,10 @@ impl MetricTypeV4 {
       Self::SC => "SC",
       Self::SI => "SI",
       Self::SA => "SA",
+      Self::CR => "CR",
+      Self::IR => "IR",
+      Self::AR => "AR",
+      Self::E => "E",
     }
   }
 }

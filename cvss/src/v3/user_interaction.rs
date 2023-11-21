@@ -53,22 +53,22 @@ impl Metric for UserInteractionType {
 
   fn help(&self) -> Help {
     match self {
-      UserInteractionType::Required => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
-      UserInteractionType::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any user.".to_string() }}
+      Self::Required => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
+      Self::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any user.".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      UserInteractionType::Required => 0.62,
-      UserInteractionType::None => 0.85,
+      Self::Required => 0.62,
+      Self::None => 0.85,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      UserInteractionType::Required => "R",
-      UserInteractionType::None => "N",
+      Self::Required => "R",
+      Self::None => "N",
     }
   }
 }
@@ -77,28 +77,22 @@ impl FromStr for UserInteractionType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'N' => Ok(Self::None),
-      'R' => Ok(Self::Required),
+      Some('N') => Ok(Self::None),
+      Some('R') => Ok(Self::Required),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "N,R".to_string(),
       }),
     }

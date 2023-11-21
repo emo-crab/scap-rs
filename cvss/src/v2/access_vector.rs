@@ -46,25 +46,25 @@ impl Metric for AccessVectorType {
 
   fn help(&self) -> Help {
     match self {
-      AccessVectorType::Network => {Help{ worth: Worth::Worst, des: "A vulnerability exploitable with network access means the vulnerable software is bound to the network stack and the attacker does not require local network access or local access. Such a vulnerability is often termed \"remotely exploitable\". An example of a network attack is an RPC buffer overflow.".to_string() }}
-      AccessVectorType::AdjacentNetwork => {Help{ worth: Worth::Worse, des: "A vulnerability exploitable with adjacent network access requires the attacker to have access to either the broadcast or collision domain of the vulnerable software.  Examples of local networks include local IP subnet, Bluetooth, IEEE 802.11, and local Ethernet segment.".to_string() }}
-      AccessVectorType::Local => {Help{ worth: Worth::Bad, des: "A vulnerability exploitable with only local access requires the attacker to have either physical access to the vulnerable system or a local (shell) account. Examples of locally exploitable vulnerabilities are peripheral attacks such as Firewire/USB DMA attacks, and local privilege escalations (e.g., sudo).".to_string() }}
+      Self::Network => {Help{ worth: Worth::Worst, des: "A vulnerability exploitable with network access means the vulnerable software is bound to the network stack and the attacker does not require local network access or local access. Such a vulnerability is often termed \"remotely exploitable\". An example of a network attack is an RPC buffer overflow.".to_string() }}
+      Self::AdjacentNetwork => {Help{ worth: Worth::Worse, des: "A vulnerability exploitable with adjacent network access requires the attacker to have access to either the broadcast or collision domain of the vulnerable software.  Examples of local networks include local IP subnet, Bluetooth, IEEE 802.11, and local Ethernet segment.".to_string() }}
+      Self::Local => {Help{ worth: Worth::Bad, des: "A vulnerability exploitable with only local access requires the attacker to have either physical access to the vulnerable system or a local (shell) account. Examples of locally exploitable vulnerabilities are peripheral attacks such as Firewire/USB DMA attacks, and local privilege escalations (e.g., sudo).".to_string() }}
     }
   }
 
   fn score(&self) -> f32 {
     match self {
-      AccessVectorType::Network => 1.0,
-      AccessVectorType::AdjacentNetwork => 0.646,
-      AccessVectorType::Local => 0.395,
+      Self::Network => 1.0,
+      Self::AdjacentNetwork => 0.646,
+      Self::Local => 0.395,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      AccessVectorType::Network => "N",
-      AccessVectorType::AdjacentNetwork => "A",
-      AccessVectorType::Local => "L",
+      Self::Network => "N",
+      Self::AdjacentNetwork => "A",
+      Self::Local => "L",
     }
   }
 }
@@ -72,29 +72,23 @@ impl FromStr for AccessVectorType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'N' => Ok(Self::Network),
-      'A' => Ok(Self::AdjacentNetwork),
-      'L' => Ok(Self::Local),
+      Some('N') => Ok(Self::Network),
+      Some('A') => Ok(Self::AdjacentNetwork),
+      Some('L') => Ok(Self::Local),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "N,A,L".to_string(),
       }),
     }

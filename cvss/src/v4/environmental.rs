@@ -1,4 +1,8 @@
+use crate::error::{CVSSError, Result};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV4, Worth};
 use serde::{Deserialize, Serialize};
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all(deserialize = "camelCase"))]
@@ -88,5 +92,235 @@ impl IntegrityRequirements {
 impl AvailabilityRequirements {
   pub(crate) fn is_high(&self) -> bool {
     matches!(self, Self::High)
+  }
+}
+impl Metric for ConfidentialityRequirements {
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::CR);
+
+  fn help(&self) -> Help {
+    match self {
+      Self::NotDefined => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::High => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Medium => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Low => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
+
+  fn score(&self) -> f32 {
+    match self {
+      Self::NotDefined => 0.0,
+      Self::High => 0.0,
+      Self::Medium => 0.1,
+      Self::Low => 0.2,
+    }
+  }
+
+  fn as_str(&self) -> &'static str {
+    match self {
+      Self::NotDefined => "X",
+      Self::High => "H",
+      Self::Medium => "M",
+      Self::Low => "L",
+    }
+  }
+}
+
+impl FromStr for ConfidentialityRequirements {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    let name = Self::name();
+    let s = s.to_uppercase();
+    let (_name, v) = s
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
+    let c = v.chars().next();
+    match c {
+      Some('L') => Ok(Self::Low),
+      Some('M') => Ok(Self::Medium),
+      Some('H') => Ok(Self::High),
+      Some('X') => Ok(Self::NotDefined),
+      _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: format!("{:?}", c),
+        expected: "L,H".to_string(),
+      }),
+    }
+  }
+}
+
+impl Display for ConfidentialityRequirements {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}:{}", Self::name(), self.as_str())
+  }
+}
+
+impl Metric for IntegrityRequirements {
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::CR);
+
+  fn help(&self) -> Help {
+    match self {
+      Self::NotDefined => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::High => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Medium => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Low => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
+
+  fn score(&self) -> f32 {
+    match self {
+      Self::NotDefined => 0.0,
+      Self::High => 0.0,
+      Self::Medium => 0.1,
+      Self::Low => 0.2,
+    }
+  }
+
+  fn as_str(&self) -> &'static str {
+    match self {
+      Self::NotDefined => "X",
+      Self::High => "H",
+      Self::Medium => "M",
+      Self::Low => "L",
+    }
+  }
+}
+
+impl FromStr for IntegrityRequirements {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    let name = Self::name();
+    let s = s.to_uppercase();
+    let (_name, v) = s
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
+    let c = v.chars().next();
+    match c {
+      Some('L') => Ok(Self::Low),
+      Some('M') => Ok(Self::Medium),
+      Some('H') => Ok(Self::High),
+      Some('X') => Ok(Self::NotDefined),
+      _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: format!("{:?}", c),
+        expected: "L,H".to_string(),
+      }),
+    }
+  }
+}
+
+impl Display for IntegrityRequirements {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}:{}", Self::name(), self.as_str())
+  }
+}
+
+impl Metric for AvailabilityRequirements {
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::CR);
+
+  fn help(&self) -> Help {
+    match self {
+      Self::NotDefined => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::High => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Medium => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+      Self::Low => Help {
+        worth: Worth::Worst,
+        des: "".to_string(),
+      },
+    }
+  }
+
+  fn score(&self) -> f32 {
+    match self {
+      Self::NotDefined => 0.0,
+      Self::High => 0.0,
+      Self::Medium => 0.1,
+      Self::Low => 0.2,
+    }
+  }
+
+  fn as_str(&self) -> &'static str {
+    match self {
+      Self::NotDefined => "X",
+      Self::High => "H",
+      Self::Medium => "M",
+      Self::Low => "L",
+    }
+  }
+}
+
+impl FromStr for AvailabilityRequirements {
+  type Err = CVSSError;
+
+  fn from_str(s: &str) -> Result<Self> {
+    let name = Self::name();
+    let s = s.to_uppercase();
+    let (_name, v) = s
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
+    let c = v.chars().next();
+    match c {
+      Some('L') => Ok(Self::Low),
+      Some('M') => Ok(Self::Medium),
+      Some('H') => Ok(Self::High),
+      Some('X') => Ok(Self::NotDefined),
+      _ => Err(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: format!("{:?}", c),
+        expected: "L,H".to_string(),
+      }),
+    }
+  }
+}
+
+impl Display for AvailabilityRequirements {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    write!(f, "{}:{}", Self::name(), self.as_str())
   }
 }

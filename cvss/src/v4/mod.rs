@@ -7,12 +7,18 @@
 
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
+use crate::roundup;
 use crate::severity::SeverityType;
 use crate::v4::attack_complexity::AttackComplexityType;
 use crate::v4::attack_requirements::AttackRequirementsType;
 use crate::v4::attack_vector::AttackVectorType;
-use crate::v4::constant::{get_eq1245_max_composed, CVSS_LOOKUP, get_eq36_max_composed};
-use crate::v4::environmental::Environmental;
+use crate::v4::constant::{
+  get_eq1245_max_composed, get_eq1245_max_severity, get_eq36_max_composed, get_eq36_max_severity,
+  lookup,
+};
+use crate::v4::environmental::{
+  AvailabilityRequirements, ConfidentialityRequirements, Environmental, IntegrityRequirements,
+};
 use crate::v4::exploit_maturity::ExploitMaturity;
 use crate::v4::privileges_required::PrivilegesRequiredType;
 use crate::v4::subsequent_impact_metrics::{
@@ -142,19 +148,43 @@ pub struct CVSS {
 
 impl CVSS {
   /// https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator
-
-  pub fn builder(
-    version: Version,
-    exploit_ability: ExploitAbility,
-    vulnerable_impact: VulnerableImpact,
-    subsequent_impact: SubsequentImpact,
-  ) -> CVSSBuilder {
-    CVSSBuilder::new(
-      version,
+  // only vector_string not version
+  pub fn vector_string(vectors: &str) -> Result<Self> {
+    let exploit_ability = ExploitAbility {
+      attack_vector: AttackVectorType::from_str(vectors)?,
+      attack_complexity: AttackComplexityType::from_str(vectors)?,
+      attack_requirements: AttackRequirementsType::from_str(vectors)?,
+      privileges_required: PrivilegesRequiredType::from_str(vectors)?,
+      user_interaction: UserInteractionType::from_str(vectors)?,
+    };
+    let vulnerable_impact = VulnerableImpact {
+      confidentiality_impact: VulnerableConfidentialityImpactType::from_str(vectors)?,
+      integrity_impact: VulnerableIntegrityImpactType::from_str(vectors)?,
+      availability_impact: VulnerableAvailabilityImpactType::from_str(vectors)?,
+    };
+    let subsequent_impact = SubsequentImpact {
+      confidentiality_impact: SubsequentConfidentialityImpactType::from_str(vectors)?,
+      integrity_impact: SubsequentIntegrityImpactType::from_str(vectors)?,
+      availability_impact: SubsequentAvailabilityImpactType::from_str(vectors)?,
+    };
+    let exploit = ExploitMaturity::from_str(vectors).unwrap_or_default();
+    let environmental = Environmental {
+      confidentiality_requirements: ConfidentialityRequirements::from_str(vectors)
+        .unwrap_or_default(),
+      integrity_requirements: IntegrityRequirements::from_str(vectors).unwrap_or_default(),
+      availability_requirements: AvailabilityRequirements::from_str(vectors).unwrap_or_default(),
+    };
+    Ok(CVSS {
+      version: Version::V4_0,
+      vector_string: format!("{}{}", Version::V4_0, vectors),
       exploit_ability,
       vulnerable_impact,
       subsequent_impact,
-    )
+      exploit,
+      environmental,
+      base_score: 0.0,
+      base_severity: SeverityType::None,
+    })
   }
 }
 
@@ -198,102 +228,11 @@ impl FromStr for CVSS {
         expected: "4.0".to_string(),
       });
     }
-    let mut vector = vectors.split('/');
-    // "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H"
-    let error = CVSSError::InvalidCVSS {
-      key: "CVSS:4.0".to_string(),
-      value: vector_string.to_string(),
-      expected: "".to_string(),
-    };
-    let exploit_ability = ExploitAbility {
-      attack_vector: AttackVectorType::from_str(vector.next().ok_or(&error)?)?,
-      attack_complexity: AttackComplexityType::from_str(vector.next().ok_or(&error)?)?,
-      attack_requirements: AttackRequirementsType::from_str(vector.next().ok_or(&error)?)?,
-      privileges_required: PrivilegesRequiredType::from_str(vector.next().ok_or(&error)?)?,
-      user_interaction: UserInteractionType::from_str(vector.next().ok_or(&error)?)?,
-    };
-    let vulnerable_impact = VulnerableImpact {
-      confidentiality_impact: VulnerableConfidentialityImpactType::from_str(
-        vector.next().ok_or(&error)?,
-      )?,
-      integrity_impact: VulnerableIntegrityImpactType::from_str(vector.next().ok_or(&error)?)?,
-      availability_impact: VulnerableAvailabilityImpactType::from_str(
-        vector.next().ok_or(&error)?,
-      )?,
-    };
-    let subsequent_impact = SubsequentImpact {
-      confidentiality_impact: SubsequentConfidentialityImpactType::from_str(
-        vector.next().ok_or(&error)?,
-      )?,
-      integrity_impact: SubsequentIntegrityImpactType::from_str(vector.next().ok_or(&error)?)?,
-      availability_impact: SubsequentAvailabilityImpactType::from_str(
-        vector.next().ok_or(&error)?,
-      )?,
-    };
-    let mut cvss = CVSS {
-      version,
-      vector_string: vector_string.to_string(),
-      exploit_ability,
-      subsequent_impact,
-      vulnerable_impact,
-      base_score: 0.0,
-      base_severity: SeverityType::None,
-      exploit: ExploitMaturity::default(),
-      environmental: Environmental::default(),
-    };
+    let mut cvss = CVSS::vector_string(vectors)?;
     cvss.base_score = cvss.base_score();
     cvss.base_severity = SeverityType::from(cvss.base_score);
     cvss.vector_string = cvss.to_string();
     Ok(cvss)
-  }
-}
-
-pub struct CVSSBuilder {
-  /// Version 版本： 3.0 和 3.1
-  pub version: Version,
-  pub exploit_ability: ExploitAbility,
-  /// [`VulnerableImpact`] 缺陷系统（Vulnerable System）
-  pub vulnerable_impact: VulnerableImpact,
-  /// [`SubsequentImpact`] 后续系统（Subsequent System）
-  pub subsequent_impact: SubsequentImpact,
-}
-/// CVSS Builder
-impl CVSSBuilder {
-  pub fn new(
-    version: Version,
-    exploit_ability: ExploitAbility,
-    vulnerable_impact: VulnerableImpact,
-    subsequent_impact: SubsequentImpact,
-  ) -> Self {
-    Self {
-      version,
-      exploit_ability,
-      vulnerable_impact,
-      subsequent_impact,
-    }
-  }
-  pub fn build(self) -> CVSS {
-    let Self {
-      version,
-      exploit_ability,
-      vulnerable_impact,
-      subsequent_impact,
-    } = self;
-    let mut cvss = CVSS {
-      version,
-      vector_string: "".to_string(),
-      exploit_ability,
-      vulnerable_impact,
-      subsequent_impact,
-      exploit: ExploitMaturity::default(),
-      environmental: Environmental::default(),
-      base_score: 0.0,
-      base_severity: SeverityType::None,
-    };
-    cvss.vector_string = cvss.to_string();
-    cvss.base_score = cvss.base_score();
-    cvss.base_severity = SeverityType::from(cvss.base_score);
-    cvss
   }
 }
 
@@ -304,67 +243,130 @@ impl CVSS {
     }
     let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
     let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
-    let score = self
-      .lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
+    println!("{}", mv);
+    let score = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
       .unwrap_or(0.0)
       .clone();
-    println!("{:?}", score);
+    println!("score:{}", score);
     let mut lower = 0;
     let score_eq1_next_lower = if eq1 < 2 {
       lower = lower + 1;
-      self.lookup(&(eq1 + 1), &eq2, &eq3, &eq4, &eq5, &eq6)
+      lookup(&(eq1 + 1), &eq2, &eq3, &eq4, &eq5, &eq6)
     } else {
       None
     };
     let score_eq2_next_lower = if eq2 < 1 {
       lower = lower + 1;
-      self.lookup(&eq1, &(eq2 + 1), &eq3, &eq4, &eq5, &eq6)
+      lookup(&eq1, &(eq2 + 1), &eq3, &eq4, &eq5, &eq6)
     } else {
       None
     };
     let score_eq4_next_lower = if eq4 < 2 {
       lower = lower + 1;
-      self.lookup(&eq1, &eq2, &eq3, &(eq4 + 1), &eq5, &eq6)
+      lookup(&eq1, &eq2, &eq3, &(eq4 + 1), &eq5, &eq6)
     } else {
       None
     };
     let score_eq5_next_lower = if eq5 < 2 {
       lower = lower + 1;
-      self.lookup(&eq1, &eq2, &eq3, &eq4, &(eq5 + 1), &eq6)
+      lookup(&eq1, &eq2, &eq3, &eq4, &(eq5 + 1), &eq6)
     } else {
       None
     };
     let score_eq3eq6_next_lower = if (eq3 == 1 && eq6 == 1) || (eq3 == 0 && eq6 == 1) {
       lower = lower + 1;
-      self.lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
+      lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
     } else if eq3 == 1 && eq6 == 0 {
       lower = lower + 1;
-      self.lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
+      lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
     } else if eq3 == 0 && eq6 == 0 {
       // multiple path take the one with higher score
       // 如果存在多个分数，取最大的分数
       lower = lower + 1;
-      let left = self
-        .lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1))
-        .unwrap_or(0.0);
-      let right = self
-        .lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
-        .unwrap_or(0.0);
+      let left = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &(eq6 + 1)).unwrap_or(0.0);
+      let right = lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6).unwrap_or(0.0);
       let max_score = right.max(left);
       Some(max_score)
     } else {
       None
     };
     println!(
-      "{:?} {:?} {:?} {:?} {:?}",
+      "{:?}{:?}{:?}{:?}{:?}",
       score_eq1_next_lower,
       score_eq2_next_lower,
       score_eq3eq6_next_lower,
       score_eq4_next_lower,
       score_eq5_next_lower
     );
-    self.max_vectors(mv);
-    let current_severity_distance_eq1 = self.exploit_ability.score();
+    // 根据lookup获取全部矩阵，然后取分数最大的那个
+    let max_vectors = self.max_vectors(mv);
+    println!("{:?}", max_vectors);
+    let (
+      current_severity_distance_eq1,
+      current_severity_distance_eq2,
+      current_severity_distance_eq3eq6,
+      current_severity_distance_eq4,
+      current_severity_distance_eq5,
+    ) = self.severity_distances(max_vectors);
+    println!(
+      "current_severity_distance: {:?} {:?} {:?} {:?} {:?}",
+      current_severity_distance_eq1,
+      current_severity_distance_eq2,
+      current_severity_distance_eq3eq6,
+      current_severity_distance_eq4,
+      current_severity_distance_eq5
+    );
+    let step: f32 = 0.1;
+    // # multiply by step because distance is pure
+    let max_severity_eq1 = get_eq1245_max_severity(1, eq1).unwrap_or_default() * step;
+    let max_severity_eq2 = get_eq1245_max_severity(2, eq2).unwrap_or_default() * step;
+    let max_severity_eq3eq6 = get_eq36_max_severity(eq3, eq6).unwrap_or_default() * step;
+    let max_severity_eq4 = get_eq1245_max_severity(4, eq4).unwrap_or_default() * step;
+    let max_severity_eq5 = get_eq1245_max_severity(5, eq5).unwrap_or_default() * step;
+
+    let mut normalized_severity_eq1 = 0.0;
+    let mut normalized_severity_eq2 = 0.0;
+    let mut normalized_severity_eq3eq6 = 0.0;
+    let mut normalized_severity_eq4 = 0.0;
+    let mut normalized_severity_eq5 = 0.0;
+
+    if let Some(score_eq1_next_lower) = score_eq1_next_lower {
+      let available_distance_eq1 = score - score_eq1_next_lower;
+      let percent_to_next_eq1_severity = current_severity_distance_eq1 / max_severity_eq1;
+      normalized_severity_eq1 = available_distance_eq1 * percent_to_next_eq1_severity;
+    }
+    if let Some(score_eq2_next_lower) = score_eq2_next_lower {
+      let available_distance_eq2 = score - score_eq2_next_lower;
+      let percent_to_next_eq2_severity = current_severity_distance_eq2 / max_severity_eq2;
+      normalized_severity_eq2 = available_distance_eq2 * percent_to_next_eq2_severity
+    }
+    if let Some(score_eq3eq6_next_lower) = score_eq3eq6_next_lower {
+      let available_distance_eq3eq6 = score - score_eq3eq6_next_lower;
+      let percent_to_next_eq3eq6_severity = current_severity_distance_eq3eq6 / max_severity_eq3eq6;
+      normalized_severity_eq3eq6 = available_distance_eq3eq6 * percent_to_next_eq3eq6_severity;
+    }
+    if let Some(score_eq4_next_lower) = score_eq4_next_lower {
+      let available_distance_eq4 = score - score_eq4_next_lower;
+      let percent_to_next_eq4_severity = current_severity_distance_eq4 / max_severity_eq4;
+      normalized_severity_eq4 = available_distance_eq4 * percent_to_next_eq4_severity
+    }
+    if let Some(score_eq5_next_lower) = score_eq5_next_lower {
+      let available_distance_eq5 = score - score_eq5_next_lower;
+      let percent_to_next_eq5_severity = current_severity_distance_eq5 / max_severity_eq5;
+      normalized_severity_eq5 = available_distance_eq5 * percent_to_next_eq5_severity
+    }
+    let mut mean_distance = 0.0;
+    if lower != 0 {
+      mean_distance = (normalized_severity_eq1
+        + normalized_severity_eq2
+        + normalized_severity_eq3eq6
+        + normalized_severity_eq4
+        + normalized_severity_eq5)
+        / lower as f32;
+    }
+    println!("{:?}", mean_distance);
+    let score = roundup(score - mean_distance);
+    println!("{}", score);
     score
   }
   // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)
@@ -388,16 +390,124 @@ impl CVSS {
     }
     return None;
   }
-  fn max_vectors(&self, macro_vector: String) {
-    let mut v = vec![];
-    let mut mv = macro_vector.as_mut_vec().sli
-    for (i, c) in macro_vector.chars().enumerate() {
-      let index = c.to_digit(10).unwrap_or(0);
-      let eq1245_max_composed = get_eq1245_max_composed((i+1) as u32, index);
-      let eq36_max_composed = get_eq36_max_composed((i+1) as u32, index);
-      println!("{:?} {:?}", eq1245_max_composed,eq36_max_composed);
-      v.push(index);
+  fn max_vectors(&self, macro_vector: String) -> Vec<String> {
+    let mut vectors = vec![];
+    let get_index = |index| {
+      macro_vector
+        .chars()
+        .nth((index - 1) as usize)
+        .unwrap_or_default()
+        .to_digit(10)
+        .unwrap_or(0)
+    };
+    let eq1_maxes = get_eq1245_max_composed(1, get_index(1));
+    let eq2_maxes = get_eq1245_max_composed(2, get_index(2));
+    let eq3_eq6_maxes = get_eq36_max_composed(get_index(3), get_index(6));
+    let eq4_maxes = get_eq1245_max_composed(4, get_index(4));
+    let eq5_maxes = get_eq1245_max_composed(5, get_index(5));
+    // 笛卡尔积获取全部可能
+    for eq1_max in eq1_maxes {
+      for eq2_max in eq2_maxes.iter() {
+        for eq3_eq6_max in eq3_eq6_maxes.iter() {
+          for eq4_max in eq4_maxes.iter() {
+            for eq5_max in eq5_maxes.iter() {
+              vectors.push(format!(
+                "{}{}{}{}{}",
+                eq1_max, eq2_max, eq3_eq6_max, eq4_max, eq5_max
+              ));
+            }
+          }
+        }
+      }
     }
+    return vectors;
+  }
+  fn severity_distances(&self, vectors: Vec<String>) -> (f32, f32, f32, f32, f32) {
+    // 每个都和self这个cvss的分数比较，返回第一个大于self本身的
+    let mut severity_distances = vec![];
+    for vector in vectors {
+      let max_vector = CVSS::vector_string(&vector);
+      if let Ok(max_vector) = max_vector {
+        let av = self.exploit_ability.attack_vector.score()
+          - max_vector.exploit_ability.attack_vector.score();
+        let pr = self.exploit_ability.privileges_required.score()
+          - max_vector.exploit_ability.privileges_required.score();
+        let ui = self.exploit_ability.user_interaction.score()
+          - max_vector.exploit_ability.user_interaction.score();
+
+        let ac = self.exploit_ability.attack_complexity.score()
+          - max_vector.exploit_ability.attack_complexity.score();
+        let at = self.exploit_ability.attack_requirements.score()
+          - max_vector.exploit_ability.attack_requirements.score();
+
+        let vc = self.vulnerable_impact.confidentiality_impact.score()
+          - max_vector.vulnerable_impact.confidentiality_impact.score();
+        let vi = self.vulnerable_impact.integrity_impact.score()
+          - max_vector.vulnerable_impact.integrity_impact.score();
+        let va = self.vulnerable_impact.availability_impact.score()
+          - max_vector.vulnerable_impact.availability_impact.score();
+
+        let sc = self.subsequent_impact.confidentiality_impact.score()
+          - max_vector.subsequent_impact.confidentiality_impact.score();
+        let si = self.subsequent_impact.integrity_impact.score()
+          - max_vector.subsequent_impact.integrity_impact.score();
+        let sa = self.subsequent_impact.availability_impact.score()
+          - max_vector.subsequent_impact.availability_impact.score();
+
+        let cr = self.environmental.confidentiality_requirements.score()
+          - max_vector
+            .environmental
+            .confidentiality_requirements
+            .score();
+        let ir = self.environmental.integrity_requirements.score()
+          - max_vector.environmental.integrity_requirements.score();
+        let ar = self.environmental.availability_requirements.score()
+          - max_vector.environmental.availability_requirements.score();
+        let all_severity_distances = vec![av, pr, ui, ac, at, vc, vi, va, sc, si, sa, cr, ir, ar];
+        // # if any is less than zero this is not the right max
+        if all_severity_distances.iter().any(|m| m < &0.0) {
+          continue;
+        }
+        severity_distances = all_severity_distances;
+        println!("severity_distances: {:?}", severity_distances);
+        break;
+        // # if multiple maxes exist to reach it it is enough the first one
+      }
+    }
+    // 以前pop是从末尾开始的，所以要先倒过来
+    severity_distances.reverse();
+    let (av, pr, ui, ac, at, vc, vi, va, sc, si, sa, cr, ir, ar) = (
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+      severity_distances.pop().unwrap_or_default(),
+    );
+    println!(
+      "{:?}",
+      vec![av, pr, ui, ac, at, vc, vi, va, sc, si, sa, cr, ir, ar]
+    );
+    let current_severity_distance_eq1 = av + pr + ui;
+    let current_severity_distance_eq2 = ac + at;
+    let current_severity_distance_eq3eq6 = vc + vi + va + cr + ir + ar;
+    let current_severity_distance_eq4 = sc + si + sa;
+    let current_severity_distance_eq5 = 0.0;
+    return (
+      current_severity_distance_eq1,
+      current_severity_distance_eq2,
+      current_severity_distance_eq3eq6,
+      current_severity_distance_eq4,
+      current_severity_distance_eq5,
+    );
   }
   fn macro_vector(&self) -> (u32, u32, u32, u32, u32, u32) {
     let eq1 = self.exploit_ability.eq1().unwrap_or_default();
@@ -408,29 +518,58 @@ impl CVSS {
     let eq6 = self.eq6().unwrap_or_default();
     return (eq1, eq2, eq3, eq4, eq5, eq6);
   }
-  fn lookup(
-    &self,
-    eq1: &u32,
-    eq2: &u32,
-    eq3: &u32,
-    eq4: &u32,
-    eq5: &u32,
-    eq6: &u32,
-  ) -> Option<f32> {
-    let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
-    CVSS_LOOKUP.get(&mv).and_then(|v| Some(v.clone()))
-  }
 }
 
 impl CVSS {}
 #[cfg(test)]
 mod tests {
   use crate::v4::CVSS;
+  use std::collections::HashMap;
   use std::str::FromStr;
   #[test]
-  fn cvss_test() {
-    let cvss =
-      CVSS::from_str("CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H").unwrap();
-    println!("{:?}", cvss);
+  fn cvss_score_test() {
+    let vs_map: HashMap<&'static str, f32> = HashMap::from_iter([
+      // (
+      //   "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+      //   10.0,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+      //   9.4,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+      //   9.0,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+      //   8.9,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+      //   7.3,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+      //   6.1,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:L/SC:H/SI:H/SA:H/E:A",
+      //   2.4,
+      // ),
+      // (
+      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:N/SC:L/SI:N/SA:H/E:A",
+      //   2.0,
+      // ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:N/SC:L/SI:N/SA:H/E:P/CR:H/IR:M/AR:L",
+        0.9,
+      ),
+    ]);
+    for (k, v) in vs_map.iter() {
+      let cvss = CVSS::from_str(k).unwrap();
+      println!("{:?}", cvss);
+      assert_eq!(cvss.base_score, *v)
+    }
   }
 }

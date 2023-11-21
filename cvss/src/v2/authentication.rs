@@ -45,15 +45,15 @@ impl Metric for AuthenticationType {
 
   fn help(&self) -> Help {
     match self {
-      AuthenticationType::Multiple => Help {
+      Self::Multiple => Help {
         worth: Worth::Bad,
         des: "Exploiting the vulnerability requires that the attacker authenticate two or more times, even if the same credentials are used each time. An example is an attacker authenticating to an operating system in addition to providing credentials to access an application hosted on that system.".to_string(),
       },
-      AuthenticationType::Single => Help {
+      Self::Single => Help {
         worth: Worth::Worse,
         des: "The vulnerability requires an attacker to be logged into the system (such as at a command line or via a desktop session or web interface).".to_string(),
       },
-      AuthenticationType::None => Help {
+      Self::None => Help {
         worth: Worth::Worst,
         des: "Authentication is not required to exploit the vulnerability.".to_string(),
       },
@@ -62,17 +62,17 @@ impl Metric for AuthenticationType {
 
   fn score(&self) -> f32 {
     match self {
-      AuthenticationType::Multiple => 0.45,
-      AuthenticationType::Single => 0.56,
-      AuthenticationType::None => 0.704,
+      Self::Multiple => 0.45,
+      Self::Single => 0.56,
+      Self::None => 0.704,
     }
   }
 
   fn as_str(&self) -> &'static str {
     match self {
-      AuthenticationType::Multiple => "M",
-      AuthenticationType::Single => "S",
-      AuthenticationType::None => "N",
+      Self::Multiple => "M",
+      Self::Single => "S",
+      Self::None => "N",
     }
   }
 }
@@ -80,29 +80,23 @@ impl FromStr for AuthenticationType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_string();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.to_uppercase().chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'M' => Ok(Self::Multiple),
-      'S' => Ok(Self::Single),
-      'N' => Ok(Self::None),
+      Some('M') => Ok(Self::Multiple),
+      Some('S') => Ok(Self::Single),
+      Some('N') => Ok(Self::None),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "M,S,N".to_string(),
       }),
     }

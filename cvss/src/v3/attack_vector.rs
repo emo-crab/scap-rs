@@ -94,30 +94,24 @@ impl FromStr for AttackVectorType {
   type Err = CVSSError;
 
   fn from_str(s: &str) -> Result<Self> {
-    let mut s = s.to_uppercase();
     let name = Self::name();
-    if s.starts_with(name) {
-      s = s
-        .strip_prefix(&format!("{}:", name))
-        .unwrap_or_default()
-        .to_string();
-    }
-    let c = {
-      let c = s.chars().next();
-      c.ok_or(CVSSError::InvalidCVSS {
-        key: name.to_string(),
-        value: s,
-        expected: name.to_string(),
-      })?
-    };
+    let s = s.to_uppercase();
+    let (_name, v) = s
+        .split_once(&format!("{}:", name))
+        .ok_or(CVSSError::InvalidCVSS {
+          key: name.to_string(),
+          value: s.to_string(),
+          expected: name.to_string(),
+        })?;
+    let c = v.chars().next();
     match c {
-      'N' => Ok(Self::Network),
-      'A' => Ok(Self::AdjacentNetwork),
-      'L' => Ok(Self::Local),
-      'P' => Ok(Self::Physical),
+      Some('N') => Ok(Self::Network),
+      Some('A') => Ok(Self::AdjacentNetwork),
+      Some('L') => Ok(Self::Local),
+      Some('P') => Ok(Self::Physical),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: c.to_string(),
+        value:format!("{:?}", c),
         expected: "N,A,L,P".to_string(),
       }),
     }
