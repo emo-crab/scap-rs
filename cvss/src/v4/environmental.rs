@@ -172,7 +172,7 @@ impl Display for ConfidentialityRequirements {
 }
 
 impl Metric for IntegrityRequirements {
-  const TYPE: MetricType = MetricType::V4(MetricTypeV4::CR);
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::IR);
 
   fn help(&self) -> Help {
     match self {
@@ -249,7 +249,7 @@ impl Display for IntegrityRequirements {
 }
 
 impl Metric for AvailabilityRequirements {
-  const TYPE: MetricType = MetricType::V4(MetricTypeV4::CR);
+  const TYPE: MetricType = MetricType::V4(MetricTypeV4::AR);
 
   fn help(&self) -> Help {
     match self {

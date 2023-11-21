@@ -35,10 +35,13 @@ pub enum MetricTypeV4 {
 
   /// User Interaction (UI)
   UI,
-
+  /// Confidentiality Requirements (CR)
   CR,
+  /// Integrity Requirements (IR)
   IR,
+  /// Availability Requirements (AR)
   AR,
+  /// Exploit Maturity (E)
   E,
 }
 
@@ -87,6 +90,9 @@ impl FromStr for MetricTypeV4 {
       "PR" => Ok(Self::PR),
       "AT" => Ok(Self::AT),
       "UI" => Ok(Self::UI),
+      "CR" => Ok(Self::CR),
+      "IR" => Ok(Self::IR),
+      "AR" => Ok(Self::AR),
       _ => Err(CVSSError::UnknownMetric { name: s.to_owned() }),
     }
   }

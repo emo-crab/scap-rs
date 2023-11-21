@@ -7,7 +7,6 @@
 
 use crate::error::{CVSSError, Result};
 use crate::metric::Metric;
-use crate::roundup;
 use crate::severity::SeverityType;
 use crate::v4::attack_complexity::AttackComplexityType;
 use crate::v4::attack_requirements::AttackRequirementsType;
@@ -192,7 +191,7 @@ impl Display for CVSS {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(
       f,
-      "CVSS:{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
+      "CVSS:{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}/{}",
       self.version,
       self.exploit_ability.attack_vector,
       self.exploit_ability.attack_complexity,
@@ -204,7 +203,11 @@ impl Display for CVSS {
       self.vulnerable_impact.availability_impact,
       self.subsequent_impact.confidentiality_impact,
       self.subsequent_impact.integrity_impact,
-      self.subsequent_impact.availability_impact
+      self.subsequent_impact.availability_impact,
+      self.environmental.confidentiality_requirements,
+      self.environmental.integrity_requirements,
+      self.environmental.availability_requirements,
+      self.exploit
     )
   }
 }
@@ -364,7 +367,7 @@ impl CVSS {
         + normalized_severity_eq5)
         / lower as f32;
     }
-    println!("{:?}", mean_distance);
+    println!("{:?}", score - mean_distance);
     let score = roundup(score - mean_distance);
     println!("{}", score);
     score
@@ -423,11 +426,13 @@ impl CVSS {
     return vectors;
   }
   fn severity_distances(&self, vectors: Vec<String>) -> (f32, f32, f32, f32, f32) {
+    println!("self_vector: {}", self);
     // 每个都和self这个cvss的分数比较，返回第一个大于self本身的
     let mut severity_distances = vec![];
     for vector in vectors {
       let max_vector = CVSS::vector_string(&vector);
       if let Ok(max_vector) = max_vector {
+        println!("max_vector: {}", max_vector);
         let av = self.exploit_ability.attack_vector.score()
           - max_vector.exploit_ability.attack_vector.score();
         let pr = self.exploit_ability.privileges_required.score()
@@ -519,48 +524,64 @@ impl CVSS {
     return (eq1, eq2, eq3, eq4, eq5, eq6);
   }
 }
-
-impl CVSS {}
+/// Roundup保留小数点后一位，小数点后第二位四舍五入。 例如, Roundup(4.02) = 4.0; 或者 Roundup(4.00) = 4.0
+fn roundup(input: f32) -> f32 {
+  let int_input = (input * 100.0) as u32;
+  println!("{}", int_input % 10);
+  if int_input % 10 < 5 {
+    println!("{}", (int_input / 10) as f32 / 10.0);
+    (int_input / 10) as f32 / 10.0
+  } else {
+    let score_floor = ((int_input as f32) / 10.0).floor();
+    (score_floor + 1.0) / 10.0
+  }
+}
 #[cfg(test)]
 mod tests {
-  use crate::v4::CVSS;
+  use crate::v4::{roundup, CVSS};
   use std::collections::HashMap;
   use std::str::FromStr;
   #[test]
+  fn roundup_test() {
+    assert_eq!(roundup(0.12000), 0.1);
+    assert_eq!(roundup(0.15000), 0.2);
+    assert_eq!(roundup(0.94900), 0.9);
+  }
+  #[test]
   fn cvss_score_test() {
     let vs_map: HashMap<&'static str, f32> = HashMap::from_iter([
-      // (
-      //   "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
-      //   10.0,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
-      //   9.4,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
-      //   9.0,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
-      //   8.9,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
-      //   7.3,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
-      //   6.1,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:L/SC:H/SI:H/SA:H/E:A",
-      //   2.4,
-      // ),
-      // (
-      //   "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:N/SC:L/SI:N/SA:H/E:A",
-      //   2.0,
-      // ),
+      (
+        "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H",
+        10.0,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+        9.4,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+        9.0,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:N/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+        8.9,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:H/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+        7.3,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:H/VA:H/SC:H/SI:H/SA:H/E:A",
+        6.1,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:L/SC:H/SI:H/SA:H/E:A",
+        2.4,
+      ),
+      (
+        "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:N/SC:L/SI:N/SA:H/E:A",
+        2.0,
+      ),
       (
         "CVSS:4.0/AV:A/AC:H/AT:P/PR:L/UI:P/VC:L/VI:L/VA:N/SC:L/SI:N/SA:H/E:P/CR:H/IR:M/AR:L",
         0.9,

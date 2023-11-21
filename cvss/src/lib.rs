@@ -16,24 +16,3 @@ pub mod v2;
 pub mod v3;
 pub mod v4;
 pub mod version;
-/// Roundup保留小数点后一位，小数点后第二位大于零则进一。 例如, Roundup(4.02) = 4.1; 或者 Roundup(4.00) = 4.0
-///
-/// Where “Round up” is defined as the smallest number,
-/// specified to one decimal place, that is equal to or higher than its input. For example,
-/// Round up (4.02) is 4.1; and Round up (4.00) is 4.0.
-///
-/// 1.  `function Roundup (input):`
-/// 2.  `    int_input = round_to_nearest_integer (input * 100000)`
-/// 3.  `    if (int_input % 10000) == 0:`
-/// 4.  `        return int_input / 100000.0`
-/// 5.  `    else:`
-/// 6.  `        return (floor(int_input / 10000) + 1) / 10.0`
-pub(crate) fn roundup(input: f32) -> f32 {
-  let int_input = (input * 100_000.0) as u32;
-  if int_input % 10000 == 0 {
-    (int_input as f32) / 100_000.0
-  } else {
-    let score_floor = ((int_input as f32) / 10_000.0).floor();
-    (score_floor + 1.0) / 10.0
-  }
-}
