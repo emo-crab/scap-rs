@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+
+
+
+<title>NVD - Data Feeds</title>
+
+<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<meta http-equiv="content-style-type" content="text/css" />
+<meta http-equiv="content-script-type" content="text/javascript" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+
+<link href="/site-scripts/font-awesome/css/font-awesome.min.css"
+	type="text/css" rel="stylesheet" />
+<link href="/site-media/bootstrap/css/bootstrap.min.css"
+	type="text/css" rel="stylesheet" />
+<link href="/site-media/bootstrap/css/bootstrap-theme.min.css"
+	type="text/css" rel="stylesheet" />
+<link
+	href="/site-scripts/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css"
+	type="text/css" rel="stylesheet" />
+
+
+<link href="/site-media/css/nist-fonts.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/css/base-style.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/css/media-resize.css" type="text/css"
+	rel="stylesheet" />
+
+
+<meta name="theme-color" content="#000000">
+
+
+<script src="/site-scripts/jquery/dist/jquery.min.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/jquery-visible/jquery.visible.min.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/underscore/underscore-min.js"
+	type="text/javascript"></script>
+<script src="/site-media/bootstrap/js/bootstrap.js"
+	type="text/javascript"></script>
+<script src="/site-scripts/moment/min/moment.min.js"
+	type="text/javascript"></script>
+<script
+	src="/site-scripts/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"
+	type="text/javascript"></script>
+
+
+<script src="/site-media/js/megamenu.js" type="text/javascript"></script>
+<script src="/site-media/js/nist-exit-script.js"
+	type="text/javascript"></script>
+<script src="/site-media/js/forms.js" type="text/javascript"></script>
+<!--
+<script th:src="@{/site-media/js/federated-analytics.all.min.js?agency=NIST&subagency=nvd&pua=UA-37115410-41&yt=true}" type="text/javascript" id="_fed_an_js_tag"></script>
+-->
+<script
+	src="/site-media/js/federated-analytics.all.min.js?agency=NIST&amp;subagency=nvd&amp;pua=UA-37115410-41&amp;yt=true"
+	type="text/javascript" id="_fed_an_js_tag"></script>
+
+
+
+<style id="antiClickjack">
+body>* {
+	display: none !important;
+}
+
+#antiClickjack {
+	display: block !important;
+}
+</style>
+<noscript>
+	<style id="antiClickjackNoScript">
+body>* {
+	display: block !important;
+}
+
+#antiClickjack {
+	display: none !important;
+}
+</style>
+</noscript>
+<script type="text/javascript" id="antiClickjackScript">
+	if (self === top) {
+		// no clickjacking
+		var antiClickjack = document.getElementById("antiClickjack");
+		antiClickjack.parentNode.removeChild(antiClickjack);
+	} else {
+		setTimeout(tryForward(), 5000);
+	}
+
+	function tryForward() {
+		top.location = self.location;
+	}
+</script>
+<meta charset="UTF-8">
+
+<link href="/site-media/css/nvd-style.css" type="text/css"
+	rel="stylesheet" />
+<link href="/site-media/images/favicons/apple-touch-icon.png"
+	rel="apple-touch-icon" type="image/png" sizes="180x180" />
+<link href="/site-media/images/favicons/favicon-32x32.png"
+	rel="icon" type="image/png" sizes="32x32" />
+<link href="/site-media/images/favicons/favicon-16x16.png"
+	rel="icon" type="image/png" sizes="16x16" />
+<link href="/site-media/images/favicons/manifest.json"
+	rel="manifest" />
+<link href="/site-media/images/favicons/safari-pinned-tab.svg"
+	rel="mask-icon" color="#000000" />
+<link href="/site-media/images/favicons/favicon.ico"
+	rel="shortcut icon" />
+<meta name="msapplication-config" content="/site-media/images/favicons/browserconfig.xml" />
+<link href="/site-media/images/favicons/favicon.ico"
+	rel="shortcut icon" type="image/x-icon" />
+<link href="/site-media/images/favicons/favicon.ico" rel="icon"
+	type="image/x-icon" />
+<meta charset="UTF-8">
+
+</head>
+<body>
+	<header role="banner" title="Site Banner">
+		<div id="antiClickjack" style="display: none">
+			<h1>You are viewing this page in an unauthorized frame window.</h1>
+			<p>
+		This is a potential security issue, you are being redirected to 
+		<a href="https://nvd.nist.gov">https://nvd.nist.gov</a>
+	</p>
+		</div>
+		<div>
+		<section class="usa-banner" aria-label="Official government website">
+		    <div class="usa-accordion container">
+		        <header class="usa-banner__header">
+		            <noscript>
+		                <p style="font-size: 0.85rem; font-weight: bold;">You have JavaScript disabled. This site requires JavaScript to be enabled for complete site functionality.</p>
+		            </noscript>
+		            <img class="usa-banner__header-flag" 
+		            	src="/site-media/images/usbanner/us_flag_small.png" alt="U.S. flag">
+		            &nbsp;
+		            <span class="usa-banner__header-text">An official website of the United States government</span>
+		
+		            <button id="gov-banner-button" class="usa-accordion__button usa-banner__button" data-toggle="collapse" data-target="#gov-banner" aria-expanded="false" aria-controls="gov-banner">
+		                <span class="usa-banner__button-text">Here's how you know</span>
+		            </button>
+		        </header>
+		        <div class="usa-banner__content usa-accordion__content collapse" role="tabpanel" id="gov-banner" aria-expanded="true">
+		            <div class="row">
+		                <div class="col-md-5 col-sm-12">
+		                    <div class="row">
+		                        <div class="col-sm-2 col-xs-3">
+		                            <img class="usa-banner__icon usa-media-block__img" 
+		                            	src="/site-media/images/usbanner/icon-dot-gov.svg" alt="Dot gov">
+		                        </div>
+		                        <div class="col-sm-10 col-xs-9">
+		                            <p>
+		                                <strong>Official websites use .gov</strong>
+		                                <br>
+		                                A <strong>.gov</strong> website belongs to an official government organization in the United States.
+		                            </p>
+		                        </div>
+		                    </div>
+		                </div>
+		                <div class="col-md-5 col-sm-12">
+		                    <div class="row">
+		                        <div class="col-sm-2 col-xs-3">
+		                            <img class="usa-banner__icon usa-media-block__img" 
+		                            	src="/site-media/images/usbanner/icon-https.svg" alt="Https">
+		                        </div>
+		                        <div class="col-sm-10 col-xs-9">
+		                        <p>
+		                            <strong>Secure .gov websites use HTTPS</strong>
+		                            <br>
+		                            A <strong>lock</strong> (<img class="usa-banner__lock" 
+		                            	src="/site-media/images/usbanner/lock.svg" alt="Dot gov">) or <strong>https://</strong> means you've safely connected to the .gov website. Share sensitive information only on official, secure websites.
+		                        </p>
+		                        </div>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		    </div>
+		</section>
+	</div>
+		<div>
+		<div>
+	<nav id="navbar" class="navbar">
+		<div id="nist-menu-container" class="container">
+			<div class="row">
+				<!-- Brand -->
+				<div class="col-xs-6 col-md-4 navbar-header"
+					style="height:104px">
+					<a class="navbar-brand" 
+						href="https://www.nist.gov" 
+						target="_blank"
+						id="navbar-brand-image"
+						style="padding-top: 36px">
+
+						<img alt="National Institute of Standards and Technology" 
+										src="/site-media/images/nist/nist-logo.svg" 
+										width="110" height="30">
+					</a>
+				</div>
+				<div class="col-xs-6 col-md-8 navbar-nist-logo">
+					<span id="nvd-menu-button" class="pull-right" style="margin-top: 26px"> <a href="#">
+							<span class="fa fa-bars"></span> <span id="nvd-menu-full-text"><span
+								class="hidden-xxs">NVD </span>MENU</span>
+					</a>
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="main-menu-row container">
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div id="main-menu-drop" class="col-lg-12" style="display: none;">
+				<ul>
+
+					<li><a href="/general"> General <span
+							class="expander fa fa-plus" id="nvd-header-menu-general"
+							data-expander-name="general" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="general">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/nvd-dashboard">NVD Dashboard</a>
+									</p>
+									<p>
+										<a href="/general/news">News</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/email-list">Email List</a>
+									</p>
+									<p>
+										<a href="/general/faq">FAQ</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/general/visualizations">Visualizations</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+					<li><a href="/vuln"> Vulnerabilities <span
+							class="expander fa fa-plus"
+							id="nvd-header-menu-vulnerabilities"
+							data-expander-name="vulnerabilities" data-expanded="false">
+								<span class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="vulnerabilities">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/search">Search &amp; Statistics</a>
+									</p>
+									<p>
+										<a href="/vuln/full-listing">Full Listing</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/categories">Weakness Types</a>
+									</p>
+									<p>
+										<a href="/vuln/data-feeds">Legacy Data Feeds</a>
+									</p>
+
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/vendor-comments">Vendor Comments</a>
+									</p>
+									<p>
+										<a href="/vuln/cvmap">CVMAP</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+					<li><a href="/vuln-metrics/cvss#"> Vulnerability Metrics <span
+							class="expander fa fa-plus" id="nvd-header-menu-metrics"
+							data-expander-name="metrics" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="metrics">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln-metrics/cvss/v3-calculator">CVSS V3
+											Calculator</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln-metrics/cvss/v2-calculator">CVSS V2
+											Calculator</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4"></div>
+							</div>
+						</div></li>
+					<li><a href="/products"> Products <span
+							class="expander fa fa-plus" id="nvd-header-menu-products"
+							data-expander-name="products" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="products">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe">CPE Dictionary</a>
+									</p>
+									<p>
+										<a href="/products/cpe/search">CPE Search</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe/statistics">CPE Statistics</a>
+									</p>
+									<p>
+										<a href="/products/swid">SWID</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4"></div>
+							</div>
+						</div></li>
+					<li>
+						<a href="/developers">Developers<span
+								class="expander fa fa-plus" id="nvd-header-menu-developers"
+								data-expander-name="developers" data-expanded="false"> <span
+									class="element-invisible">Expand or Collapse</span>
+							</span>
+						</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="developers">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/start-here">Start Here</a>
+									</p>
+									<p>
+										<a href="/developers/request-an-api-key">Request an API Key</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/vulnerabilities">Vulnerabilities</a>
+									</p>
+									<p>
+										<a href="/developers/products">Products</a>
+									</p>
+
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/developers/data-sources">Data Sources</a>
+									</p>
+									<p>
+										<a href="/developers/terms-of-use">Terms of Use</a>
+									</p>
+								</div>
+							</div>
+						</div>
+					</li>
+					<li><a href="/info"> Contact NVD </a></li>
+					<li><a href="/other"> Other Sites <span
+							class="expander fa fa-plus" id="nvd-header-menu-othersites"
+							data-expander-name="otherSites" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="otherSites">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="https://ncp.nist.gov">Checklist (NCP) Repository</a>
+									</p>
+									<p>
+										<a href="https://ncp.nist.gov/cce">Configurations (CCE)</a>
+									</p>
+									<p>
+										<a href="https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search">800-53 Controls</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/scap-validation-program">SCAP
+											Validated Tools</a>
+									</p>
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/security-content-automation-protocol">SCAP</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a
+											href="https://csrc.nist.gov/projects/united-states-government-configuration-baseline">USGCB</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+
+					<li><a href="/search"> Search <span
+							class="expander fa fa-plus" id="nvd-header-menu-search"
+							data-expander-name="search" data-expanded="false"> <span
+								class="element-invisible">Expand or Collapse</span>
+						</span>
+					</a>
+						<div style="display: none;" class="sub-menu"
+							data-expander-trigger="search">
+							<div class="row">
+								<div class="col-lg-4">
+									<p>
+										<a href="/vuln/search">Vulnerability Search</a>
+									</p>
+								</div>
+								<div class="col-lg-4">
+									<p>
+										<a href="/products/cpe/search">CPE Search</a>
+									</p>
+								</div>
+							</div>
+						</div></li>
+
+
+
+
+				</ul>
+			</div>
+			<!-- /#mobile-nav-container -->
+		</div>
+
+	</nav>
+	<section id="itl-header" class="has-menu">
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-12 col-md-8">
+					<h2 class="hidden-xs hidden-sm">
+						<a href="https://www.nist.gov/itl" target="_blank">Information Technology Laboratory</a>
+					</h2>
+			 		<h1 class="hidden-xs hidden-sm">
+						<a id="nvd-header-link"
+						  href="/">National Vulnerability Database</a>
+					</h1>
+					<h1 class="hidden-xs text-center hidden-md hidden-lg"
+						>National Vulnerability Database</h1>
+					<h1 class="hidden-sm hidden-md hidden-lg text-center"
+						>NVD</h1>
+				
+				</div>
+				<div class="col-sm-12 col-md-4">
+					<a style="width: 100%; text-align: center; display: block;padding-top: 14px">
+						<img id="img-logo-nvd-lg" 
+							alt="National Vulnerability Database" 
+							src="/site-media/images/F_NIST-Logo-NVD-white.svg" 
+							width="500" height="100">
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+
+		
+</div>
+	</div>
+	</header>
+	<main>
+		<div>
+		<div id="body-section" class="container">
+			<div class="row">
+				<ol class="breadcrumb">
+					<li><a href="/vuln" class="CMSBreadCrumbsLink">Vulnerabilities</a></li>
+				</ol>
+			</div>
+			<div>
+
+		<div id="divNvdDataFeeds"
+			class="row">
+			
+			<h2>NVD Data Feeds</h2>
+	
+			<div id="divRetirementBanner-1"
+				class="bs-callout bs-callout-warning">
+	
+				<strong class="h4Size">NOTICE</strong>
+				<hr/>
+
+				<p>
+					<strong>In September 2023, the NVD plans to retire all legacy data feeds while guiding any 
+					remaining data feed users to updated application-programming interfaces (APIs). APIs have 
+					many benefits over data feeds and have been the proven and preferred approach to web-based
+					automation for over a decade. For additional information on the NVD API, please visit the 
+					<a href="/developers">developers pages</a>.
+					<a href="/General/News/change-timeline">Click here</a>               
+					for more information on the NVD timeline.</strong> 
+				</p>	
+			</div>
+		</div>		
+		
+		<div id="divApisAndFeeds"
+			class="row">
+			
+			<h3>APIs and Data Feed Types</h3>
+		
+			<p>		
+				The following table contains links and short descriptions for each API or data feed the NVD offers.
+				Please read how to keep up-to-date with NVD data when using the traditional data feeds.
+			</p>
+			<p>
+				Users of the data feeds provided on this page must have an understanding of the XML 
+				and/or JSON standards and XML or JSON related technologies as defined by 
+				www.w3.org.
+			</p>
+			
+			<table id="tableApisAndFeeds" 
+				align="center" 
+				border="1" 
+				cellpadding="1" 
+				cellspacing="1" 
+				class="ncp-table table table-condensed" 
+				style="width:1000px;">
+				<thead>
+					<td style="text-align: center;"><strong>Type</strong></td>
+					<td style="text-align: center;"><strong>Description</strong></td>
+				</thead>
+				<tbody>
+					<tr>
+						<td><a href="#APIS">CVE and CPE APIs</a></td>
+						<td>An alternative to the traditional vulnerability data feed files. The APIs are far more flexible and offer a richer dataset in a single interface compared to the JSON Vulnerability Feeds and&nbsp;CPE Match Feed.</td>
+					</tr>
+					<tr>
+						<td><a href="#JSON_FEED">JSON Vulnerability Feeds</a></td>
+						<td>Each vulnerability in the file includes a description and associated reference links from the CVE&reg; dictionary feed, as well as CVSS base scores, vulnerable product configuration, and weakness categorization.</td>
+					</tr>
+					<tr>
+						<td><a href="#cpeMatch">CPE Match Feed</a></td>
+						<td>A feed that provides the product/platform applicability statement to CPE URI matching based on the CPEs in the official CPE dictionary.</td>
+					</tr>
+					<tr>
+						<td><a href="#RSS">RSS Vulnerability Feeds</a></td>
+						<td>An eight day window of security related software flaws.</td>
+					</tr>
+					<tr>
+						<td><a href="#transxml">Vulnerability Translation Feeds</a></td>
+						<td>Translations of vulnerability feeds.</td>
+					</tr>
+					<tr>
+						<td><a href="#comments">Vulnerability Vendor Comments</a></td>
+						<td>Comments provided by vendors regarding a particular flaw affecting within a product.</td>
+					</tr>
+					<tr>
+						<td><a href="/products/cpe">CPE Dictionary</a></td>
+						<td>dictionary containing a list of products.</td>
+					</tr>
+					<tr>
+						<td><a href="https://ncp.nist.gov/cce">Common Configuration Enumeration (CCE) Reference Data</a></td>
+						<td>Reference data for common configuration items.</td>
+					</tr>
+				</tbody>
+			</table>		
+		</div>
+		
+		<div id="divAPIS"
+			class="row">
+
+			<h3 id="APIS">CVE and CPE APIs</h3>
+			
+			<p>
+				<strong>The CVE and CPE APIs are the preferred method for staying up to date with the NVD.</strong>
+				Users interested in learning where to begin with the API should visit 
+				<a href="/developers">the NVD developers pages</a>.
+			</p>	
+			<p>
+				Benefits of the APIs over the traditional data feeds include:
+			</p>
+			
+			<ul id="listApiAdvantages"
+				style="list-style-type:square;">
+				<li>The APIs are updated as frequently as our website (unlike the traditional feeds which have explicit update intervals)</li>
+				<li>The APIs provide search capabilities based on the Advanced search feature of the website</li>
+				<li>The APIs provide CVE and CPE based searching capabilities, including the ability to search for single CVE and CPE entries</li>
+				<li>The ability to view only the information that has changed since a given date or time</li>
+				<li>Simplified methods of identifying CPE matches to Applicability statements</li>
+			</ul>
+
+			<table id="tableAPIS" 
+				align="center" 
+				border="1" 
+				cellpadding="1" 
+				cellspacing="1" 
+				class="ncp-table table table-hover table-condensed" 
+				style="width:500px;">
+				<thead>
+					<td style="text-align: center;"><strong>CVE API Documentation</strong></td>
+					<td style="text-align: center;"><strong>CPE API Documentation</strong></td>
+				</thead>
+				<tbody>
+					<tr>
+						<td>
+							<a href="/developers/vulnerabilities">
+								Automation Support for CVE Retrieval&nbsp;
+							</a>
+						</td>
+						<td>
+							<a href="/developers/products">
+								Automation Support for CPE Retrieval
+							</a>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		
+		</div>
+		
+		<div id="divKeepUpdated"
+			class="row">
+			
+			<h3 id="keepUpdated">How to Keep Up-to-Date with the NVD Data Using the Traditional Feeds</h3>
+		
+			<p>
+				The vulnerability feeds provide CVE&reg; data organized by the first four digits of a CVE&reg; identifier 
+				(except for the 2002 feeds which include vulnerabilities prior to and including &quot;CVE-2002-&quot;).  
+				If you are locally mirroring NVD data, either the APIs or the data feeds may be used to stay synchronized. After performing 
+				a one-time import of the complete data set using the compressed JSON vulnerability feeds, the &quot;modified&quot; 
+				feeds should be used to keep up-to-date.
+			</p>
+			<p>
+				<strong>Each feed is updated nightly, but only if the content of that feed has changed.</strong> For example, the 2004 feeds 
+				will be updated only if there is an addition or modification to any vulnerability with a starting CVE&reg; identifier 
+				of &quot;CVE-2004-&quot;. The &quot;recent&quot; feeds are a list of recently published vulnerabilities and 
+				the &quot;modified&quot; feeds are a list of recently published and modified vulnerabilities. The &quot;recent&quot; 
+				and &quot;modified&quot; feeds only contain vulnerabilities changed within the previous eight days. These feeds are
+				updated approximately every two hours.
+			</p>
+		</div>
+
+		<div id="divMetafiles"
+			class="row">
+
+			<h3 id="metaFiles">META Files</h3>
+
+			<p>
+				Users should always consult the META file to determine if a given feed has been updated since the last import. 
+				If no changes have been made there is no benefit to downloading either the .zip or .gz files.  This approach should 
+				result in a reasonable use of less than 200 requests per day.
+			</p>
+			<p>
+				Each of the data feeds is described by an associated plain text file with the same name as the .xml file 
+				with a .meta extension. These files are updated approximately every two hours to reflect changes within their 
+				respective feed file. For example, if the name of the file is nvdcve-1.1-Modified.json then the .meta file 
+				name will be nvdcve-1.1-Modified.meta. The .meta file contains information about the specific feed file including 
+				the last modified date and time, the size of the&nbsp;file uncompressed, and a SHA256 value of the uncompressed file:
+			</p>
+			
+			<div id="divMetafileExample"
+				class="bs-callout bs-callout-success">
+				<p>
+				lastModifiedDate:2015-09-10T08:40:09-04:00<br />
+				size:1273382<br />
+				zipSize:91619<br />
+				gzSize:91477<br />
+				sha256:ac782e2db403e2b09ad5dd676501e8755fda3f2bef347b7503491700c6c5eaff
+				</p>
+			</div>
+			
+		</div>
+
+		<div id="divJSONFeeds"
+			class="row">
+			
+			<h3 id="JSON_FEED">JSON Feeds</h3>
+		
+			<p>
+				These data feeds includes both previously offered and new NVD data points in an updated JSON format. 
+				The &quot;year&quot; feeds are updated once per day, while the &quot;recent&quot; and &quot;modified&quot; 
+				feeds are updated every two hours.
+			</p>
+
+			<div id="divRetirementBanner-2"
+				class="bs-callout bs-callout-warning">
+	
+				<strong class="h4Size">NOTICE</strong>
+				<hr/>
+
+				<p>
+					<strong>In September 2023, the NVD will retire its legacy data feeds while working to guide any 
+					remaining data feed users to updated application-programming interfaces (APIs). APIs have 
+					many benefits over data feeds and have been the proven and preferred approach to web-based
+					automation for over a decade. For additional information on the NVD API, please visit the 
+					<a href="/developers">developers pages</a>.
+					<a href="/General/News/change-timeline">Click here</a>               
+					for more information on the NVD timeline.</strong> 
+				</p>	
+			</div>
+					
+	
+    		<div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-12"
+    			id="vuln-feed-table">
+    		
+				<div>
+   
+ 		<table class="xml-feed-table table table-striped table-condensed">
+			<thead>
+                <tr class="xml-feed-header-row">
+					<td colspan="2" style="font-size:1.0em">
+						<strong>XML Schema </strong>
+						<strong>Version 1.1</strong>
+						<strong>:&nbsp;</strong>
+						<a href="https://csrc.nist.gov/schema/nvd/feed/1.1/nvd_cve_feed_json_1.1.schema" 
+							target="_blank">NVD JSON 1.1 Schema</a><br/>
+					</td>
+				</tr>
+				<tr class="xml-feed-desc-row">
+					<th>Feed</th>
+					<th>Updated</th>
+					<th>Download</th>
+					<th>Size (MB)</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds0-meta"> 
+						<td rowspan="3">CVE-Modified</td>
+						
+						<td rowspan="3">07/25/2023; 1:00:01 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-modified.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds0-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-modified.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.39 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds0-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-modified.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.39 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds1-meta"> 
+						<td rowspan="3">CVE-Recent</td>
+						
+						<td rowspan="3">07/25/2023; 1:00:00 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-recent.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds1-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-recent.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.08 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds1-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-recent.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.08 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds2-meta"> 
+						<td rowspan="3">CVE-2023</td>
+						
+						<td rowspan="3">07/25/2023; 3:00:07 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2023.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds2-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2023.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.76 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds2-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2023.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.76 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds3-meta"> 
+						<td rowspan="3">CVE-2022</td>
+						
+						<td rowspan="3">07/25/2023; 3:00:27 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2022.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds3-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2022.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">5.91 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds3-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2022.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">5.91 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds4-meta"> 
+						<td rowspan="3">CVE-2021</td>
+						
+						<td rowspan="3">07/25/2023; 3:00:52 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2021.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds4-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2021.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">6.11 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds4-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2021.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">6.11 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds5-meta"> 
+						<td rowspan="3">CVE-2020</td>
+						
+						<td rowspan="3">07/22/2023; 3:01:28 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2020.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds5-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2020.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">5.49 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds5-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2020.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">5.49 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds6-meta"> 
+						<td rowspan="3">CVE-2019</td>
+						
+						<td rowspan="3">07/21/2023; 3:01:32 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2019.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds6-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2019.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">4.50 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds6-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2019.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">4.50 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds7-meta"> 
+						<td rowspan="3">CVE-2018</td>
+						
+						<td rowspan="3">07/19/2023; 3:01:33 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2018.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds7-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2018.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">3.95 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds7-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2018.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">3.95 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds8-meta"> 
+						<td rowspan="3">CVE-2017</td>
+						
+						<td rowspan="3">07/12/2023; 3:02:09 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2017.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds8-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2017.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">3.66 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds8-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2017.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">3.66 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds9-meta"> 
+						<td rowspan="3">CVE-2016</td>
+						
+						<td rowspan="3">07/21/2023; 3:01:45 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2016.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds9-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2016.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.58 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds9-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2016.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.58 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds10-meta"> 
+						<td rowspan="3">CVE-2015</td>
+						
+						<td rowspan="3">07/19/2023; 3:01:54 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2015.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds10-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2015.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.14 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds10-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2015.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.14 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds11-meta"> 
+						<td rowspan="3">CVE-2014</td>
+						
+						<td rowspan="3">06/27/2023; 3:01:52 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2014.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds11-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2014.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.24 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds11-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2014.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.24 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds12-meta"> 
+						<td rowspan="3">CVE-2013</td>
+						
+						<td rowspan="3">06/22/2023; 3:02:26 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2013.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds12-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2013.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.30 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds12-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2013.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.30 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds13-meta"> 
+						<td rowspan="3">CVE-2012</td>
+						
+						<td rowspan="3">06/07/2023; 3:02:58 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2012.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds13-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2012.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.93 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds13-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2012.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.93 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds14-meta"> 
+						<td rowspan="3">CVE-2011</td>
+						
+						<td rowspan="3">05/31/2023; 3:02:37 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2011.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds14-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2011.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.73 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds14-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2011.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.73 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds15-meta"> 
+						<td rowspan="3">CVE-2010</td>
+						
+						<td rowspan="3">07/21/2023; 3:01:52 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2010.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds15-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2010.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.84 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds15-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2010.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.84 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds16-meta"> 
+						<td rowspan="3">CVE-2009</td>
+						
+						<td rowspan="3">04/14/2023; 3:01:49 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2009.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds16-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2009.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.87 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds16-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2009.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.87 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds17-meta"> 
+						<td rowspan="3">CVE-2008</td>
+						
+						<td rowspan="3">07/07/2023; 3:02:11 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2008.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds17-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2008.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.06 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds17-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2008.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.06 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds18-meta"> 
+						<td rowspan="3">CVE-2007</td>
+						
+						<td rowspan="3">06/21/2023; 3:01:43 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2007.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds18-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2007.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.01 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds18-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2007.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.01 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds19-meta"> 
+						<td rowspan="3">CVE-2006</td>
+						
+						<td rowspan="3">04/27/2023; 3:02:35 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2006.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds19-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2006.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.03 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds19-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2006.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">2.03 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds20-meta"> 
+						<td rowspan="3">CVE-2005</td>
+						
+						<td rowspan="3">06/09/2023; 3:02:11 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2005.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds20-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2005.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.28 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds20-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2005.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.28 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds21-meta"> 
+						<td rowspan="3">CVE-2004</td>
+						
+						<td rowspan="3">06/21/2023; 3:01:46 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2004.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds21-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2004.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.81 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds21-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2004.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.81 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds22-meta"> 
+						<td rowspan="3">CVE-2003</td>
+						
+						<td rowspan="3">12/14/2022; 3:02:58 AM -0500</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2003.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds22-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2003.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.42 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds22-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2003.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.42 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCveFeeds23-meta"> 
+						<td rowspan="3">CVE-2002</td>
+						
+						<td rowspan="3">07/19/2023; 3:02:00 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2002.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds23-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2002.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.39 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCveFeeds23-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cve/1.1/nvdcve-1.1-2002.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.39 MB</td>
+					</tr>
+				
+			</tbody>
+		</table>    
+    </div>
+    		
+			</div>
+		</div>
+		
+		<div id="divCpeMatchFeeds"
+			class="row">
+		
+			<h3 id="cpeMatch">CPE Match Feed</h3>
+		
+			<p>
+				This data feed provides a list of all CVE applicability statement match criteria (CPE match strings and 
+				CPE match ranges) and the CPE URIs from the official CPE dictionary that match. Data consumers can use this 
+				feed to enhance the CPE information provided in the JSON Vulnerability feeds. If a CPE URI expected to 
+				match a given criteria is missing, please contact 
+				<a href="mailto:cpe_dictionary@nist.gov">
+					cpe_dictionary@nist.gov
+				</a> as those CPEs may need approved to the official CPE dictionary. This feed is updated once per day.
+			</p>
+				
+    		<div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-12" 
+    			data-testid="cpematch-feed-table">
+				<div>
+   
+ 		<table class="xml-feed-table table table-striped table-condensed">
+			<thead>
+                <tr class="xml-feed-header-row">
+					<td colspan="2" style="font-size:1.0em">
+						<strong>XML Schema </strong>
+						<strong>Version 1.0</strong>
+						<strong>:&nbsp;</strong>
+						<a href="https://csrc.nist.gov/schema/cpematch/feed/1.0/nvd_cpematch_feed_json_1.0.schema" 
+							target="_blank">NVD CPE Match Feed 1.0 Schema</a><br/>
+					</td>
+				</tr>
+				<tr class="xml-feed-desc-row">
+					<th>Feed</th>
+					<th>Updated</th>
+					<th>Download</th>
+					<th>Size (MB)</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableCpeMatch0-meta"> 
+						<td rowspan="3">CPE-Match</td>
+						
+						<td rowspan="3">07/25/2023; 12:19:52 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/json/cpematch/1.0/nvdcpematch-1.0.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCpeMatch0-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cpematch/1.0/nvdcpematch-1.0.json.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">33.57 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableCpeMatch0-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/json/cpematch/1.0/nvdcpematch-1.0.json.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">33.57 MB</td>
+					</tr>
+				
+			</tbody>
+		</table>    
+    </div>
+			</div>
+		</div>
+		
+		<div id="divRSSFeeds"
+			class="row">
+
+			<h3 id="RSS">RSS Vulnerability Feeds</h3>
+
+			<div id="divRetirementBanner-3" class="bs-callout bs-callout-warning">
+
+				<strong class="h4Size">NOTICE</strong>
+				<hr/>
+	
+				<p>
+					<strong>In March 2023, The NVD plans to retire the RSS data feeds and pages intended to support web 
+						scraping (e.g., Full Listings) before its APIs existed.  Users with automated workflows that 
+						target such pages must transition to the  <a href="/developers">the 2.0 APIs</a>.</strong> 
+				</p>	
+			</div>
+		
+			<p>NVD provides two RSS 1.0 data feeds. The first feed, 
+				<a href="/feeds/xml/cve/misc/nvd-rss.xml">
+					nvd-rss.xml
+				</a> (
+				<a href="/feeds/xml/cve/misc/nvd-rss.xml.zip" target="_blank">
+					zip
+				</a> or 
+				<a href="/feeds/xml/cve/misc/nvd-rss.xml.gz" target="_blank">
+					gz
+				</a>), provides information on all vulnerabilities within the previous eight days. 
+				The second feed, 
+				<a href="/feeds/xml/cve/misc/nvd-rss-analyzed.xml">
+					nvd-rss-analyzed.xml
+				</a> (
+				<a href="/feeds/xml/cve/misc/nvd-rss-analyzed.xml.zip" target="_blank">
+					zip
+				</a> or 
+				<a href="/feeds/xml/cve/misc/nvd-rss-analyzed.xml.gz" target="_blank">
+					gz
+				</a>), provides only vulnerabilities which have been analyzed within the previous eight days. 
+				The advantage of the second feed is that we are able to provide vulnerable product names in
+				the title. The advantage of the former is that you learn about new vulnerabilities as soon as possible.
+			</p>
+		</div>
+
+		<div id="divVendorComments"
+			class="row">
+
+			<h3 id="comments">Vulnerability Vendor Comments</h3>
+			
+			<p>NVD provides a service whereby software development organizations can submit 
+				&quot;Official Vendor Comments&quot; on the set of CVE vulnerabilities that apply to their products. 
+				Organizations can submit comments by contacting NVD staff at 
+				<a href="mailto:nvd@nist.gov">
+					nvd@nist.gov
+				</a>. More information is provided on the 
+				<a href="/vuln/vendor-comments">
+					vendor comment
+				</a> page.
+			</p>
+	
+			<p>All of the vendors comments can be downloaded from the following XML feed which is updated 
+				every 2 hours:
+			</p>
+	
+    		<div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-12"
+    		 data-testid="vendor-comments-feed-table">
+				<div>
+   
+ 		<table class="xml-feed-table table table-striped table-condensed">
+			<thead>
+                
+				<tr class="xml-feed-desc-row">
+					<th>Feed</th>
+					<th>Updated</th>
+					<th>Download</th>
+					<th>Size (MB)</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableComments0-meta"> 
+						<td rowspan="3">Vendor Comments</td>
+						
+						<td rowspan="3">07/25/2023; 12:45:02 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/misc/vendorstatements.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableComments0-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/misc/vendorstatements.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableComments0-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/misc/vendorstatements.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+				
+			</tbody>
+		</table>    
+    </div>
+			</div>
+		</div>
+		
+		<div id="divTranslationsFeeds"
+			class="row">
+			
+			<h3 id="transxml">NVD/CVE Translated XML Feed (version 1.0)</h3>
+
+			<p>
+				NVD provides an XML feed for translations of CVE vulnerabilities into other languages.
+			</p>
+
+			<p>Currently, 
+				<a class="external" href="https://www.incibe.es/" target="_blank">
+					INCIBE
+				</a> (Spanish National Cybersecurity Institute) is translating vulnerabilities into Spanish. 
+				INCIBE is solely responsible for the Spanish translation content.
+				<a class="external" 
+					href="https://www.incibe.es" 
+					style="background-color: rgb(255, 255, 255); color: rgb(35, 82, 124); text-decoration: underline; outline: 0px;">
+					<img alt="Incibe Logo" 
+				        src="/site-media/images/logo-incibe2.png"
+						style="float: right;" />
+				</a>
+			</p>
+			
+    		<div class="col-lg-offset-3 col-lg-6 col-md-offset-2 col-md-8 col-sm-12"
+    		    data-testid="translations-feed-table">
+				<div>
+   
+ 		<table class="xml-feed-table table table-striped table-condensed">
+			<thead>
+                <tr class="xml-feed-header-row">
+					<td colspan="2" style="font-size:1.0em">
+						<strong>XML Schema </strong>
+						<strong>Version 1</strong>
+						<strong>:&nbsp;</strong>
+						<a href="https://csrc.nist.gov/schema/nvd/nvdcvetrans.xsd" 
+							target="_blank">NVD/CVE Translation XML Schema</a><br/>
+					</td>
+				</tr>
+				<tr class="xml-feed-desc-row">
+					<th>Feed</th>
+					<th>Updated</th>
+					<th>Download</th>
+					<th>Size (MB)</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans0-meta"> 
+						<td rowspan="3">CVE-Modified</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:00 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-modifiedtrans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans0-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-modifiedtrans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">&lt; 0.01 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans0-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-modifiedtrans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">&lt; 0.01 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans1-meta"> 
+						<td rowspan="3">CVE-2023</td>
+						
+						<td rowspan="3">07/25/2023; 12:35:01 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2023trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans1-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2023trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.02 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans1-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2023trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.02 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans2-meta"> 
+						<td rowspan="3">CVE-2022</td>
+						
+						<td rowspan="3">07/25/2023; 12:35:34 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2022trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans2-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2022trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.41 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans2-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2022trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.41 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans3-meta"> 
+						<td rowspan="3">CVE-2021</td>
+						
+						<td rowspan="3">07/25/2023; 12:36:17 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2021trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans3-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2021trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.94 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans3-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2021trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.94 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans4-meta"> 
+						<td rowspan="3">CVE-2020</td>
+						
+						<td rowspan="3">07/25/2023; 12:36:57 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2020trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans4-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2020trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.73 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans4-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2020trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.73 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans5-meta"> 
+						<td rowspan="3">CVE-2019</td>
+						
+						<td rowspan="3">07/25/2023; 12:37:30 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2019trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans5-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2019trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.44 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans5-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2019trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.44 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans6-meta"> 
+						<td rowspan="3">CVE-2018</td>
+						
+						<td rowspan="3">07/25/2023; 12:38:03 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2018trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans6-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2018trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.31 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans6-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2018trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.31 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans7-meta"> 
+						<td rowspan="3">CVE-2017</td>
+						
+						<td rowspan="3">07/25/2023; 12:38:34 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2017trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans7-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2017trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.24 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans7-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2017trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">1.24 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans8-meta"> 
+						<td rowspan="3">CVE-2016</td>
+						
+						<td rowspan="3">07/25/2023; 12:38:54 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2016trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans8-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2016trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.71 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans8-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2016trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.71 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans9-meta"> 
+						<td rowspan="3">CVE-2015</td>
+						
+						<td rowspan="3">07/25/2023; 12:39:12 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2015trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans9-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2015trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.63 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans9-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2015trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.63 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans10-meta"> 
+						<td rowspan="3">CVE-2014</td>
+						
+						<td rowspan="3">07/25/2023; 12:39:29 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2014trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans10-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2014trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.64 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans10-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2014trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.64 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans11-meta"> 
+						<td rowspan="3">CVE-2013</td>
+						
+						<td rowspan="3">07/25/2023; 12:39:43 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2013trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans11-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2013trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.53 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans11-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2013trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.53 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans12-meta"> 
+						<td rowspan="3">CVE-2012</td>
+						
+						<td rowspan="3">07/25/2023; 12:39:54 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2012trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans12-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2012trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.46 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans12-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2012trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.46 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans13-meta"> 
+						<td rowspan="3">CVE-2011</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:05 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2011trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans13-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2011trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.41 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans13-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2011trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.41 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans14-meta"> 
+						<td rowspan="3">CVE-2010</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:16 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2010trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans14-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2010trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.45 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans14-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2010trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.45 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans15-meta"> 
+						<td rowspan="3">CVE-2009</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:26 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2009trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans15-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2009trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.47 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans15-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2009trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.47 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans16-meta"> 
+						<td rowspan="3">CVE-2008</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:41 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2008trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans16-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2008trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.63 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans16-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2008trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.63 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans17-meta"> 
+						<td rowspan="3">CVE-2007</td>
+						
+						<td rowspan="3">07/25/2023; 12:40:55 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2007trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans17-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2007trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.62 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans17-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2007trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.62 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans18-meta"> 
+						<td rowspan="3">CVE-2006</td>
+						
+						<td rowspan="3">07/25/2023; 12:41:05 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2006trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans18-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2006trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.39 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans18-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2006trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.39 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans19-meta"> 
+						<td rowspan="3">CVE-2005</td>
+						
+						<td rowspan="3">07/25/2023; 12:41:07 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2005trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans19-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2005trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.04 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans19-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2005trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.04 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans20-meta"> 
+						<td rowspan="3">CVE-2004</td>
+						
+						<td rowspan="3">07/25/2023; 12:41:09 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2004trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans20-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2004trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.06 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans20-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2004trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.06 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans21-meta"> 
+						<td rowspan="3">CVE-2003</td>
+						
+						<td rowspan="3">07/25/2023; 12:41:11 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2003trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans21-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2003trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans21-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2003trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+				
+					<tr class="xml-feed-desc-row" data-testid="tableTrans22-meta"> 
+						<td rowspan="3">CVE-2002</td>
+						
+						<td rowspan="3">07/25/2023; 12:41:14 AM -0400</td>						
+						<td class="xml-file-type file-20" colspan="2">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2002trans.meta" 
+		                       target="_blank">
+		                       META
+		                    </a>
+						</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans22-gz">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2002trans.xml.gz" 
+		                       target="_blank">
+		                       GZ
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+					<tr class="xml-feed-data-row" data-testid="tableTrans22-zip">
+						<td class="xml-file-type file-20">
+		                    <a href="/feeds/xml/cve/trans/es/nvdcve-2002trans.xml.zip" 
+		                       target="_blank">
+		                       ZIP
+		                    </a>
+						</td>
+						
+						<td class="xml-file-size file-20">0.07 MB</td>
+					</tr>
+				
+			</tbody>
+		</table>    
+    </div>
+    		</div>
+		</div>
+		
+	</div>
+		</div>
+	</div>
+	</main>
+	<footer id="footer" role="contentinfo">
+		<div class="container">
+
+			<div class="row">
+				<div class="col-sm-12">
+					<ul class="social-list pull-right">
+						<li class="field-item service-twitter list-horiz"><a
+							href="https://twitter.com/NISTCyber" target="_blank"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-twitter fa-fw"><span class="element-invisible">twitter</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span>
+						</a></li>
+						<li class="field-item service-facebook list-horiz"><a
+							href="https://www.facebook.com/NIST" target="_blank"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-facebook fa-fw"><span class="element-invisible">facebook</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-linkedin list-horiz"><a
+							href="https://www.linkedin.com/company/nist" target="_blank"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-linkedin fa-fw"><span class="element-invisible">linkedin</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-youtube list-horiz"><a
+							href="https://www.youtube.com/user/USNISTGOV" target="_blank"
+							class="social-btn social-btn--large extlink ext"> <i
+								class="fa fa-youtube fa-fw"><span class="element-invisible">youtube</span></i><span
+								class="ext"><span class="element-invisible"> (link
+										is external)</span></span></a></li>
+						<li class="field-item service-rss list-horiz"><a
+							href="https://www.nist.gov/news-events/nist-rss-feeds"
+							target="_blank" class="social-btn social-btn--large extlink">
+								<i class="fa fa-rss fa-fw"><span class="element-invisible">rss</span></i>
+						</a></li>
+						<li class="field-item service-govdelivery list-horiz last"><a
+							href="https://public.govdelivery.com/accounts/USNIST/subscriber/new?qsp=USNIST_3"
+							target="_blank" class="social-btn social-btn--large extlink ext">
+								<i class="fa fa-envelope fa-fw"><span
+									class="element-invisible">govdelivery</span></i><span class="ext"><span
+									class="element-invisible"> (link is external)</span></span>
+						</a></li>
+					</ul>
+					<span class="hidden-xs"> <a
+						title="National Institute of Standards and Technology" rel="home"
+						class="footer-nist-logo"> <img
+							src="/site-media/images/nist/nist-logo.png"
+							alt="National Institute of Standards and Technology logo" />
+					</a>
+					</span>
+				</div>
+			</div>
+			<div class="row hidden-sm hidden-md hidden-lg">
+				<div class="col-sm-12">
+					<a href="https://www.nist.gov"
+						title="National Institute of Standards and Technology" rel="home"
+						target="_blank" class="footer-nist-logo"> <img
+						src="/site-media/images/nist/nist-logo.png"
+						alt="National Institute of Standards and Technology logo" />
+					</a>
+				</div>
+			</div>
+
+			<div class="row footer-contact-container">
+				<div class="col-sm-6">
+					<strong>HEADQUARTERS</strong>
+					<br>
+					100 Bureau Drive
+					<br>
+					Gaithersburg, MD 20899
+					<br>
+					<a href="tel:301-975-2000">(301) 975-2000</a>
+					<br>
+					<br>
+					<a href="mailto:nvd@nist.gov">Webmaster</a> | <a
+						href="https://www.nist.gov/about-nist/contact-us">Contact Us</a>
+					| <a href="https://www.nist.gov/about-nist/visit"
+						style="display: inline-block;">Our Other Offices</a>
+				</div>
+				<div class="col-sm-6">
+					<div class="pull-right"
+						style="text-align:right">
+						<strong>Incident Response Assistance and Non-NVD Related<br>Technical Cyber Security Questions:</strong>
+						<br>
+						US-CERT Security Operations Center
+						<br> Email: <a href="mailto:soc@us-cert.gov">soc@us-cert.gov</a>
+						<br> Phone:	1-888-282-0870
+						<br>
+						<span style="display: inline-block; text-align: left; margin-left: 0; margin-right: 0;">
+							<strong style="float: right">Sponsored by</strong>
+							<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+							&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
+							<a href="https://www.cisa.gov" target="_blank">CISA</a>
+						</span>
+						<a style="float: right; width: 68px;">
+							<img src="/site-media/images/cisa-thumbnail.png" alt="CISA"/>
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="row">
+			    <nav title="Footer Navigation" role="navigation"
+			    	 class="row footer-bottom-links-container">
+			    <!-- https://github.com/usnistgov/nist-header-footer/blob/nist-pages/boilerplate-footer.html -->
+      				<p>
+			          <a href="https://www.nist.gov/oism/site-privacy">Site Privacy</a>
+			        |
+			          <a href="https://www.nist.gov/oism/accessibility">Accessibility</a>
+			        |
+			          <a href="https://www.nist.gov/privacy">Privacy Program</a>
+			        |
+			          <a href="https://www.nist.gov/oism/copyrights">Copyrights</a>
+			        |
+			          <a href="https://www.commerce.gov/vulnerability-disclosure-policy">Vulnerability Disclosure</a>
+			        |
+			          <a href="https://www.nist.gov/no-fear-act-policy">No Fear Act Policy</a>
+			        |
+			          <a href="https://www.nist.gov/foia">FOIA</a>
+			        |
+			          <a href="https://www.nist.gov/environmental-policy-statement">Environmental Policy</a>
+					|
+			          <a href="https://www.nist.gov/summary-report-scientific-integrity">Scientific Integrity</a>
+			        |
+			          <a href="https://www.nist.gov/nist-information-quality-standards">Information Quality Standards</a>
+			        |
+			          <a href="https://www.commerce.gov/">Commerce.gov</a>
+			        |
+			          <a href="https://www.science.gov/">Science.gov</a>
+			        |
+			          <a href="https://www.usa.gov/">USA.gov</a>
+            		</p>
+    			</nav>
+			</div>
+		</div>
+	</footer>
+</body>
+</html>

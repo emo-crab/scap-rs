@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+    xmlns="http://scap.nist.gov/schema/configuration/0.1"
+    xmlns:scap-core="http://scap.nist.gov/schema/scap-core/0.3"
+    xmlns:cce="http://scap.nist.gov/schema/cce/0.2"
+    xmlns:cpe-lang="http://cpe.mitre.org/language/2.0"
+    xmlns:xml="http://www.w3.org/XML/1998/namespace"
+    targetNamespace="http://scap.nist.gov/schema/configuration/0.1"
+    elementFormDefault="qualified" attributeFormDefault="unqualified"
+    version="0.2">
+    <xsd:import namespace="http://scap.nist.gov/schema/scap-core/0.3" schemaLocation="scap-core_0.3.xsd"/>
+    <xsd:import namespace="http://scap.nist.gov/schema/cce/0.2" schemaLocation="cce_0.2.xsd"/>
+    <xsd:import namespace="http://cpe.mitre.org/language/2.0" schemaLocation="../cpe/2.2/cpe-language_2.2a.xsd"/>
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="https://www.w3.org/2009/01/xml.xsd"/>
+    <!-- ================================================== -->
+    <!-- =====  Element Declarations  -->
+    <!-- ================================================== -->
+    <xsd:element name="configuration" type="configurationType"/>
+    <!-- ================================================== -->
+    <!-- =====  Complex Type Definitions  -->
+    <!-- ================================================== -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--  Tool_Configuration  -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <xsd:complexType name="toolConfigurationType">
+        <xsd:sequence>
+            <xsd:element name="name" type="scap-core:cpeNamePatternType" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>The CPE name of the scanning tool.  A value must be supplied for this element.  The CPE name can be used for a CPE from the NVD.  The CPE title attribute can be used for internal naming conventions. (or both, if possible)</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="definition" type="scap-core:checkReferenceType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>Defines required signature or policy definition that must be installed on the tool.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <!--  Vulnerability  -->
+    <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
+    <xsd:complexType name="configurationType">
+        <xsd:annotation>
+            <xsd:documentation>TODO: Low priority: Add reference to notes type to allow analysts, vendor and other comments.  Add source attribute.  Maybe categorization?</xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="cce-id" type="cce:cceNamePatternType"/>
+            <xsd:element name="published-datetime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="last-modified-datetime" type="xsd:dateTime" minOccurs="0"/>
+            <xsd:element name="summary" type="xsd:string" minOccurs="0"/>
+            <xsd:element ref="scap-core:control-mappings" minOccurs="0"/>
+            <!--            <xsd:element name="target-products" type="cpe-lang:PlatformType" minOccurs="0" maxOccurs="unbounded"/>-->
+<!--            <xsd:element name="assessment_check" type="scap-core:checkReferenceType" maxOccurs="unbounded" minOccurs="0"/>-->
+<!--            <xsd:element name="scanner" type="toolConfigurationType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:annotation>
+                    <xsd:documentation>Denotes a scanner and required configuration that is capable of detecting the referenced vulnerability.  May also be an OVAL definition and omit scanner name.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>-->
+<!--            <xsd:element name="technical_description" type="scap-core:referenceType" minOccurs="0" maxOccurs="unbounded"/>-->
+        </xsd:sequence>
+        <xsd:attribute name="id" type="configurationIdType" use="required"/>
+    </xsd:complexType>
+    
+    <xsd:simpleType name="configurationIdType">
+        <xsd:restriction base="xsd:token"/>
+    </xsd:simpleType>
+</xsd:schema>
+    
