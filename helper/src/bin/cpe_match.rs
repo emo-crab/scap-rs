@@ -27,7 +27,6 @@ fn main() {
     .filter(products::name.eq("windows_nt"))
     .first::<Product>(connection_pool.get().unwrap().deref_mut())
     .unwrap();
-  println!("{product:?}");
   let cp = CreateCveProductByName {
     cve_id: "CVE-1999-0595".to_string(),
     vendor: "microsoft".to_string(),

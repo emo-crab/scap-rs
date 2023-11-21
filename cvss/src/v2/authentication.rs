@@ -83,12 +83,12 @@ impl FromStr for AuthenticationType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('M') => Ok(Self::Multiple),
@@ -96,7 +96,7 @@ impl FromStr for AuthenticationType {
       Some('N') => Ok(Self::None),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value:format!("{:?}", c),
+        value: format!("{:?}", c),
         expected: "M,S,N".to_string(),
       }),
     }

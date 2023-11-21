@@ -1,6 +1,6 @@
 use crate::component::TooltipPopover;
 use cvss::metric::{Help, Worth};
-use cvss::severity::{SeverityTypeV2, SeverityType};
+use cvss::severity::{SeverityType, SeverityTypeV2};
 use cvss::v3::attack_complexity::AttackComplexityType;
 use cvss::v3::attack_vector::AttackVectorType;
 use cvss::v3::impact_metrics::{

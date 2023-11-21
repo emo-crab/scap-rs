@@ -1,5 +1,5 @@
-use crate::routes::Route;
 use crate::layout::Footer;
+use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub struct Main;

@@ -95,19 +95,19 @@ impl FromStr for ScopeType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('U') => Ok(Self::Unchanged),
       Some('C') => Ok(Self::Changed),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value:format!("{:?}", c),
+        value: format!("{:?}", c),
         expected: "U,C".to_string(),
       }),
     }

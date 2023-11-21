@@ -44,11 +44,11 @@ mod v2;
 mod v3;
 mod v4;
 
-use std::fmt::{Debug, Display};
-use std::str::FromStr;
 pub use crate::metric::v2::MetricTypeV2;
 pub use crate::metric::v3::MetricTypeV3;
 pub use crate::metric::v4::MetricTypeV4;
+use std::fmt::{Debug, Display};
+use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub struct Help {
@@ -82,5 +82,5 @@ pub trait Metric: Clone + Debug + FromStr + Display {
 pub enum MetricType {
   V2(MetricTypeV2),
   V3(MetricTypeV3),
-  V4(MetricTypeV4)
+  V4(MetricTypeV4),
 }

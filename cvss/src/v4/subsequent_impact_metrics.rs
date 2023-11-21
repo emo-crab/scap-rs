@@ -108,12 +108,12 @@ impl FromStr for SubsequentConfidentialityImpactType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('N') => Ok(Self::None),
@@ -121,7 +121,7 @@ impl FromStr for SubsequentConfidentialityImpactType {
       Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: format!("{:?}",c),
+        value: format!("{:?}", c),
         expected: "N,L,H".to_string(),
       }),
     }
@@ -134,12 +134,12 @@ impl FromStr for SubsequentIntegrityImpactType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('N') => Ok(Self::None),
@@ -147,7 +147,7 @@ impl FromStr for SubsequentIntegrityImpactType {
       Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value: format!("{:?}",c),
+        value: format!("{:?}", c),
         expected: "N,L,H".to_string(),
       }),
     }
@@ -160,12 +160,12 @@ impl FromStr for SubsequentAvailabilityImpactType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('N') => Ok(Self::None),

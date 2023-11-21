@@ -15,5 +15,5 @@ Cargo.lock
 *.xml.zip
 /helper/examples/nvdcve/data-feeds.html
 /.env
-/nvd-api/nvd-er.mwb.bak
-/nvd-api/dist/
+/nvd-server/nvd-er.mwb.bak
+/nvd-server/dist/

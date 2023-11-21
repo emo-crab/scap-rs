@@ -246,11 +246,9 @@ impl CVSS {
     }
     let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
     let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
-    println!("{}", mv);
     let score = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
       .unwrap_or(0.0)
       .clone();
-    println!("score:{}", score);
     let mut lower = 0;
     let score_eq1_next_lower = if eq1 < 2 {
       lower = lower + 1;
@@ -293,17 +291,8 @@ impl CVSS {
     } else {
       None
     };
-    println!(
-      "{:?}{:?}{:?}{:?}{:?}",
-      score_eq1_next_lower,
-      score_eq2_next_lower,
-      score_eq3eq6_next_lower,
-      score_eq4_next_lower,
-      score_eq5_next_lower
-    );
     // 根据lookup获取全部矩阵，然后取分数最大的那个
     let max_vectors = self.max_vectors(mv);
-    println!("{:?}", max_vectors);
     let (
       current_severity_distance_eq1,
       current_severity_distance_eq2,
@@ -311,14 +300,6 @@ impl CVSS {
       current_severity_distance_eq4,
       current_severity_distance_eq5,
     ) = self.severity_distances(max_vectors);
-    println!(
-      "current_severity_distance: {:?} {:?} {:?} {:?} {:?}",
-      current_severity_distance_eq1,
-      current_severity_distance_eq2,
-      current_severity_distance_eq3eq6,
-      current_severity_distance_eq4,
-      current_severity_distance_eq5
-    );
     let step: f32 = 0.1;
     // # multiply by step because distance is pure
     let max_severity_eq1 = get_eq1245_max_severity(1, eq1).unwrap_or_default() * step;
@@ -367,9 +348,7 @@ impl CVSS {
         + normalized_severity_eq5)
         / lower as f32;
     }
-    println!("{:?}", score - mean_distance);
     let score = roundup(score - mean_distance);
-    println!("{}", score);
     score
   }
   // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)
@@ -426,13 +405,11 @@ impl CVSS {
     return vectors;
   }
   fn severity_distances(&self, vectors: Vec<String>) -> (f32, f32, f32, f32, f32) {
-    println!("self_vector: {}", self);
     // 每个都和self这个cvss的分数比较，返回第一个大于self本身的
     let mut severity_distances = vec![];
     for vector in vectors {
       let max_vector = CVSS::vector_string(&vector);
       if let Ok(max_vector) = max_vector {
-        println!("max_vector: {}", max_vector);
         let av = self.exploit_ability.attack_vector.score()
           - max_vector.exploit_ability.attack_vector.score();
         let pr = self.exploit_ability.privileges_required.score()
@@ -474,7 +451,6 @@ impl CVSS {
           continue;
         }
         severity_distances = all_severity_distances;
-        println!("severity_distances: {:?}", severity_distances);
         break;
         // # if multiple maxes exist to reach it it is enough the first one
       }
@@ -496,10 +472,6 @@ impl CVSS {
       severity_distances.pop().unwrap_or_default(),
       severity_distances.pop().unwrap_or_default(),
       severity_distances.pop().unwrap_or_default(),
-    );
-    println!(
-      "{:?}",
-      vec![av, pr, ui, ac, at, vc, vi, va, sc, si, sa, cr, ir, ar]
     );
     let current_severity_distance_eq1 = av + pr + ui;
     let current_severity_distance_eq2 = ac + at;
@@ -527,9 +499,7 @@ impl CVSS {
 /// Roundup保留小数点后一位，小数点后第二位四舍五入。 例如, Roundup(4.02) = 4.0; 或者 Roundup(4.00) = 4.0
 fn roundup(input: f32) -> f32 {
   let int_input = (input * 100.0) as u32;
-  println!("{}", int_input % 10);
   if int_input % 10 < 5 {
-    println!("{}", (int_input / 10) as f32 / 10.0);
     (int_input / 10) as f32 / 10.0
   } else {
     let score_floor = ((int_input as f32) / 10.0).floor();
@@ -589,7 +559,6 @@ mod tests {
     ]);
     for (k, v) in vs_map.iter() {
       let cvss = CVSS::from_str(k).unwrap();
-      println!("{:?}", cvss);
       assert_eq!(cvss.base_score, *v)
     }
   }

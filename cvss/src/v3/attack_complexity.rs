@@ -80,19 +80,19 @@ impl FromStr for AttackComplexityType {
     let name = Self::name();
     let s = s.to_uppercase();
     let (_name, v) = s
-        .split_once(&format!("{}:", name))
-        .ok_or(CVSSError::InvalidCVSS {
-          key: name.to_string(),
-          value: s.to_string(),
-          expected: name.to_string(),
-        })?;
+      .split_once(&format!("{}:", name))
+      .ok_or(CVSSError::InvalidCVSS {
+        key: name.to_string(),
+        value: s.to_string(),
+        expected: name.to_string(),
+      })?;
     let c = v.chars().next();
     match c {
       Some('L') => Ok(Self::Low),
       Some('H') => Ok(Self::High),
       _ => Err(CVSSError::InvalidCVSS {
         key: name.to_string(),
-        value:format!("{:?}", c),
+        value: format!("{:?}", c),
         expected: "L,H".to_string(),
       }),
     }
