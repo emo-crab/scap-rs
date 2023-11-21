@@ -246,8 +246,7 @@ impl CVSS {
     }
     let (eq1, eq2, eq3, eq4, eq5, eq6) = self.macro_vector();
     let mv = format!("{}{}{}{}{}{}", eq1, eq2, eq3, eq4, eq5, eq6);
-    let score = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6)
-      .unwrap_or(0.0);
+    let score = lookup(&eq1, &eq2, &eq3, &eq4, &eq5, &eq6).unwrap_or(0.0);
     let mut lower = 0;
     let score_eq1_next_lower = if eq1 < 2 {
       lower += 1;
@@ -273,7 +272,7 @@ impl CVSS {
     } else {
       None
     };
-    let score_eq3eq6_next_lower = if  (eq3 == 0 || eq3 == 1) && eq6 == 1 {
+    let score_eq3eq6_next_lower = if (eq3 == 0 || eq3 == 1) && eq6 == 1 {
       lower += 1;
       lookup(&eq1, &eq2, &(eq3 + 1), &eq4, &eq5, &eq6)
     } else if eq3 == 1 && eq6 == 0 {
@@ -347,7 +346,7 @@ impl CVSS {
         + normalized_severity_eq5)
         / lower as f32;
     }
-    
+
     roundup(score - mean_distance)
   }
   // EQ6: 0-(CR:H and VC:H) or (IR:H and VI:H) or (AR:H and VA:H)

@@ -19,7 +19,9 @@ use crate::metric::Metric;
 use crate::severity::SeverityType;
 use crate::v3::attack_complexity::AttackComplexityType;
 use crate::v3::attack_vector::AttackVectorType;
-use crate::v3::impact_metrics::{AvailabilityImpactType, ConfidentialityImpactType, Impact, IntegrityImpactType};
+use crate::v3::impact_metrics::{
+  AvailabilityImpactType, ConfidentialityImpactType, Impact, IntegrityImpactType,
+};
 use crate::v3::privileges_required::PrivilegesRequiredType;
 use crate::v3::scope::ScopeType;
 use crate::v3::user_interaction::UserInteractionType;
