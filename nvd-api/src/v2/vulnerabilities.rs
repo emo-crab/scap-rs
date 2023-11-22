@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
-
+// https://nvd.nist.gov/developers/vulnerabilities
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct CVE {
+pub struct Vulnerabilities {
     cpe_name: Option<String>,
     cve_id: Option<String>,
     cvss_v2_metrics: Option<String>,
@@ -29,7 +29,7 @@ struct CVE {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct VirtualMatch {
+pub struct VirtualMatch {
     virtual_match_string: String,
     #[serde(flatten)]
     version_start: Option<VersionStart>,
@@ -38,43 +38,43 @@ struct VirtualMatch {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct VersionStart {
+pub struct VersionStart {
     version_start: String,
     version_start_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct VersionEnd {
+pub struct VersionEnd {
     version_end: String,
     version_end_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-enum VersionType {
+pub enum VersionType {
     Including,
     Excluding,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct LimitOffset {
+pub struct LimitOffset {
     results_per_page: Option<u64>,
     start_index: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct PubDate {
+pub struct PubDate {
     pub_start_date: String,
     pub_end_date: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct Keyword {
+pub struct Keyword {
     keyword_exact_match: bool,
     keyword_search: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-struct LastModDate {
+pub struct LastModDate {
     last_mod_start_date: String,
     last_mod_end_date: String,
 }
