@@ -7,7 +7,7 @@ include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["cpe", "cve", "cvss", "cwe", "helper", "nvd-server", "nvd-yew"]
+members = ["cpe", "cve", "cvss", "cwe", "helper", "nvd-server", "nvd-yew", "nvd-api"]
 default-members = ["nvd-server"]
 
 #https://github.com/johnthagen/min-sized-rust

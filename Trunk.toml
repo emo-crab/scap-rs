@@ -1,6 +1,6 @@
 [build]
 target = "nvd-yew/index.html"
-dist = "nvd-api/dist"
+dist = "nvd-server/dist"
 
 [[proxy]]
 backend = "http://127.0.0.1:8888/api/"
