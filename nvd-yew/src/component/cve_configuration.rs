@@ -1,9 +1,9 @@
 use crate::component::TooltipPopover;
-use cve::configurations::Operator;
+use cve::v4::configurations::Operator;
 use yew::prelude::*;
 #[derive(PartialEq, Clone, Properties)]
 pub struct CVEConfigurationProps {
-  pub props: cve::configurations::Configurations,
+  pub props: cve::v4::configurations::Configurations,
 }
 pub struct CVEConfiguration;
 impl Component for CVEConfiguration {
@@ -54,7 +54,7 @@ fn operator(o: Operator) -> &'static str {
 }
 
 impl CVEConfiguration {
-  fn cpe_match(&self, m: cve::configurations::Match) -> Html {
+  fn cpe_match(&self, m: cve::v4::configurations::Match) -> Html {
     let vendor = m.cpe_uri.cpe23_uri.vendor.to_string();
     let product = m.cpe_uri.cpe23_uri.product.to_string();
     html! {
@@ -92,11 +92,11 @@ impl CVEConfiguration {
   }
   fn operator_vulnerable(
     &self,
-    cpe_match: Vec<cve::configurations::Match>,
+    cpe_match: Vec<cve::v4::configurations::Match>,
     operator: Operator,
   ) -> Html {
     if cpe_match.len() == 1
-      && matches!(operator, cve::configurations::Operator::Or)
+      && matches!(operator, cve::v4::configurations::Operator::Or)
       && !cpe_match.first().unwrap().vulnerable
     {
       return html! {
@@ -110,7 +110,7 @@ impl CVEConfiguration {
     }
     html!()
   }
-  fn node(&self, nodes: Vec<cve::configurations::Node>) -> Html {
+  fn node(&self, nodes: Vec<cve::v4::configurations::Node>) -> Html {
     nodes.into_iter().map(|node|{
       html!{
             <tr>

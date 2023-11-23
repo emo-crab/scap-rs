@@ -1,5 +1,7 @@
 use crate::v2::vulnerabilities::Vulnerabilities;
-use crate::{Error, NVDApi, Object};
+use crate::{Error, NVDApi};
+use crate::pagination::Object;
+
 const ROUTER: &str = "cve";
 
 impl NVDApi {

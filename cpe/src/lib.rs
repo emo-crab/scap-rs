@@ -8,7 +8,7 @@
 //! The CPE Dictionary hosted and maintained at NIST may be used by nongovernmental organizations on a voluntary basis and is not subject to copyright in the United States. Attribution would, however, be appreciated by NIST.
 //!
 
-#![doc(html_root_url = "https://emo-car.github.io/nvd-rs/cpe")]
+#![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cpe")]
 // Package wfn provides a representation, bindings and matching of the Well-Formed CPE names as per
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7695.pdf and
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7696.pdf

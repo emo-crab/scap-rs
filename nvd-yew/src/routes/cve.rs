@@ -156,7 +156,7 @@ impl CVEDetails {
       <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
   }
-  fn references(&self, reference: Vec<cve::Reference>) -> Html {
+  fn references(&self, reference: Vec<cve::v4::Reference>) -> Html {
     html! {
       <div>
       <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
@@ -203,7 +203,7 @@ impl CVEDetails {
       </div>
     }
   }
-  fn configurations(&self, configuration: cve::configurations::Configurations) -> Html {
+  fn configurations(&self, configuration: cve::v4::configurations::Configurations) -> Html {
     let p = CVEConfigurationProps {
       props: configuration.clone(),
     };

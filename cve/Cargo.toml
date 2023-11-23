@@ -11,3 +11,6 @@ chrono = { version = "0.4", default-features = false, features = ["serde"] }
 cpe = { path = "../cpe" }
 cvss = { path = "../cvss" }
 thiserror = "1.0"
+
+[dev-dependencies]
+serde_json = "1.0"

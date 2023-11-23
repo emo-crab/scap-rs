@@ -28,7 +28,7 @@ impl Configurations {
 pub struct Node {
   // 逻辑操作符
   pub operator: Operator,
-  // 字节点
+  // 子节点
   pub children: Vec<Node>,
   // CPE 匹配列表
   pub cpe_match: Vec<Match>,

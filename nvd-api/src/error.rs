@@ -1,8 +1,8 @@
 use std::fmt::{Display, Formatter};
 use std::num::NonZeroU16;
 use serde::{Deserialize, Serialize};
+use crate::pagination::Object;
 
-/// An wrapper Error type for all errors produced by the [`NotionApi`](NotionApi) client.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("Invalid UUID: {}", source)]
@@ -45,7 +45,6 @@ impl Display for StatusCode {
     }
 }
 
-/// <https://developers.notion.com/reference/errors>
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
 pub struct ErrorResponse {
     pub status: StatusCode,
@@ -53,7 +52,6 @@ pub struct ErrorResponse {
     pub message: String,
 }
 
-/// <https://developers.notion.com/reference/errors>
 #[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum ErrorCode {

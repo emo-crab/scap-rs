@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 // https://nvd.nist.gov/developers/vulnerabilities
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct Vulnerabilities {
     cpe_name: Option<String>,
     cve_id: Option<String>,
@@ -29,6 +30,7 @@ pub struct Vulnerabilities {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct VirtualMatch {
     virtual_match_string: String,
     #[serde(flatten)]
@@ -38,42 +40,49 @@ pub struct VirtualMatch {
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct VersionStart {
     version_start: String,
     version_start_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct VersionEnd {
     version_end: String,
     version_end_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub enum VersionType {
     Including,
     Excluding,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct LimitOffset {
     results_per_page: Option<u64>,
     start_index: Option<u64>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct PubDate {
     pub_start_date: String,
     pub_end_date: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct Keyword {
     keyword_exact_match: bool,
     keyword_search: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[serde(rename_all = "camelCase")]
 pub struct LastModDate {
     last_mod_start_date: String,
     last_mod_end_date: String,
