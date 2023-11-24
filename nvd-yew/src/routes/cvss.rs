@@ -1,7 +1,7 @@
 use crate::component::CVSS3;
 use yew::prelude::*;
-pub struct CVSS;
-impl Component for CVSS {
+pub struct Cvss;
+impl Component for Cvss {
   type Message = ();
   type Properties = ();
 

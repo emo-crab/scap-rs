@@ -26,7 +26,7 @@ pub mod impact_metrics;
 use std::str::FromStr;
 // https://nvd.nist.gov/vuln-metrics/cvss/v2-calculator
 use crate::error::{CVSSError, Result};
-use crate::metric::Metric;
+use crate::metric::{Metric, MetricLevelType};
 use crate::severity::SeverityTypeV2;
 use crate::v2::access_complexity::AccessComplexityType;
 use crate::v2::access_vector::AccessVectorType;
@@ -37,7 +37,7 @@ use crate::v2::impact_metrics::{
 use crate::version::Version;
 use serde::{Deserialize, Serialize};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct CVSS {
   // 版本
@@ -59,6 +59,7 @@ pub struct CVSS {
   // 基础评分
   pub base_score: f32,
 }
+
 impl FromStr for CVSS {
   type Err = CVSSError;
   fn from_str(vector_string: &str) -> Result<Self> {
@@ -66,7 +67,7 @@ impl FromStr for CVSS {
       None => {
         return Err(CVSSError::InvalidPrefix {
           value: vector_string.to_string(),
-        })
+        });
       }
       Some((v, vector)) => {
         let version = Version::from_str(v).unwrap_or_default();
@@ -146,15 +147,21 @@ impl CVSS {
 ///
 /// The CVSSv2 <https://www.first.org/cvss/v2/guide> scoring data, split up into Base Metrics Group (BM), Temporal Metrics Group (TM) and Environmental Metrics Group (EM).
 ///
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV2 {
+  #[serde(default)]
+  pub source: Option<String>,
+  #[serde(default)]
+  pub r#type: MetricLevelType,
+  #[serde(alias = "cvssData")]
   pub cvss_v2: CVSS,
   // 漏洞的可利用评分
   pub exploitability_score: f32,
   // 评分
   pub impact_score: f32,
   // 评级
+  #[serde(alias = "baseSeverity")]
   pub severity: SeverityTypeV2,
   pub ac_insuf_info: Option<bool>,
   pub obtain_all_privilege: bool,
@@ -163,6 +170,7 @@ pub struct ImpactMetricV2 {
   // 用户交互
   pub user_interaction_required: Option<bool>,
 }
+
 impl FromStr for ImpactMetricV2 {
   type Err = CVSSError;
 
@@ -173,6 +181,8 @@ impl FromStr for ImpactMetricV2 {
         let impact_score = c.impact_score();
         let severity = SeverityTypeV2::from(c.base_score);
         Ok(Self {
+          source: None,
+          r#type: Default::default(),
           cvss_v2: c,
           exploitability_score,
           impact_score,

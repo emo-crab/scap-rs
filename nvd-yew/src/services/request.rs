@@ -25,7 +25,6 @@ where
   let mut builder = client
     .request(method, &url)
     .query(&query)
-    .fetch_credentials_include()
     .header("Content-Type", "application/json");
   if allow_body {
     builder = builder.json(&body);
@@ -52,16 +51,16 @@ where
         401 => Err(Error::Unauthorized),
         403 => Err(Error::Forbidden),
         404 => Err(Error::NotFound),
-        422 => Err(Error::UnprocessableEntity),
+        422 => Err(Error::UnProcessableEntity),
         500 => Err(Error::InternalServerError),
         502 => Err(Error::BadGateway),
         503 => Err(Error::ServiceUnavailable),
         504 => Err(Error::GatewayTimeout),
-        _ => Err(Error::RequestError),
+        _ => Err(Error::Request),
       }
     }
   } else {
-    Err(Error::RequestError)
+    Err(Error::Request)
   }
 }
 

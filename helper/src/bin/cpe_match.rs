@@ -23,7 +23,7 @@ fn main() {
     .filter(vendors::name.eq("microsoft"))
     .first(connection_pool.get().unwrap().deref_mut())
     .unwrap();
-  let product = Product::belonging_to(&vendor_id)
+  let _product = Product::belonging_to(&vendor_id)
     .filter(products::name.eq("windows_nt"))
     .first::<Product>(connection_pool.get().unwrap().deref_mut())
     .unwrap();

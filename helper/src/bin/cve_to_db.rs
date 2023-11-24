@@ -1,5 +1,7 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
+use cve::impact::OneOrMany;
+use cve::v4::{CVEContainer, CVEItem};
 use cvss::v2::ImpactMetricV2;
 use cvss::v3::ImpactMetricV3;
 use diesel::mysql::MysqlConnection;
@@ -14,22 +16,31 @@ use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::str::FromStr;
-use cve::v4::{CVEContainer, CVEItem};
 
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
-fn v3(v3: &Option<ImpactMetricV3>) -> (String, f32) {
+fn v3(v3: &OneOrMany<ImpactMetricV3>) -> (String, f32) {
   match v3 {
-    None => (String::new(), 0.0),
-    Some(v) => (v.cvss_v3.vector_string.to_string(), v.cvss_v3.base_score),
+    OneOrMany::None => (String::new(), 0.0),
+    OneOrMany::One(v) => (v.cvss_v3.vector_string.to_string(), v.cvss_v3.base_score),
+    OneOrMany::Many(vs) => (
+      vs.first().unwrap().cvss_v3.vector_string.to_string(),
+      vs.first().unwrap().cvss_v3.base_score,
+    ),
   }
 }
-fn v2(v2: &Option<ImpactMetricV2>) -> (String, f32) {
+
+fn v2(v2: &OneOrMany<ImpactMetricV2>) -> (String, f32) {
   match v2 {
-    None => (String::new(), 0.0),
-    Some(v) => (v.cvss_v2.vector_string.to_string(), v.cvss_v2.base_score),
+    OneOrMany::None => (String::new(), 0.0),
+    OneOrMany::One(v) => (v.cvss_v2.vector_string.to_string(), v.cvss_v2.base_score),
+    OneOrMany::Many(vs) => (
+      vs.first().unwrap().cvss_v2.vector_string.to_string(),
+      vs.first().unwrap().cvss_v2.base_score,
+    ),
   }
 }
+
 fn import_to_db(connection: &mut MysqlConnection, cve_item: CVEItem) -> DBResult<String> {
   let id = cve_item.cve.meta.id;
   let y = id.split('-').nth(1).unwrap_or_default();
@@ -92,6 +103,7 @@ pub fn create_cve_product(
   }
   String::new()
 }
+
 #[cached(
   type = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
@@ -101,6 +113,7 @@ fn import_vendor_product_to_db(connection: &mut MysqlConnection, product: cpe::P
   let vendor_id = create_vendor(connection, product.vendor, None);
   create_product(connection, vendor_id, product.product, product.part)
 }
+
 #[cached(
   type = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
@@ -128,6 +141,7 @@ pub fn create_vendor(
   }
   new_post.id
 }
+
 #[cached(
   type = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
@@ -162,6 +176,7 @@ pub fn create_product(
   }
   new_post.id
 }
+
 fn main() {
   let connection_pool = init_db_pool();
   for y in 2023..2024 {

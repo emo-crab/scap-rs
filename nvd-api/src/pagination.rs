@@ -1,7 +1,7 @@
-use chrono::NaiveDateTime;
 use crate::error::ErrorResponse;
-use serde::{Deserialize, Serialize};
 use crate::v2::Vulnerabilities;
+use chrono::NaiveDateTime;
+use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Clone)]
 #[serde(transparent)]
@@ -19,10 +19,11 @@ pub trait Pageable {
     fn start_from(self, starting_point: Option<PagingCursor>) -> Self;
 }
 
-/// <https://developers.notion.com/reference/pagination#responses>
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
-pub struct ListResponse<T> {
-    pub results: Vec<T>,
+#[derive(Serialize, Deserialize, PartialEq, Debug, Clone)]
+#[serde(rename_all(deserialize = "camelCase"))]
+pub struct ListResponse {
+    #[serde(flatten)]
+    pub results: Object,
     pub results_per_page: u32,
     pub start_index: u32,
     pub total_results: u32,
@@ -31,22 +32,10 @@ pub struct ListResponse<T> {
     pub timestamp: NaiveDateTime,
 }
 
-impl<T> ListResponse<T> {
-    pub fn results(&self) -> &[T] {
-        &self.results
-    }
-}
-
-impl ListResponse<Object> {}
-
-#[derive(Eq, Serialize, Deserialize, Clone, Debug, PartialEq)]
-// #[serde(tag = "format")]
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq)]
 #[serde(rename_all = "snake_case")]
 pub enum Object {
-    Vulnerabilities {
-        #[serde(flatten)]
-        cve: Vulnerabilities,
-    },
+    Vulnerabilities(Vec<Vulnerabilities>),
     Error {
         #[serde(flatten)]
         error: ErrorResponse,

@@ -1,20 +1,17 @@
+use crate::pagination::Object;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::num::NonZeroU16;
-use serde::{Deserialize, Serialize};
-use crate::pagination::Object;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
-    #[error("Invalid UUID: {}", source)]
-    UUID { source: uuid::Error },
-
-    #[error("Invalid Notion API Token: {}", source)]
+    #[error("Invalid NVD API Token: {}", source)]
     InvalidApiToken {
         source: reqwest::header::InvalidHeaderValue,
     },
 
     #[error("Unable to build reqwest HTTP client: {}", source)]
-    ErrorBuildingClient { source: reqwest::Error },
+    BuildingClient { source: reqwest::Error },
 
     #[error("Error sending HTTP request: {}", source)]
     RequestFailed {
@@ -23,16 +20,16 @@ pub enum Error {
     },
 
     #[error("Error reading response: {}", source)]
-    ResponseIoError { source: reqwest::Error },
+    ResponseIo { source: reqwest::Error },
 
     #[error("Error parsing json response: {}", source)]
-    JsonParseError { source: serde_json::Error },
+    JsonParse { source: serde_json::Error },
 
     #[error("Unexpected API Response")]
     UnexpectedResponse { response: Object },
 
     #[error("API Error {}({}): {}", .error.code, .error.status, .error.message)]
-    ApiError { error: ErrorResponse },
+    Api { error: ErrorResponse },
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -62,8 +59,6 @@ pub enum ErrorCode {
     /// This request is not supported.
     InvalidRequest,
     /// The request body does not match the schema for the expected parameters. Check the "message" property for more details.
-    ValidationError,
-    /// The request is missing the required Notion-Version header. See Versioning.
     MissionVersion,
     /// The bearer token is not valid.
     Unauthorized,
@@ -75,12 +70,10 @@ pub enum ErrorCode {
     ConflictError,
     /// This request exceeds the number of requests allowed. Slow down and try again. More details on rate limits.
     RateLimited,
-    /// An unexpected error occurred. Reach out to Notion support.
+    /// An unexpected error occurred. Reach out to NVD support.
     InternalServerError,
-    /// Notion is unavailable. Try again later. This can occur when the time to respond to a request takes longer than 60 seconds, the maximum request timeout.
+    /// NVD is unavailable. Try again later. This can occur when the time to respond to a request takes longer than 60 seconds, the maximum request timeout.
     ServiceUnavailable,
-    /// Notion's database is unavailable or in an unqueryable state. Try again later.
-    DatabaseConnectionUnavailable,
     #[serde(other)] // serde issue #912
     Unknown,
 }

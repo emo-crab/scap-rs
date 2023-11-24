@@ -1,41 +1,42 @@
+use crate::impact::ImpactMetrics;
+use crate::v4::configurations::Node;
+use crate::v4::{DescriptionData, ProblemTypeDataItem, Reference};
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-use crate::impact::ImpactMetrics;
-use crate::v4::{DescriptionData, ProblemTypeDataItem, Reference};
-use crate::v4::configurations::{Node};
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all(deserialize = "camelCase"))]
 pub struct CVE {
-    pub id: String,
-    pub source_identifier: String,
-    pub published: NaiveDateTime,
-    // 最后修改时间
-    pub last_modified: NaiveDateTime,
-    pub vuln_status: VulnStatus,
-    pub descriptions: Vec<DescriptionData>,
-    pub metrics: ImpactMetrics,
-    pub weaknesses: Vec<ProblemTypeDataItem>,
-    pub configurations: Vec<Node>,
-    pub references: Vec<Reference>,
+  pub id: String,
+  pub source_identifier: String,
+  pub published: NaiveDateTime,
+  // 最后修改时间
+  pub last_modified: NaiveDateTime,
+  pub vuln_status: VulnStatus,
+  pub descriptions: Vec<DescriptionData>,
+  pub metrics: ImpactMetrics,
+  pub weaknesses: Vec<ProblemTypeDataItem>,
+  #[serde(default)]
+  pub configurations: Vec<Node>,
+  pub references: Vec<Reference>,
 }
 
-#[derive(Debug, Serialize, Deserialize, Clone)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum VulnStatus {
-    Analyzed,
-    #[serde(rename="Undergoing Analysis")]
-    UndergoingAnalysis,
+  Modified,
+  Analyzed,
+  #[serde(rename = "Undergoing Analysis")]
+  UndergoingAnalysis,
 }
-
 
 #[cfg(test)]
 mod tests {
-    use crate::api::CVE;
-    use crate::v4::configurations::Node;
+  use crate::api::CVE;
+  use crate::v4::configurations::Node;
 
-    #[test]
-    fn nodes() {
-        let j = r#"
+  #[test]
+  fn nodes() {
+    let j = r#"
           [
               {
                 "operator": "OR",
@@ -50,13 +51,13 @@ mod tests {
                 ]
               }
             ]"#;
-        let i: Vec<Node> = serde_json::from_str(j).unwrap();
-        println!("{:?}", i);
-    }
+    let i: Vec<Node> = serde_json::from_str(j).unwrap();
+    println!("{:?}", i);
+  }
 
-    #[test]
-    fn cve() {
-        let j = r#"{
+  #[test]
+  fn cve() {
+    let j = r#"{
         "id": "CVE-2023-0001",
         "sourceIdentifier": "psirt@paloaltonetworks.com",
         "published": "2023-02-08T18:15:11.523",
@@ -175,7 +176,7 @@ mod tests {
           }
         ]
       }"#;
-        let i: CVE = serde_json::from_str(j).unwrap();
-        println!("{:?}", i);
-    }
+    let i: CVE = serde_json::from_str(j).unwrap();
+    println!("{:?}", i);
+  }
 }

@@ -12,13 +12,13 @@ use yew_router::prelude::*;
 pub enum Msg {
   SetFetchState(FetchState<CveInfoList>),
   Send,
-  PageMsg(PageMsg),
-  QueryMsg(QueryMsg),
+  Page(PageMsg),
+  Query(QueryMsg),
 }
 pub enum PageMsg {
-  NextPage,
-  PrevPage,
-  ToPage(i64),
+  Next,
+  Prev,
+  To(i64),
 }
 pub enum QueryMsg {
   Severity(String),
@@ -60,17 +60,17 @@ impl Component for CveInfoList {
           }
         });
       }
-      Msg::PageMsg(page) => {
+      Msg::Page(page) => {
         match page {
-          PageMsg::NextPage => {
+          PageMsg::Next => {
             self.query.offset =
               Some(self.query.offset.unwrap_or(0) + self.query.limit.unwrap_or(10));
           }
-          PageMsg::PrevPage => {
+          PageMsg::Prev => {
             self.query.offset =
               Some(self.query.offset.unwrap_or(0) - self.query.limit.unwrap_or(10));
           }
-          PageMsg::ToPage(page) => {
+          PageMsg::To(page) => {
             self.query.offset = Some((page - 1) * self.query.limit.unwrap_or(10));
           }
         }
@@ -82,7 +82,7 @@ impl Component for CveInfoList {
           .unwrap();
         ctx.link().send_message(Msg::Send);
       }
-      Msg::QueryMsg(query) => {
+      Msg::Query(query) => {
         match query {
           QueryMsg::Severity(severity) => {
             self.query.severity = Some(severity);
@@ -112,13 +112,13 @@ impl Component for CveInfoList {
   fn view(&self, ctx: &Context<Self>) -> Html {
     let set_vendor = ctx.link().callback(|event: MouseEvent| {
       let target = event.target_unchecked_into::<HtmlButtonElement>();
-      Msg::QueryMsg(QueryMsg::Vendor(target.get_attribute("value").unwrap()))
+      Msg::Query(QueryMsg::Vendor(target.get_attribute("value").unwrap()))
     });
     let set_product = ctx.link().callback(|event: MouseEvent| {
       let target = event.target_unchecked_into::<HtmlButtonElement>();
       let vendor = target.get_attribute("vendor").unwrap();
       let product = target.get_attribute("product").unwrap();
-      Msg::QueryMsg(QueryMsg::Product(vendor, product))
+      Msg::Query(QueryMsg::Product(vendor, product))
     });
     html! {
       <div class="card">
@@ -162,13 +162,13 @@ impl CveInfoList {
     let total = self.total;
     let limit = self.limit;
     let offset = self.offset;
-    let next_page = ctx.link().callback(|_| Msg::PageMsg(PageMsg::NextPage));
-    let prev_page = ctx.link().callback(|_| Msg::PageMsg(PageMsg::PrevPage));
+    let next_page = ctx.link().callback(|_| Msg::Page(PageMsg::Next));
+    let prev_page = ctx.link().callback(|_| Msg::Page(PageMsg::Prev));
     let to_page = ctx.link().callback(|event: MouseEvent| {
       let target: EventTarget = event.target().unwrap();
       let page: i64 = i64::from_str(&target.clone().unchecked_into::<HtmlButtonElement>().value())
         .unwrap_or_default();
-      Msg::PageMsg(PageMsg::ToPage(page))
+      Msg::Page(PageMsg::To(page))
     });
     let p = PaginationProps {
       limit,
@@ -184,11 +184,11 @@ impl CveInfoList {
     let query_severity = ctx.link().callback(|e: MouseEvent| {
       let target: EventTarget = e.target().unwrap();
       let severity: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
-      Msg::QueryMsg(QueryMsg::Severity(severity))
+      Msg::Query(QueryMsg::Severity(severity))
     });
     let query = ctx
       .link()
-      .callback(|args: QueryCve| Msg::QueryMsg(QueryMsg::Query(args)));
+      .callback(|args: QueryCve| Msg::Query(QueryMsg::Query(args)));
     let p = CVEQueryProps {
       props: self.query.clone(),
       query_severity,

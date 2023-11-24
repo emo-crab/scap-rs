@@ -43,23 +43,23 @@ impl Component for CVSS3 {
               {"V3 Legend"} <i class="ti ti-external-link"></i></a>
         </div>
         <div class="progress progress-sm card-progress">
-          <div class="progress-bar" style={format!( "width: {}%",(score*10.0).to_string())} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
+          <div class="progress-bar" style={format!( "width: {}%",(score*10.0))} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
             <span class="visually-hidden">{score.to_string()}</span>
           </div>
         </div>
         </div>
         </div>
         <div class="col-md-4">
-          {V3Card::AttackVectorType(cvss_v3.exploit_ability.attack_vector)}
-          {V3Card::AttackComplexityType(cvss_v3.exploit_ability.attack_complexity)}
-          {V3Card::PrivilegesRequiredType(cvss_v3.exploit_ability.privileges_required)}
-          {V3Card::UserInteractionType(cvss_v3.exploit_ability.user_interaction)}
+          {V3Card::AV(cvss_v3.exploit_ability.attack_vector)}
+          {V3Card::AC(cvss_v3.exploit_ability.attack_complexity)}
+          {V3Card::PR(cvss_v3.exploit_ability.privileges_required)}
+          {V3Card::UI(cvss_v3.exploit_ability.user_interaction)}
         </div>
         <div class="col-md-4">
-          {V3Card::ScopeType(cvss_v3.scope)}
-          {V3Card::ConfidentialityImpactType(cvss_v3.impact.confidentiality_impact)}
-          {V3Card::IntegrityImpactType(cvss_v3.impact.integrity_impact)}
-          {V3Card::AvailabilityImpactType(cvss_v3.impact.availability_impact)}
+          {V3Card::S(cvss_v3.scope)}
+          {V3Card::C(cvss_v3.impact.confidentiality_impact)}
+          {V3Card::I(cvss_v3.impact.integrity_impact)}
+          {V3Card::A(cvss_v3.impact.availability_impact)}
         </div>
       </div>
       </>

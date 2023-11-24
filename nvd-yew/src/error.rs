@@ -3,7 +3,7 @@ use thiserror::Error as ThisError;
 pub enum Error {
   //http request error (unable to send request, eg api server is down)
   #[error("Http Request Error")]
-  RequestError,
+  Request,
   //401 (eg not logged in)
   #[error("Unauthorized")]
   Unauthorized,
@@ -14,8 +14,8 @@ pub enum Error {
   #[error("Not Found")]
   NotFound,
   //422
-  #[error("Unprocessable Entity")]
-  UnprocessableEntity,
+  #[error("UnProcessable Entity")]
+  UnProcessableEntity,
   //500
   #[error("Internal Server Error")]
   InternalServerError,

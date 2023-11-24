@@ -10,30 +10,30 @@
 
 #![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cve")]
 
-pub mod error;
-pub mod v4;
 pub mod api;
+pub mod error;
 pub mod impact;
+pub mod v4;
 
 mod date_format {
-    use chrono::NaiveDateTime;
-    use serde::{self, Deserialize, Deserializer, Serializer};
+  use chrono::NaiveDateTime;
+  use serde::{self, Deserialize, Deserializer, Serializer};
 
-    const FORMAT: &str = "%Y-%m-%dT%H:%MZ";
+  const FORMAT: &str = "%Y-%m-%dT%H:%MZ";
 
-    pub fn serialize<S>(date: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
-        where
-            S: Serializer,
-    {
-        let s = date.to_string();
-        serializer.serialize_str(&s)
-    }
+  pub fn serialize<S>(date: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
+  where
+    S: Serializer,
+  {
+    let s = date.to_string();
+    serializer.serialize_str(&s)
+  }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
-        where
-            D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
-        NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
-    }
+  pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
+  where
+    D: Deserializer<'de>,
+  {
+    let s = String::deserialize(deserializer)?;
+    NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
+  }
 }

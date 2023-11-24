@@ -6,7 +6,7 @@ mod page_not_found;
 
 use crate::modules::cve::CveInfoList;
 use cve::CVEDetails;
-use cvss::CVSS;
+use cvss::Cvss;
 use home::Home;
 use page_not_found::PageNotFound;
 use yew::prelude::*;
@@ -20,7 +20,7 @@ pub enum Route {
   #[at("/")]
   Home,
   #[at("/cvss")]
-  CVSS,
+  Cvss,
   #[not_found]
   #[at("/404")]
   NotFound,
@@ -38,8 +38,8 @@ impl Route {
       Route::Cve { id } => {
         html! {<CVEDetails id={id}/ >}
       }
-      Route::CVSS => {
-        html! { <CVSS /> }
+      Route::Cvss => {
+        html! { <Cvss /> }
       }
       Route::NotFound => {
         html! { <PageNotFound /> }

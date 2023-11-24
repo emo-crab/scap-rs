@@ -47,44 +47,57 @@ mod v4;
 pub use crate::metric::v2::MetricTypeV2;
 pub use crate::metric::v3::MetricTypeV3;
 pub use crate::metric::v4::MetricTypeV4;
+use serde::{Deserialize, Serialize};
 use std::fmt::{Debug, Display};
 use std::str::FromStr;
 
 // TODO: 改宏定义
 #[derive(Debug, Clone)]
 pub struct Help {
-    pub worth: Worth,
-    pub des: String,
+  pub worth: Worth,
+  pub des: String,
 }
 
 #[derive(Debug, Clone)]
 pub enum Worth {
-    /// 最严重的
-    Worst,
-    /// 比较严重的
-    Worse,
-    /// 坏
-    Bad,
-    /// 还好
-    Good,
+  /// 最严重的
+  Worst,
+  /// 比较严重的
+  Worse,
+  /// 坏
+  Bad,
+  /// 还好
+  Good,
 }
 
 pub trait Metric: Clone + Debug + FromStr + Display {
-    const TYPE: MetricType;
-    fn name() -> &'static str {
-        match Self::TYPE {
-            MetricType::V2(v2) => v2.name(),
-            MetricType::V3(v3) => v3.name(),
-            MetricType::V4(v4) => v4.name(),
-        }
+  const TYPE: MetricType;
+  fn name() -> &'static str {
+    match Self::TYPE {
+      MetricType::V2(v2) => v2.name(),
+      MetricType::V3(v3) => v3.name(),
+      MetricType::V4(v4) => v4.name(),
     }
-    fn help(&self) -> Help;
-    fn score(&self) -> f32;
-    fn as_str(&self) -> &'static str;
+  }
+  fn help(&self) -> Help;
+  fn score(&self) -> f32;
+  fn as_str(&self) -> &'static str;
 }
 
 pub enum MetricType {
-    V2(MetricTypeV2),
-    V3(MetricTypeV3),
-    V4(MetricTypeV4),
+  V2(MetricTypeV2),
+  V3(MetricTypeV3),
+  V4(MetricTypeV4),
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub enum MetricLevelType {
+  Primary,
+  Secondary,
+}
+
+impl Default for MetricLevelType {
+  fn default() -> Self {
+    Self::Primary
+  }
 }

@@ -53,7 +53,7 @@ impl Component for CVEDetails {
     false
   }
   fn view(&self, _ctx: &Context<Self>) -> Html {
-    if let None = self.cve {
+    if self.cve.is_none() {
       return html! {
         <div class="container container-slim py-4">
         <div class="text-center">
@@ -123,12 +123,12 @@ impl CVEDetails {
       <ul class="nav nav-tabs p-1" role="tablist">
       if let Some(v3) = cvss_v3.clone(){
         <li class="nav-item">
-          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cve.cvss3_score.clone())}</a>
+          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cve.cvss3_score)}</a>
         </li>
       }
       if let Some(v2) = cvss_v2.clone(){
         <li class="nav-item">
-          <a href="#tabs-cvss2" class="nav-link" data-bs-toggle="tab">{format!("CVSS v{}",v2.cvss_v2.version.to_string())} {cvss2(cve.cvss2_score.clone())}</a>
+          <a href="#tabs-cvss2" class="nav-link" data-bs-toggle="tab">{format!("CVSS v{}",v2.cvss_v2.version.to_string())} {cvss2(cve.cvss2_score)}</a>
         </li>
       }
       </ul>
@@ -146,7 +146,7 @@ impl CVEDetails {
     </>
     }
   }
-  fn description(&self, description_data: Vec<cve::DescriptionData>) -> Html {
+  fn description(&self, description_data: Vec<cve::v4::DescriptionData>) -> Html {
     let description = description_data
       .iter()
       .map(|d| d.value.clone())
