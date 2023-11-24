@@ -275,12 +275,28 @@ impl CVSSBuilder {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all(deserialize = "camelCase"), deny_unknown_fields)]
 pub struct ImpactMetricV3 {
+    #[serde(default)]
+    pub source: Option<String>,
+    #[serde(default)]
+    pub r#type: MetricType,
     #[serde(alias = "cvssData")]
     pub cvss_v3: CVSS,
     /// 漏洞的可利用 评分
     pub exploitability_score: f32,
     /// 影响评分
     pub impact_score: f32,
+}
+
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+pub enum MetricType {
+    Primary,
+    Secondary,
+}
+
+impl Default for MetricType {
+    fn default() -> Self {
+        Self::Primary
+    }
 }
 
 impl FromStr for ImpactMetricV3 {
@@ -292,6 +308,8 @@ impl FromStr for ImpactMetricV3 {
                 let exploit_ability_score = c.exploitability_score();
                 let impact_score = c.impact_score();
                 Ok(Self {
+                    source: None,
+                    r#type: Default::default(),
                     cvss_v3: c,
                     exploitability_score: exploit_ability_score,
                     impact_score,

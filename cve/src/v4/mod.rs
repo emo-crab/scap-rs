@@ -1,8 +1,9 @@
 pub mod configurations;
+
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use crate::v4::configurations::Configurations;
-use crate::{date_format, DescriptionData};
+use crate::{date_format};
 use crate::impact::ImpactMetrics;
 // https://nvd.nist.gov/general/News/JSON-1-1-Vulnerability-Feed-Release
 // https://github.com/CVEProject/cve-schema
@@ -81,8 +82,10 @@ pub struct References {
 #[serde(deny_unknown_fields)]
 pub struct Reference {
     pub url: String,
+    #[serde(default)]
     pub name: String,
-    pub refsource: String,
+    #[serde(rename = "refsource", alias = "source")]
+    pub ref_source: String,
     pub tags: Vec<String>,
 }
 
@@ -92,7 +95,12 @@ pub struct Description {
     pub description_data: Vec<DescriptionData>,
 }
 
-
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
+#[serde(deny_unknown_fields)]
+pub struct DescriptionData {
+    pub lang: String,
+    pub value: String,
+}
 
 /// This is metadata about the CVE ID such as the CVE ID, who requested it, who assigned it, when it was requested, when it was assigned, the current state (PUBLIC, REJECT, etc.) and so on.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
@@ -119,6 +127,8 @@ pub struct ProblemType {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct ProblemTypeDataItem {
+    pub source: Option<String>,
+    pub r#type: Option<String>,
     pub description: Vec<ProblemTypeDescription>,
 }
 
@@ -128,4 +138,3 @@ pub struct ProblemTypeDescription {
     pub lang: String,
     pub value: String,
 }
-

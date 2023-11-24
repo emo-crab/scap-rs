@@ -12,13 +12,30 @@ use serde::{Deserialize, Serialize};
 pub struct ImpactMetrics {
     // TODO: Implement V1?
     // cvssV2 过期
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub base_metric_v2: Option<ImpactMetricV2>,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "cvssMetricV2")]
+    pub base_metric_v2: Option<OneOrMany<ImpactMetricV2>>,
     // cvssV3
-    pub base_metric_v3: Option<ImpactMetricV3>,
+    #[serde(skip_serializing_if = "Option::is_none", alias = "cvssMetricV31")]
+    pub base_metric_v3: Option<OneOrMany<ImpactMetricV3>>,
     // TODO: Implement V4?
 }
 
+// 为了兼容API接口返回的数据和json归档数据结构
+#[derive(Debug, Serialize, Deserialize, Clone)]
+#[serde(untagged)]
+pub enum OneOrMany<T> {
+    One(T),
+    Many(Vec<T>),
+}
+
+impl<T> From<OneOrMany<T>> for Vec<T> {
+    fn from(from: OneOrMany<T>) -> Self {
+        match from {
+            OneOrMany::One(val) => vec![val],
+            OneOrMany::Many(vec) => vec,
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
@@ -45,12 +62,13 @@ mod tests {
       "exploitabilityScore": 0.8,
       "impactScore": 5.9
     }}"#;
-        let i: ImpactMetrics = serde_json::from_str(&j).unwrap();
+        let i: ImpactMetrics = serde_json::from_str(j).unwrap();
         println!("{:?}", i);
     }
+
     #[test]
-    fn test_cvss_v3(){
-        let j2 = r#"{"baseMetricV3":{
+    fn test_cvss_v3() {
+        let j2 = r#"{"cvssMetricV31":[{
               "cvssData": {
                 "version": "3.1",
                 "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
@@ -67,8 +85,8 @@ mod tests {
               },
               "exploitabilityScore": 3.9,
               "impactScore": 3.6
-            }}"#;
-        let i2: ImpactMetrics = serde_json::from_str(&j2).unwrap();
+            }]}"#;
+        let i2: ImpactMetrics = serde_json::from_str(j2).unwrap();
         println!("{:?}", i2);
     }
 }

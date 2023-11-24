@@ -183,7 +183,7 @@ impl CVEDetails {
                     <tr>
                     <td><i class="ti ti-external-link"></i><a href={r.url} target="_blank">{r.name}</a></td>
                     <td class="text-dark">
-                      {r.refsource}
+                      {r.ref_source}
                     </td>
                     <td class="text-secondary">
                     <div class="badges-list">

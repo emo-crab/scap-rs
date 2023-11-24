@@ -10,8 +10,6 @@
 
 #![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cve")]
 
-use serde::{Deserialize, Serialize};
-
 pub mod error;
 pub mod v4;
 pub mod api;
@@ -38,11 +36,4 @@ mod date_format {
         let s = String::deserialize(deserializer)?;
         NaiveDateTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)
     }
-}
-
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
-#[serde(deny_unknown_fields)]
-pub struct DescriptionData {
-    pub lang: String,
-    pub value: String,
 }

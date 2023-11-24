@@ -1,6 +1,5 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
-use cve::{CVEContainer, CVEItem};
 use cvss::v2::ImpactMetricV2;
 use cvss::v3::ImpactMetricV3;
 use diesel::mysql::MysqlConnection;
@@ -15,6 +14,7 @@ use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::str::FromStr;
+use cve::v4::{CVEContainer, CVEItem};
 
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
