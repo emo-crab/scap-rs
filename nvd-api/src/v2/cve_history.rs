@@ -4,19 +4,19 @@ use crate::v2::LimitOffset;
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct CveHistoryParameters {
-    cve_id: Option<String>,
+    pub cve_id: Option<String>,
     #[serde(flatten)]
-    change_date: Option<ChangeDate>,
-    event_name: Option<EventName>,
+    pub change_date: Option<ChangeDate>,
+    pub event_name: Option<EventName>,
     #[serde(flatten)]
-    limit_offset: Option<LimitOffset>,
+    pub limit_offset: Option<LimitOffset>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct ChangeDate {
-    change_start_date: String,
-    change_end_date: String,
+    pub change_start_date: String,
+    pub change_end_date: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]

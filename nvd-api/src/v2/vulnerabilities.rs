@@ -1,58 +1,58 @@
+use crate::v2::{Keyword, LastModDate, LimitOffset};
 use serde::{Deserialize, Serialize};
-use crate::v2::LimitOffset;
 
 // https://nvd.nist.gov/developers/vulnerabilities
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct CveParameters {
-  cpe_name: Option<String>,
-  cve_id: Option<String>,
-  cvss_v2_metrics: Option<String>,
-  cvss_v2_severity: Option<cvss::severity::SeverityTypeV2>,
-  cvss_v3_metrics: Option<String>,
-  cvss_v3_severity: Option<cvss::severity::SeverityType>,
-  cwe_id: Option<String>,
-  has_cert_alerts: Option<bool>,
-  has_cert_notes: Option<bool>,
-  has_kev: Option<bool>,
-  has_oval: Option<bool>,
-  is_vulnerable: Option<bool>,
+  pub cpe_name: Option<String>,
+  pub cve_id: Option<String>,
+  pub cvss_v2_metrics: Option<String>,
+  pub cvss_v2_severity: Option<cvss::severity::SeverityTypeV2>,
+  pub cvss_v3_metrics: Option<String>,
+  pub cvss_v3_severity: Option<cvss::severity::SeverityType>,
+  pub cwe_id: Option<String>,
+  pub has_cert_alerts: Option<bool>,
+  pub has_cert_notes: Option<bool>,
+  pub has_kev: Option<bool>,
+  pub has_oval: Option<bool>,
+  pub is_vulnerable: Option<bool>,
   #[serde(flatten)]
-  keyword: Option<Keyword>,
+  pub keyword: Option<Keyword>,
   #[serde(flatten)]
-  last_mod: Option<LastModDate>,
-  no_rejected: Option<bool>,
+  pub last_mod: Option<LastModDate>,
+  pub no_rejected: Option<bool>,
   #[serde(flatten)]
-  pub_date: Option<PubDate>,
+  pub pub_date: Option<PubDate>,
   #[serde(flatten)]
-  limit_offset: Option<LimitOffset>,
-  source_identifier: Option<String>,
+  pub limit_offset: Option<LimitOffset>,
+  pub source_identifier: Option<String>,
   #[serde(flatten)]
-  virtual_match: Option<VirtualMatch>,
+  pub virtual_match: Option<VirtualMatch>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct VirtualMatch {
-  virtual_match_string: String,
+  pub virtual_match_string: String,
   #[serde(flatten)]
-  version_start: Option<VersionStart>,
+  pub version_start: Option<VersionStart>,
   #[serde(flatten)]
-  version_end: Option<VersionEnd>,
+  pub version_end: Option<VersionEnd>,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct VersionStart {
-  version_start: String,
-  version_start_type: String,
+  pub version_start: String,
+  pub version_start_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct VersionEnd {
-  version_end: String,
-  version_end_type: String,
+  pub version_end: String,
+  pub version_end_type: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
@@ -62,25 +62,11 @@ pub enum VersionType {
   Excluding,
 }
 
-
-
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct PubDate {
-  pub_start_date: String,
-  pub_end_date: String,
+  pub pub_start_date: String,
+  pub pub_end_date: String,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct Keyword {
-  keyword_exact_match: bool,
-  keyword_search: String,
-}
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
-#[serde(rename_all = "camelCase")]
-pub struct LastModDate {
-  last_mod_start_date: String,
-  last_mod_end_date: String,
-}
