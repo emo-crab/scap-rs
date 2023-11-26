@@ -15,6 +15,7 @@ pub struct CVE {
   pub vuln_status: VulnStatus,
   pub descriptions: Vec<DescriptionData>,
   pub metrics: ImpactMetrics,
+  #[serde(default)]
   pub weaknesses: Vec<ProblemTypeDataItem>,
   #[serde(default)]
   pub configurations: Vec<Node>,
@@ -27,6 +28,7 @@ pub enum VulnStatus {
   Analyzed,
   #[serde(rename = "Undergoing Analysis")]
   UndergoingAnalysis,
+  Rejected,
 }
 
 #[cfg(test)]

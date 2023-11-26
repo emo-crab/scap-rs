@@ -1,5 +1,5 @@
 use crate::error::Error;
-use crate::pagination::Object;
+use crate::pagination::{ListResponse};
 use reqwest::{ClientBuilder, RequestBuilder};
 
 mod error;
@@ -37,7 +37,7 @@ impl NVDApi {
 }
 
 impl NVDApi {
-  pub async fn request(&self, request: RequestBuilder) -> Result<Object, Error> {
+  pub async fn request(&self, request: RequestBuilder) -> Result<ListResponse, Error> {
     let request = request.build()?;
     let json = self
       .client
@@ -47,10 +47,8 @@ impl NVDApi {
       .text()
       .await
       .map_err(|source| Error::ResponseIo { source })?;
+    // println!("{}", json);
     let result = serde_json::from_str(&json).map_err(|source| Error::JsonParse { source })?;
-    match result {
-      Object::Error { error } => Err(Error::Api { error }),
-      response => Ok(response),
-    }
+    Ok(result)
   }
 }

@@ -60,6 +60,7 @@ pub struct Titles {
 #[serde(rename_all = "camelCase")]
 pub struct Refs {
   pub r#ref: String,
+  #[serde(default)]
   pub r#type: RefType,
 }
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
@@ -72,6 +73,13 @@ pub enum RefType {
   Vendor,
   Version,
 }
+
+impl Default for RefType {
+  fn default() -> Self {
+    Self::ChangeLog
+  }
+}
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct DeprecatedBy {
