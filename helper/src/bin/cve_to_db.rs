@@ -179,7 +179,7 @@ pub fn create_product(
 
 fn main() {
   let connection_pool = init_db_pool();
-  for y in 2023..2024 {
+  for y in 2004..2024 {
     let p = format!("helper/examples/nvdcve/nvdcve-1.1-{y}.json.gz");
     println!("{p}");
     let gz_open_file = File::open(p).unwrap();
