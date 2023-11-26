@@ -90,11 +90,11 @@ where
   request(reqwest::Method::PUT, url, query, body).await
 }
 #[allow(dead_code)]
-pub async fn request_delete<B, Q, T>(url: String) -> Result<T, Error>
+pub async fn request_delete<B, Q, T>(url: String, query: Q, body: B) -> Result<T, Error>
 where
   T: DeserializeOwned + 'static + std::fmt::Debug,
   Q: Serialize + std::fmt::Debug,
   B: Serialize + std::fmt::Debug,
 {
-  request(reqwest::Method::DELETE, url, (), ()).await
+  request(reqwest::Method::DELETE, url, query, body).await
 }

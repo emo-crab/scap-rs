@@ -186,15 +186,8 @@ fn main() {
     let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
     let file = BufReader::new(gz_decoder);
     let c: CVEContainer = serde_json::from_reader(file).unwrap();
-    let mut count = 0;
     for w in c.CVE_Items {
-      count += 1;
       import_to_db(connection_pool.get().unwrap().deref_mut(), w).unwrap_or_default();
-      if count == 100 {
-        std::process::exit(0);
-      }
-      // break;
     }
-    break;
   }
 }
