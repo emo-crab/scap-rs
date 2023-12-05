@@ -1,0 +1,24 @@
+[package]
+name = "nvd-server"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+actix-web = { version = "4.4.0", features = ["openssl"] }
+openssl-sys = "0.9"
+openssl = { version = "0.10", features = ["vendored"] }
+actix-files = "0.6.2"
+actix-cors = "0.6.4"
+diesel = { version = "2.1.4", features = ["r2d2", "mysql", "chrono", "uuid", "serde_json"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+dotenvy = "0.15"
+chrono = { version = "0.4", default-features = false, features = ["serde"] }
+thiserror = "1.0"
+uuid = { version = "1.6.1", features = ["v4"] }
+env_logger = "0.10.0"
+[[bin]]
+name = "nvd-server"
+path = "src/main.rs"

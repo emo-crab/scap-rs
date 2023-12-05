@@ -1,0 +1,8 @@
+target
+nvd-server/nvd-er.mwb.bak
+nvd-server/nvd-er.mwb
+.idea
+.github
+dev-script
+helper/examples
+helper/tests
