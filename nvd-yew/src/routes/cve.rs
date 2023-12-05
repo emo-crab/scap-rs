@@ -9,56 +9,56 @@ use yew_router::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
 pub struct CVEProps {
-    pub id: String,
+  pub id: String,
 }
 
 pub enum Msg {
-    SetFetchState(FetchState<Cve>),
-    Back,
-    Send,
+  SetFetchState(FetchState<Cve>),
+  Back,
+  Send,
 }
 
 pub struct CVEDetails {
-    cve: Option<Cve>,
+  cve: Option<Cve>,
 }
 
 impl Component for CVEDetails {
-    type Message = Msg;
-    type Properties = CVEProps;
+  type Message = Msg;
+  type Properties = CVEProps;
 
-    fn create(_ctx: &Context<Self>) -> Self {
-        Self { cve: None }
-    }
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        match msg {
-            Msg::SetFetchState(state) => {
-                match state {
-                    FetchState::Success(data) => self.cve = Some(data),
-                    FetchState::Failed(err) => {
-                        console_log!("{:?}", err);
-                    }
-                }
-                return true;
-            }
-            Msg::Send => {
-                let id = ctx.props().id.clone();
-                ctx.link().send_future(async {
-                    match cve_details(id).await {
-                        Ok(data) => Msg::SetFetchState(FetchState::Success(data)),
-                        Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
-                    }
-                });
-            }
-            Msg::Back => {
-                ctx.link().navigator().unwrap().back();
-            }
+  fn create(_ctx: &Context<Self>) -> Self {
+    Self { cve: None }
+  }
+  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    match msg {
+      Msg::SetFetchState(state) => {
+        match state {
+          FetchState::Success(data) => self.cve = Some(data),
+          FetchState::Failed(err) => {
+            console_log!("{:?}", err);
+          }
         }
-        false
+        return true;
+      }
+      Msg::Send => {
+        let id = ctx.props().id.clone();
+        ctx.link().send_future(async {
+          match cve_details(id).await {
+            Ok(data) => Msg::SetFetchState(FetchState::Success(data)),
+            Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
+          }
+        });
+      }
+      Msg::Back => {
+        ctx.link().navigator().unwrap().back();
+      }
     }
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let on_back = ctx.link().callback(|_event: MouseEvent| Msg::Back);
-        if self.cve.is_none() {
-            return html! {
+    false
+  }
+  fn view(&self, ctx: &Context<Self>) -> Html {
+    let on_back = ctx.link().callback(|_event: MouseEvent| Msg::Back);
+    if self.cve.is_none() {
+      return html! {
         <div class="container container-slim py-4">
         <div class="text-center">
           <div class="mb-3">
@@ -71,9 +71,9 @@ impl Component for CVEDetails {
         </div>
       </div>
       };
-        }
-        let cve = self.cve.clone().unwrap();
-        html! {
+    }
+    let cve = self.cve.clone().unwrap();
+    html! {
       <>
       <div class="row g-2 align-items-center">
       <div class="col">
@@ -105,19 +105,19 @@ impl Component for CVEDetails {
       </div>
       </>
     }
+  }
+  fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
+    if first_render {
+      ctx.link().send_message(Msg::Send);
     }
-    fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
-        if first_render {
-            ctx.link().send_message(Msg::Send);
-        }
-    }
+  }
 }
 
 impl CVEDetails {
-    fn cvss(&self, cve: Cve) -> Html {
-        let cvss_v3 = cve.metrics.base_metric_v3.inner();
-        let cvss_v2 = cve.metrics.base_metric_v2.inner();
-        html! {
+  fn cvss(&self, cve: Cve) -> Html {
+    let cvss_v3 = cve.metrics.base_metric_v3.inner();
+    let cvss_v2 = cve.metrics.base_metric_v2.inner();
+    html! {
       <>
       <div class="card-tabs p-1">
       <ul class="nav nav-tabs p-1" role="tablist">
@@ -147,19 +147,19 @@ impl CVEDetails {
       </div>
     </>
     }
-    }
-    fn description(&self, description_data: Vec<cve::v4::Description>) -> Html {
-        let description = description_data
-            .iter()
-            .map(|d| d.value.clone())
-            .collect::<String>();
-        let mut description = description.chars();
-        html! {
+  }
+  fn description(&self, description_data: Vec<cve::v4::Description>) -> Html {
+    let description = description_data
+      .iter()
+      .map(|d| d.value.clone())
+      .collect::<String>();
+    let mut description = description.chars();
+    html! {
       <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
-    }
-    fn references(&self, reference: Vec<cve::v4::Reference>) -> Html {
-        html! {
+  }
+  fn references(&self, reference: Vec<cve::v4::Reference>) -> Html {
+    html! {
       <div>
       <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
         <div class="accordion-item">
@@ -204,11 +204,11 @@ impl CVEDetails {
       </div>
       </div>
     }
-    }
-    fn configurations(&self, configuration: Vec<cve::v4::configurations::Node>) -> Html {
-        let p = CVEConfigurationProps {
-            props: configuration.clone(),
-        };
-        html! {<CVEConfiguration ..p.clone()/>}
-    }
+  }
+  fn configurations(&self, configuration: Vec<cve::v4::configurations::Node>) -> Html {
+    let p = CVEConfigurationProps {
+      props: configuration.clone(),
+    };
+    html! {<CVEConfiguration ..p.clone()/>}
+  }
 }

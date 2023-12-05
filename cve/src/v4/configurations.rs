@@ -145,20 +145,16 @@ impl Match {
     }
     // 什么都没有的
     if v_start.is_none() && v_end.is_none() {
-      return format!(
-        "{} {}",
-        op_start.unwrap_or(""),
-        version.unwrap_or_default()
-      );
+      format!("{} {}", op_start.unwrap_or(""), version.unwrap_or_default())
     } else {
-      return format!(
+      format!(
         "{}{} {} {}{}",
         v_start.unwrap_or(""),
         op_start.unwrap_or(""),
         version.unwrap_or_default(),
         op_end.unwrap_or(""),
         v_end.unwrap_or_default()
-      );
+      )
     }
   }
   pub fn match_version_range(&self, ver: &str) -> bool {

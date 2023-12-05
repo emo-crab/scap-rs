@@ -14,9 +14,24 @@ pub struct NVDApi {
   version: String,
   client: reqwest::Client,
 }
+pub enum ApiVersion {
+  V2_0,
+}
 
+impl Default for ApiVersion {
+  fn default() -> Self {
+    Self::V2_0
+  }
+}
+impl ToString for ApiVersion {
+  fn to_string(&self) -> String {
+    match self {
+      ApiVersion::V2_0 => String::from("2.0"),
+    }
+  }
+}
 impl NVDApi {
-  pub fn new(api_token: Option<String>, version: &str) -> Result<Self, Error> {
+  pub fn new(api_token: Option<String>, version: ApiVersion) -> Result<Self, Error> {
     let mut headers = reqwest::header::HeaderMap::new();
     if let Some(api_token) = api_token {
       let mut auth_value = reqwest::header::HeaderValue::from_str(&format!("Bearer {api_token}"))

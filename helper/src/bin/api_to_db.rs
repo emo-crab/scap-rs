@@ -1,17 +1,18 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
+use chrono::{NaiveDateTime, Utc};
 use cve::v4::{CVEContainer, CVEItem};
 use diesel::mysql::MysqlConnection;
 use helper::init_db_pool;
+use nvd_api::v2::vulnerabilities::CveParameters;
+use nvd_api::v2::LastModDate;
+use nvd_api::ApiVersion;
 use nvd_server::error::DBResult;
 use nvd_server::modules::cve_db::CreateCve;
 use nvd_server::modules::cve_product_db::CreateCveProductByName;
 use nvd_server::modules::product_db::{CreateProduct, QueryProductById};
 use nvd_server::modules::vendor_db::CreateVendors;
 use nvd_server::modules::{Cve, CveProduct, Product, Vendor};
-use std::fs::File;
-use std::io::BufReader;
-use std::ops::DerefMut;
 use std::str::FromStr;
 
 // https://cwe.mitre.org/data/downloads.html
@@ -153,17 +154,30 @@ pub fn create_product(
 }
 
 fn main() {
-  let connection_pool = init_db_pool();
-  for y in 2002..2024 {
-    let p = format!("helper/examples/nvdcve/nvdcve-1.1-{y}.json.gz");
-    println!("{p}");
-    let gz_open_file = File::open(p).unwrap();
-    let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
-    let file = BufReader::new(gz_decoder);
-    let c: CVEContainer = serde_json::from_reader(file).unwrap();
-    for w in c.CVE_Items {
-      import_to_db(connection_pool.get().unwrap().deref_mut(), w).unwrap_or_default();
-    }
-    // break;
-  }
+  // let connection_pool = init_db_pool();
+  // let api = nvd_api::NVDApi::new(None, ApiVersion::default()).unwrap();
+  let now = Utc::now();
+    let two_h =
+  println!("{:?}", now);
+  // api.cve(CveParameters{
+  //     cpe_name: None,
+  //     cve_id: None,
+  //     cvss_v2_metrics: None,
+  //     cvss_v2_severity: None,
+  //     cvss_v3_metrics: None,
+  //     cvss_v3_severity: None,
+  //     cwe_id: None,
+  //     has_cert_alerts: None,
+  //     has_cert_notes: None,
+  //     has_kev: None,
+  //     has_oval: None,
+  //     is_vulnerable: None,
+  //     keyword: None,
+  //     last_mod: Some(LastModDate{ last_mod_start_date: "".to_string(), last_mod_end_date: "".to_string() }),
+  //     no_rejected: None,
+  //     pub_date: None,
+  //     limit_offset: None,
+  //     source_identifier: None,
+  //     virtual_match: None,
+  // })
 }

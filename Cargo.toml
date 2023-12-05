@@ -31,7 +31,3 @@ opt-level = 3
 
 
 [dependencies]
-
-[[bin]]
-name = "nvd-server"
-path = "nvd-server/src/main.rs"

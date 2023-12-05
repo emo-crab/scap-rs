@@ -18,6 +18,7 @@ COPY nvd-yew nvd-yew
 COPY nvd-api nvd-api
 COPY nvd-server nvd-server
 COPY helper helper
+COPY src src
 RUN cargo build --release
 RUN trunk build --release
 
