@@ -5,7 +5,7 @@
 //!
 //! CVSS is owned and managed by FIRST.Org, Inc. (FIRST), a US-based non-profit organization, whose mission is to help computer security incident response teams across the world. The official CVSS documentation can be found at  <https://www.first.org/cvss/>.
 
-#![doc(html_root_url = "https://emo-car.github.io/nvd-rs/cvss")]
+#![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cvss")]
 // 通用漏洞评分系统
 // https://csrc.nist.gov/schema/nvd/feed/1.1-Beta/cvss-v3.x_beta.json
 // https://www.first.org/cvss/specification-document
