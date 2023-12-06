@@ -66,7 +66,7 @@ pub struct Vendor {
   pub created_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Cwe {
   pub id: i32,
   pub name: String,

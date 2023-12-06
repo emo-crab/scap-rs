@@ -103,7 +103,7 @@ pub enum SeverityTypeV2 {
 
 impl Display for SeverityTypeV2 {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-    write!(f, "S:{}", self.as_str())
+    write!(f, "{}", self.as_str())
   }
 }
 

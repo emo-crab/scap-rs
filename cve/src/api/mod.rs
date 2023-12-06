@@ -29,6 +29,7 @@ pub enum VulnStatus {
   #[serde(rename = "Undergoing Analysis")]
   UndergoingAnalysis,
   Rejected,
+  Received,
 }
 
 #[cfg(test)]

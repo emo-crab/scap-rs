@@ -14,6 +14,7 @@ pub struct NVDApi {
   version: String,
   client: reqwest::Client,
 }
+
 pub enum ApiVersion {
   V2_0,
 }
@@ -23,6 +24,7 @@ impl Default for ApiVersion {
     Self::V2_0
   }
 }
+
 impl ToString for ApiVersion {
   fn to_string(&self) -> String {
     match self {
@@ -30,6 +32,7 @@ impl ToString for ApiVersion {
     }
   }
 }
+
 impl NVDApi {
   pub fn new(api_token: Option<String>, version: ApiVersion) -> Result<Self, Error> {
     let mut headers = reqwest::header::HeaderMap::new();
@@ -62,7 +65,6 @@ impl NVDApi {
       .text()
       .await
       .map_err(|source| Error::ResponseIo { source })?;
-    // println!("{}", json);
     let result = serde_json::from_str(&json).map_err(|source| Error::JsonParse { source })?;
     Ok(result)
   }

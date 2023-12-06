@@ -3,10 +3,10 @@
 - A collection of lib for working with [National Vulnerability Database](https://nvd.nist.gov/).
 
 ## CVE
-![CVE列表](doc/cve.png)
+![CVE列表](docs/cve.png)
 
 ## Details
-![CVE详情](doc/details.png)
+![CVE详情](docs/details.png)
 
 ## Libraries
 

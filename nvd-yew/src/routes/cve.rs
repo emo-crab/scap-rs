@@ -1,5 +1,5 @@
 use crate::component::cvss_tags::{cvss2, cvss3};
-use crate::component::{CVEConfiguration, CVEConfigurationProps, CVSS2, CVSS3};
+use crate::component::{CVEConfiguration, CVEConfigurationProps, CWEDetails, CVSS2, CVSS3};
 use crate::console_log;
 use crate::modules::cve::Cve;
 use crate::services::cve::cve_details;
@@ -96,9 +96,10 @@ impl Component for CVEDetails {
       <div class="card-header">
       {self.description(cve.description.clone())}
       </div>
-      {self.cvss(cve.clone())}
-      {self.references(cve.references)}
-      {self.configurations(cve.configurations)}
+        {self.cvss(cve.clone())}
+        {self.references(cve.references)}
+        {self.weaknesses(cve.weaknesses.clone())}
+        {self.configurations(cve.configurations)}
       <div class="card-body">
 
       </div>
@@ -183,7 +184,7 @@ impl CVEDetails {
                 {reference.into_iter().map(|r|{
                   html!{
                     <tr>
-                    <td><i class="ti ti-external-link"></i><a href={r.url} target="_blank">{r.name}</a></td>
+                    <td><i class="ti ti-external-link"></i><a href={r.url.clone()} target="_blank">{r.url}</a></td>
                     <td class="text-dark">
                       {r.source}
                     </td>
@@ -210,5 +211,30 @@ impl CVEDetails {
       props: configuration.clone(),
     };
     html! {<CVEConfiguration ..p.clone()/>}
+  }
+
+  fn weaknesses(&self, ws: Vec<cve::v4::Weaknesses>) -> Html {
+    // CVE-2006-5757有多个cwe
+    html! {
+      <div>
+      <div class="accordion" id="accordion-weaknesses" role="tablist" aria-multiselectable="true">
+        <div class="accordion-item">
+          <h2 class="accordion-header" role="tab">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-weaknesses" aria-expanded="true">
+              {"Weaknesses"}
+            </button>
+          </h2>
+          <div id="collapse-weaknesses" class="accordion-collapse collapse show" data-bs-parent="#accordion-weaknesses" style="">
+            <div class="accordion-body pt-0">
+            {ws.into_iter().flat_map(|w|w.description).map(|d|{
+                html!{<CWEDetails id={d.value}/>}
+            }).collect::<Html>()}
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+    }
   }
 }

@@ -1,5 +1,5 @@
-use nvd_api::ApiVersion;
 use nvd_api::v2::products::{CpeMatchParameters, CpeParameters};
+use nvd_api::ApiVersion;
 // https://cwe.mitre.org/data/downloads.html
 // curl -s -k https://cwe.mitre.org/data/downloads.html |grep  -Eo '(/[^"]*\.xml.zip)'|xargs -I % wget -c https://cwe.mitre.org%
 #[tokio::main]

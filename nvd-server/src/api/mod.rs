@@ -1,4 +1,5 @@
 mod cve_api;
+mod cwe_api;
 mod product_api;
 mod vendor_api;
 
@@ -15,6 +16,11 @@ pub fn api_route(cfg: &mut web::ServiceConfig) {
       web::scope("/vendor")
         .service(vendor_api::api_vendor_name)
         .service(vendor_api::api_vendor_list),
+    )
+    .service(
+      web::scope("/cwe")
+        .service(cwe_api::api_cwe_id)
+        .service(cwe_api::api_cwe_list),
     )
     .service(web::scope("/product").service(product_api::api_product_list));
 }

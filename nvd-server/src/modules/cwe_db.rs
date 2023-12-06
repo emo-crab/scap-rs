@@ -1,8 +1,10 @@
 use crate::error::{DBError, DBResult};
 use crate::modules::Cwe;
 use crate::schema::cwes;
+use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use serde::{Deserialize, Serialize};
 
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
@@ -10,6 +12,46 @@ pub struct CreateCwe {
   pub id: i32,
   pub name: String,
   pub description: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct CweCount {
+  pub result: Vec<Cwe>,
+  pub total: i64,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct QueryCwe {
+  pub id: Option<i32>,
+  pub name: Option<String>,
+  pub limit: Option<i64>,
+  pub offset: Option<i64>,
+}
+
+impl QueryCwe {
+  fn query<'a>(
+    &'a self,
+    _conn: &mut MysqlConnection,
+    mut query: cwes::BoxedQuery<'a, DB>,
+  ) -> DBResult<cwes::BoxedQuery<'a, DB>> {
+    if let Some(name) = &self.name {
+      let name = format!("%{name}%");
+      query = query.filter(cwes::name.like(name));
+    }
+    if let Some(id) = &self.id {
+      query = query.filter(cwes::id.eq(id));
+    }
+    Ok(query)
+  }
+  fn total(&self, conn: &mut MysqlConnection) -> DBResult<i64> {
+    let query = self.query(conn, cwes::table.into_boxed())?;
+    // 统计查询全部，分页用
+    Ok(
+      query
+        .select(diesel::dsl::count(cwes::id))
+        .first::<i64>(conn)?,
+    )
+  }
 }
 
 impl Cwe {
@@ -30,5 +72,26 @@ impl Cwe {
         .filter(cwes::name.eq(&args.name))
         .first::<Cwe>(conn)?,
     )
+  }
+  pub fn query_by_id(conn: &mut MysqlConnection, id: &i32) -> DBResult<Self> {
+    Ok(
+      cwes::dsl::cwes
+        .filter(cwes::id.eq(id))
+        .first::<Self>(conn)?,
+    )
+  }
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCwe) -> DBResult<CweCount> {
+    let total = args.total(conn)?;
+    let offset = args.offset.unwrap_or(0).abs();
+    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10).abs(), 10);
+    let result = {
+      let query = args.query(conn, cwes::table.into_boxed())?;
+      query
+        .offset(offset)
+        .limit(limit)
+        .order(cwes::name.asc())
+        .load::<Cwe>(conn)?
+    };
+    Ok(CweCount { result, total })
   }
 }

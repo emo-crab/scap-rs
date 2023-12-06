@@ -26,6 +26,11 @@ pub enum StructuredTextType {
     #[serde(rename(deserialize = "$value"), default)]
     children: Vec<Box<StructuredTextType>>,
   },
+  #[serde(rename(deserialize = "sup"))]
+  Sup {
+    #[serde(rename(deserialize = "$value"), default)]
+    children: Vec<Box<StructuredTextType>>,
+  },
   #[serde(rename(deserialize = "b"))]
   XhtmlB {
     #[serde(rename(deserialize = "$value"), default)]

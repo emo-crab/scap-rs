@@ -3,7 +3,7 @@ use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
 // https://nvd.nist.gov/developers/vulnerabilities
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct CveParameters {
   pub cpe_name: Option<String>,
@@ -32,7 +32,7 @@ pub struct CveParameters {
   pub virtual_match: Option<VirtualMatch>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct VirtualMatch {
   pub virtual_match_string: String,
@@ -125,6 +125,7 @@ pub enum EventName {
 pub struct CveChanges {
   pub change: Change,
 }
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Change {
@@ -135,6 +136,7 @@ pub struct Change {
   pub created: NaiveDateTime,
   pub details: Vec<Details>,
 }
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct Details {
@@ -143,6 +145,7 @@ pub struct Details {
   pub old_value: Option<String>,
   pub new_value: Option<String>,
 }
+
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 pub enum Action {
   Added,

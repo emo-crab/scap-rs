@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Please note, new users are discouraged from starting with the 1.0 API as it will be retired in 2023 but you may still view documentation for the 1.0 Vulnerability and 1.0 Product APIs.
 ///
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct CpeParameters {
   pub cpe_name_id: Option<String>,
@@ -22,7 +22,7 @@ pub struct CpeParameters {
   pub limit_offset: Option<LimitOffset>,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct CpeMatchParameters {
   pub cve_id: Option<String>,

@@ -24,11 +24,7 @@ pub fn cvss3(metric: Option<&cvss::v3::ImpactMetricV3>) -> Html {
   let severity_class = match metric {
     None => "bg-secondary",
     Some(m) => {
-      score = format!(
-        "{} {}",
-        m.cvss_v3.base_score,
-        m.cvss_v3.base_severity
-      );
+      score = format!("{} {}", m.cvss_v3.base_score, m.cvss_v3.base_severity);
       match m.cvss_v3.base_severity {
         SeverityType::None => "bg-secondary",
         SeverityType::Low => "bg-info",

@@ -23,6 +23,8 @@ impl Component for CVSS3 {
     let v3 = ctx.props().v3.clone().unwrap();
     let cvss_v3 = v3.cvss_v3.clone();
     let score = v3.cvss_v3.base_score;
+    let source = v3.source.clone();
+    let who = v3.r#type.clone();
     let exploit_ability_score = round_score(v3.exploitability_score);
     let impact_score = round_score(v3.impact_score);
     html! {
@@ -42,8 +44,12 @@ impl Component for CVSS3 {
         </div>
         </div>
         <div class="card-footer text-bg-light text-center text-muted p-2">
-          <a href="https://www.first.org/cvss/specification-document" target="_blank">
-              {"V3 Legend"} <i class="ti ti-external-link"></i></a>
+            <ul class="list-group list-group-horizontal">
+            <li class="list-group-item col-sm-6">
+            <span class="badge bg-red">{format!("{:?}",who)}</span></li>
+            <li class="list-group-item col-sm-6">
+            <span class="badge bg-blue">{source}</span></li>
+            </ul>
         </div>
         <div class="progress progress-sm card-progress">
           <div class="progress-bar" style={format!( "width: {}%",(score*10.0))} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
@@ -94,6 +100,8 @@ impl Component for CVSS2 {
 
   fn view(&self, ctx: &Context<Self>) -> Html {
     let v2 = ctx.props().v2.clone().unwrap();
+    let who = v2.r#type.clone();
+    let source = v2.source.clone();
     let cvss_v2 = v2.cvss_v2.clone();
     let score = v2.cvss_v2.base_score;
     let exploit_ability_score = round_score(v2.exploitability_score);
@@ -115,8 +123,12 @@ impl Component for CVSS2 {
         </div>
         </div>
         <div class="card-footer text-bg-light text-center text-muted p-2">
-          <a href="https://www.first.org/cvss/specification-document" target="_blank">
-              {"V2 Legend"} <i class="ti ti-external-link"></i></a>
+            <ul class="list-group list-group-horizontal">
+            <li class="list-group-item col-sm-6">
+            <span class="badge bg-red">{format!("{:?}",who)}</span></li>
+            <li class="list-group-item col-sm-6">
+            <span class="badge bg-blue">{source}</span></li>
+            </ul>
         </div>
         <div class="progress progress-sm card-progress">
           <div class="progress-bar" style={format!( "width: {}%",(score*10.0))} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
