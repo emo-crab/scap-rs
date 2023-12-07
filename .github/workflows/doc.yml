@@ -1,8 +1,8 @@
 name: rustdoc
 on:
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
 
 env:
   CARGO_INCREMENTAL: 0

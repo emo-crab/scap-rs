@@ -11,6 +11,7 @@ openssl-sys = "0.9"
 openssl = { version = "0.10", features = ["vendored"] }
 actix-files = "0.6.2"
 actix-cors = "0.6.4"
+mysqlclient-sys = "0.2.5"
 diesel = { version = "2.1.4", features = ["r2d2", "mysql", "chrono", "uuid", "serde_json"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1", features = ["preserve_order"] }

@@ -7,8 +7,8 @@ on:
       - '!/docs/**'
       - "!/LICENSE-*"
   push:
-    branches:
-      - main
+    tags:
+      - "v*"
     paths:
       - '**'
       - '!/*.md'
