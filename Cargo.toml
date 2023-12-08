@@ -33,7 +33,7 @@ codegen-units = 1
 opt-level = 3
 
 [workspace.dependencies]
-nvd-cve = { path = "nvd-cve" }
-nvd-cpe = { path = "nvd-cpe" }
-nvd-cvss = { path = "nvd-cvss" }
-nvd-cwe = { path = "nvd-cwe" }
+nvd-cve = { path = "nvd-cve", version = "0.1.0" }
+nvd-cpe = { path = "nvd-cpe", version = "0.1.0" }
+nvd-cvss = { path = "nvd-cvss", version = "0.1.0" }
+nvd-cwe = { path = "nvd-cwe", version = "0.1.0" }

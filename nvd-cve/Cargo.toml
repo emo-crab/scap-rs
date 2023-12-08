@@ -14,8 +14,6 @@ version.workspace = true
 [dependencies]
 serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", default-features = false, features = ["serde"] }
-#cpe = { path = "../cpe" }
-#cvss = { path = "../cvss" }
 nvd-cpe.workspace = true
 nvd-cvss.workspace = true
 thiserror = "1.0"
