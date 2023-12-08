@@ -109,5 +109,5 @@ pub struct Deprecates {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
 pub struct MatchStrings {
-  pub match_string: nvd_cve::v4::configurations::Match,
+  pub match_string: nvd_cves::v4::configurations::Match,
 }

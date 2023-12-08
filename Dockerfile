@@ -22,7 +22,7 @@ RUN cargo install --locked wasm-bindgen-cli
 COPY Cargo.toml Cargo.toml
 COPY Trunk.toml Trunk.toml
 COPY nvd-cpe nvd-cpe
-COPY nvd-cve nvd-cve
+COPY nvd-cves nvd-cve
 COPY nvd-cvss nvd-cvss
 COPY nvd-yew nvd-yew
 RUN trunk build --release

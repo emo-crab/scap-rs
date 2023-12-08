@@ -72,7 +72,7 @@ pub struct PubDate {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Vulnerabilities {
-  pub cve: nvd_cve::api::CVE,
+  pub cve: nvd_cves::api::CVE,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]

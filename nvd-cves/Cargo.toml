@@ -1,5 +1,5 @@
 [package]
-name = "nvd-cve"
+name = "nvd-cves"
 edition = "2021"
 description = "A rust implementation of the nvd-cve."
 homepage = "https://github.com/emo-crab/nvd-rs"

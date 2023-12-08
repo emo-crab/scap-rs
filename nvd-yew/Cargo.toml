@@ -24,7 +24,7 @@ web-sys = { version = "0.3.63", features = [
     "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
 nvd-cpe = { path = "../nvd-cpe" }
-nvd-cve = { path = "../nvd-cve" }
+nvd-cves = { path = "../nvd-cves" }
 nvd-cvss = { path = "../nvd-cvss" }
 chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
 js-sys = "0.3.65"

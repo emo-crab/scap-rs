@@ -111,7 +111,7 @@ impl Component for CVERow {
     }
 }
 
-pub fn unique_vendor_product(nodes: Vec<nvd_cve::v4::configurations::Node>) -> Vec<nvd_cpe::Product> {
+pub fn unique_vendor_product(nodes: Vec<nvd_cves::v4::configurations::Node>) -> Vec<nvd_cpe::Product> {
     nodes
         .iter()
         .flat_map(|node| node.vendor_product())

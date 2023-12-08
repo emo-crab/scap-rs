@@ -160,7 +160,7 @@ impl CVEDetails {
     </>
     }
   }
-  fn description(&self, description_data: Vec<nvd_cve::v4::Description>) -> Html {
+  fn description(&self, description_data: Vec<nvd_cves::v4::Description>) -> Html {
     let description = description_data
       .iter()
       .map(|d| d.value.clone())
@@ -170,7 +170,7 @@ impl CVEDetails {
       <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
   }
-  fn references(&self, reference: Vec<nvd_cve::v4::Reference>) -> Html {
+  fn references(&self, reference: Vec<nvd_cves::v4::Reference>) -> Html {
     html! {
       <div>
       <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
@@ -217,14 +217,14 @@ impl CVEDetails {
       </div>
     }
   }
-  fn configurations(&self, configuration: Vec<nvd_cve::v4::configurations::Node>) -> Html {
+  fn configurations(&self, configuration: Vec<nvd_cves::v4::configurations::Node>) -> Html {
     let p = CVEConfigurationProps {
       props: configuration.clone(),
     };
     html! {<CVEConfiguration ..p.clone()/>}
   }
 
-  fn weaknesses(&self, ws: Vec<nvd_cve::v4::Weaknesses>) -> Html {
+  fn weaknesses(&self, ws: Vec<nvd_cves::v4::Weaknesses>) -> Html {
     // CVE-2006-5757有多个cwe
     html! {
       <div>

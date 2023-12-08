@@ -9,7 +9,7 @@ license = "GPL-3.0-only"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["nvd-api", "nvd-cpe", "nvd-cve", "nvd-cvss", "nvd-cwe"]
+members = ["nvd-api", "nvd-cpe", "nvd-cves", "nvd-cvss", "nvd-cwe"]
 exclude = ["helper", "nvd-cpe/schema", "nvd-server", "nvd-yew"]
 resolver = "2"
 
@@ -33,7 +33,7 @@ codegen-units = 1
 opt-level = 3
 
 [workspace.dependencies]
-nvd-cve = { path = "nvd-cve", version = "0.1.0" }
+nvd-cves = { path = "nvd-cves", version = "0.1.0" }
 nvd-cpe = { path = "nvd-cpe", version = "0.1.0" }
 nvd-cvss = { path = "nvd-cvss", version = "0.1.0" }
 nvd-cwe = { path = "nvd-cwe", version = "0.1.0" }
