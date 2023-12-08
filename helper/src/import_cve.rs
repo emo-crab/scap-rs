@@ -1,6 +1,6 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
-use cve::v4::CVEItem;
+use nvd_cve::v4::CVEItem;
 use diesel::mysql::MysqlConnection;
 use nvd_server::error::DBResult;
 use nvd_server::modules::cve_db::CreateCve;
@@ -38,7 +38,7 @@ fn create_cve_product(
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{:?}", product.to_owned()) }"#
 )]
-fn import_vendor_product_to_db(connection: &mut MysqlConnection, product: cpe::Product) -> Vec<u8> {
+fn import_vendor_product_to_db(connection: &mut MysqlConnection, product: nvd_cpe::Product) -> Vec<u8> {
   let vendor_id = create_vendor(connection, product.vendor, None);
   create_product(connection, vendor_id, product.product, product.part)
 }
@@ -147,7 +147,7 @@ pub fn import_from_archive(
 
 pub fn import_from_api(
   connection: &mut MysqlConnection,
-  cve_item: cve::api::CVE,
+  cve_item: nvd_cve::api::CVE,
 ) -> DBResult<String> {
   let id = cve_item.id;
   let y = id.split('-').nth(1).unwrap_or_default();

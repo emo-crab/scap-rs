@@ -34,16 +34,16 @@ use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 
-mod attack_complexity;
-mod attack_requirements;
-mod attack_vector;
+pub mod attack_complexity;
+pub mod attack_requirements;
+pub mod attack_vector;
 mod constant;
-mod environmental;
-mod exploit_maturity;
-mod privileges_required;
-mod subsequent_impact_metrics;
-mod user_interaction;
-mod vulnerable_impact_metrics;
+pub mod environmental;
+pub mod exploit_maturity;
+pub mod privileges_required;
+pub mod subsequent_impact_metrics;
+pub mod user_interaction;
+pub mod vulnerable_impact_metrics;
 
 /// 2.1. Exploitability Metrics
 ///
@@ -146,8 +146,8 @@ pub struct CVSS {
 }
 
 impl CVSS {
-  /// https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator
-  // only vector_string not version
+  /// <https://nvd.nist.gov/vuln-metrics/cvss/v4-calculator>
+  /// only vector_string not version
   pub fn vector_string(vectors: &str) -> Result<Self> {
     let exploit_ability = ExploitAbility {
       attack_vector: AttackVectorType::from_str(vectors)?,

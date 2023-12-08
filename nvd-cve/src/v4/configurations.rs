@@ -17,7 +17,7 @@ pub struct Configurations {
 }
 
 impl Configurations {
-  pub fn unique_vendor_product(&self) -> Vec<cpe::Product> {
+  pub fn unique_vendor_product(&self) -> Vec<nvd_cpe::Product> {
     self
       .nodes
       .iter()
@@ -119,10 +119,10 @@ impl Match {
       || self.version_end_including.is_some()
       || self.version_end_excluding.is_some()
   }
-  pub fn product(&self) -> cpe::Product {
-    match cpe::CPEName::from_uri(&self.cpe23_uri) {
-      Ok(name) => cpe::Product::from(&name),
-      Err(_) => cpe::Product::default(),
+  pub fn product(&self) -> nvd_cpe::Product {
+    match nvd_cpe::CPEName::from_uri(&self.cpe23_uri) {
+      Ok(name) => nvd_cpe::Product::from(&name),
+      Err(_) => nvd_cpe::Product::default(),
     }
   }
   pub fn get_version_range(&self) -> String {
@@ -131,7 +131,7 @@ impl Match {
     let mut op_end = None;
     let mut v_start = None;
     let mut v_end = None;
-    if let Ok(name) = cpe::CPEName::from_uri(&self.cpe23_uri) {
+    if let Ok(name) = nvd_cpe::CPEName::from_uri(&self.cpe23_uri) {
       if !(name.version.matches("*") || name.version.matches("-")) {
         op_start = Some("=");
       }
@@ -169,25 +169,25 @@ impl Match {
   }
   pub fn match_version_range(&self, ver: &str) -> bool {
     if let Some(start_inc) = &self.version_start_including {
-      if !cpe::version_cmp(ver, start_inc, ">=") {
+      if !nvd_cpe::version_cmp(ver, start_inc, ">=") {
         return false;
       }
     }
 
     if let Some(start_exc) = &self.version_start_excluding {
-      if !cpe::version_cmp(ver, start_exc, ">") {
+      if !nvd_cpe::version_cmp(ver, start_exc, ">") {
         return false;
       }
     }
 
     if let Some(end_inc) = &self.version_end_including {
-      if !cpe::version_cmp(ver, end_inc, "<=") {
+      if !nvd_cpe::version_cmp(ver, end_inc, "<=") {
         return false;
       }
     }
 
     if let Some(end_exc) = &self.version_end_excluding {
-      if !cpe::version_cmp(ver, end_exc, "<") {
+      if !nvd_cpe::version_cmp(ver, end_exc, "<") {
         return false;
       }
     }
@@ -195,7 +195,7 @@ impl Match {
   }
 
   pub fn is_match(&self, product: &str, version: &str) -> bool {
-    if let Ok(name) = cpe::CPEName::from_uri(&self.cpe23_uri) {
+    if let Ok(name) = nvd_cpe::CPEName::from_uri(&self.cpe23_uri) {
       if name.match_product(product) {
         if self.has_version_range() {
           return self.match_version_range(version);
@@ -248,7 +248,7 @@ impl Node {
     }
     false
   }
-  pub fn vendor_product(&self) -> HashSet<cpe::Product> {
+  pub fn vendor_product(&self) -> HashSet<nvd_cpe::Product> {
     // 只获取有漏洞的组件，运行环境不关联cve
     let product = self
       .cpe_match

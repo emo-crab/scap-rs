@@ -1,6 +1,6 @@
 use crate::component::cvss_tags::{V2Card, V3Card};
-use cvss::v2::ImpactMetricV2;
-use cvss::v3::ImpactMetricV3;
+use nvd_cvss::v2::ImpactMetricV2;
+use nvd_cvss::v3::ImpactMetricV3;
 use yew::prelude::*;
 
 #[derive(Default)]

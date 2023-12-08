@@ -308,11 +308,11 @@ impl VulnerableAvailabilityImpactType {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct VulnerableImpact {
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  /// [`VulnerableConfidentialityImpactType`] 机密性影响（C）
   pub confidentiality_impact: VulnerableConfidentialityImpactType,
-  /// [`IntegrityImpactType`] 完整性影响（I）
+  /// [`VulnerableIntegrityImpactType`] 完整性影响（I）
   pub integrity_impact: VulnerableIntegrityImpactType,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
+  /// [`VulnerableAvailabilityImpactType`] 可用性影响（A）
   pub availability_impact: VulnerableAvailabilityImpactType,
 }
 

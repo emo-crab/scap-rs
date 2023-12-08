@@ -9,9 +9,9 @@ pub struct CveParameters {
   pub cpe_name: Option<String>,
   pub cve_id: Option<String>,
   pub cvss_v2_metrics: Option<String>,
-  pub cvss_v2_severity: Option<cvss::severity::SeverityTypeV2>,
+  pub cvss_v2_severity: Option<nvd_cvss::severity::SeverityTypeV2>,
   pub cvss_v3_metrics: Option<String>,
-  pub cvss_v3_severity: Option<cvss::severity::SeverityType>,
+  pub cvss_v3_severity: Option<nvd_cvss::severity::SeverityType>,
   pub cwe_id: Option<String>,
   pub has_cert_alerts: Option<bool>,
   pub has_cert_notes: Option<bool>,
@@ -72,7 +72,7 @@ pub struct PubDate {
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 pub struct Vulnerabilities {
-  pub cve: cve::api::CVE,
+  pub cve: nvd_cve::api::CVE,
 }
 
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]

@@ -7,11 +7,11 @@ use std::str::FromStr;
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct Environmental {
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  /// [`ConfidentialityRequirements`] 机密性影响（C）
   pub confidentiality_requirements: ConfidentialityRequirements,
-  /// [`IntegrityImpactType`] 完整性影响（I）
+  /// [`IntegrityRequirements`] 完整性影响（I）
   pub integrity_requirements: IntegrityRequirements,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
+  /// [`AvailabilityRequirements`] 可用性影响（A）
   pub availability_requirements: AvailabilityRequirements,
 }
 

@@ -125,12 +125,12 @@ impl CVEDetails {
       <ul class="nav nav-tabs p-1" role="tablist">
       if let Some(v3) = cvss_v31{
         <li class="nav-item">
-          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v3)}</a>
+          <a href="#tabs-cvss31" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v31)}</a>
         </li>
       }
       if let Some(v3) = cvss_v3{
         <li class="nav-item">
-          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v3)}</a>
+          <a href="#tabs-cvss30" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v3)}</a>
         </li>
       }
       if let Some(v2) = cvss_v2{
@@ -141,12 +141,12 @@ impl CVEDetails {
       </ul>
         <div class="tab-content">
         if let Some(v3) = cvss_v31{
-          <div class="tab-pane show active" id="tabs-cvss3">
+          <div class="tab-pane show active" id="tabs-cvss31">
             <CVSS3 v3={Some(v3.clone())}/>
           </div>
         }
         if let Some(v3) = cvss_v3{
-          <div class="tab-pane show active" id="tabs-cvss3">
+          <div class="tab-pane show active" id="tabs-cvss30">
             <CVSS3 v3={Some(v3.clone())}/>
           </div>
         }
@@ -160,7 +160,7 @@ impl CVEDetails {
     </>
     }
   }
-  fn description(&self, description_data: Vec<cve::v4::Description>) -> Html {
+  fn description(&self, description_data: Vec<nvd_cve::v4::Description>) -> Html {
     let description = description_data
       .iter()
       .map(|d| d.value.clone())
@@ -170,7 +170,7 @@ impl CVEDetails {
       <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
   }
-  fn references(&self, reference: Vec<cve::v4::Reference>) -> Html {
+  fn references(&self, reference: Vec<nvd_cve::v4::Reference>) -> Html {
     html! {
       <div>
       <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
@@ -217,14 +217,14 @@ impl CVEDetails {
       </div>
     }
   }
-  fn configurations(&self, configuration: Vec<cve::v4::configurations::Node>) -> Html {
+  fn configurations(&self, configuration: Vec<nvd_cve::v4::configurations::Node>) -> Html {
     let p = CVEConfigurationProps {
       props: configuration.clone(),
     };
     html! {<CVEConfiguration ..p.clone()/>}
   }
 
-  fn weaknesses(&self, ws: Vec<cve::v4::Weaknesses>) -> Html {
+  fn weaknesses(&self, ws: Vec<nvd_cve::v4::Weaknesses>) -> Html {
     // CVE-2006-5757有多个cwe
     html! {
       <div>

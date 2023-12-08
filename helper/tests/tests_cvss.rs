@@ -1,31 +1,31 @@
 #[cfg(test)]
 mod tests {
-  use cvss::severity::SeverityType;
-  use cvss::v3::attack_complexity::AttackComplexityType;
-  use cvss::v3::attack_vector::AttackVectorType;
-  use cvss::v3::impact_metrics::{
+  use nvd_cvss::severity::SeverityType;
+  use nvd_cvss::v3::attack_complexity::AttackComplexityType;
+  use nvd_cvss::v3::attack_vector::AttackVectorType;
+  use nvd_cvss::v3::impact_metrics::{
     AvailabilityImpactType, ConfidentialityImpactType, Impact, IntegrityImpactType,
   };
-  use cvss::v3::privileges_required::PrivilegesRequiredType;
-  use cvss::v3::scope::ScopeType;
-  use cvss::v3::user_interaction::UserInteractionType;
-  use cvss::v3::ExploitAbility;
-  use cvss::version::Version;
+  use nvd_cvss::v3::privileges_required::PrivilegesRequiredType;
+  use nvd_cvss::v3::scope::ScopeType;
+  use nvd_cvss::v3::user_interaction::UserInteractionType;
+  use nvd_cvss::v3::ExploitAbility;
+  use nvd_cvss::version::Version;
   use std::collections::HashMap;
   use std::str::FromStr;
 
   #[test]
   fn it_works() {
     let result = 2 + 2;
-    let cvss3 = cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H");
+    let cvss3 = nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H");
     println!("{cvss3:?}");
-    let cvss2 = cvss::v2::CVSS::from_str("CVSS:2.0/AV:L/AC:M/Au:N/C:C/I:C/A:C");
+    let cvss2 = nvd_cvss::v2::CVSS::from_str("CVSS:2.0/AV:L/AC:M/Au:N/C:C/I:C/A:C");
     println!("{cvss2:?}");
     assert_eq!(result, 4);
   }
   #[test]
   fn test_cvss() {
-    let cvss3 = cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H").unwrap();
+    let cvss3 = nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H").unwrap();
     assert_eq!(
       cvss3.to_string(),
       "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"
@@ -33,7 +33,7 @@ mod tests {
   }
   #[test]
   fn test_cvss_builder() {
-    let cvss_builder = cvss::v3::CVSSBuilder::new(
+    let cvss_builder = nvd_cvss::v3::CVSSBuilder::new(
       Version::V3_1,
       ExploitAbility {
         attack_vector: AttackVectorType::Network,
@@ -59,12 +59,12 @@ mod tests {
   #[test]
   fn test_cvss_scope() {
     let cvss_v3_unchanged =
-      cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:L/A:H").unwrap();
+      nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:L/A:H").unwrap();
     println!("{cvss_v3_unchanged:?}");
     assert_eq!(cvss_v3_unchanged.base_score, 7.1);
     assert_eq!(cvss_v3_unchanged.base_severity, SeverityType::High);
     let cvss_v3_changed =
-      cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:L/A:H").unwrap();
+      nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:C/C:H/I:L/A:H").unwrap();
     assert_eq!(cvss_v3_changed.base_score, 8.2);
     assert_eq!(cvss_v3_changed.base_severity, SeverityType::High);
   }
@@ -81,7 +81,7 @@ mod tests {
       ("CVSS:3.1/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L", 1.8),
     ]);
     for (c, s) in cvss_map.into_iter() {
-      let cvss_v3 = cvss::v3::CVSS::from_str(c).unwrap();
+      let cvss_v3 = nvd_cvss::v3::CVSS::from_str(c).unwrap();
       assert_eq!(cvss_v3.base_score, s);
     }
   }

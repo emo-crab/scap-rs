@@ -1,7 +1,13 @@
 [package]
 name = "nvd-yew"
-version = "0.1.0"
 edition = "2021"
+description = "A rust implementation of the nvd-yew."
+homepage = "https://github.com/emo-crab/nvd-rs"
+repository = "https://github.com/emo-crab/nvd-rs"
+authors = ["Kali-Team <root@kali-team.cn>"]
+readme = "README.md"
+license = "GPLv3"
+version = "0.0.0"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -17,9 +23,9 @@ web-sys = { version = "0.3.63", features = [
     "HtmlSpanElement",
     "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
-cvss = { path = "../cvss" }
-cve = { path = "../cve" }
-cpe = { path = "../cpe" }
+nvd-cpe = { path = "../nvd-cpe" }
+nvd-cve = { path = "../nvd-cve" }
+nvd-cvss = { path = "../nvd-cvss" }
 chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
 js-sys = "0.3.65"
 reqwest = { version = "0.11", features = ["json", "cookies"] }

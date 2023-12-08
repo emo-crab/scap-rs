@@ -6,3 +6,6 @@ nvd-server/nvd-er.mwb
 dev-script
 helper/examples
 helper/tests
+/helper/target/
+/nvd-server/target/
+/nvd-yew/target/

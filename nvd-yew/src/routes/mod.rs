@@ -6,7 +6,7 @@ mod page_not_found;
 
 use crate::modules::cve::CveInfoList;
 use cve::CVEDetails;
-// use cvss::Cvss;
+// use nvd_cvss::Cvss;
 use home::Home;
 use page_not_found::PageNotFound;
 use yew::prelude::*;

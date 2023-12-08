@@ -328,11 +328,11 @@ impl SubsequentAvailabilityImpactType {
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubsequentImpact {
-  /// [`ConfidentialityImpactType`] 机密性影响（C）
+  /// [`SubsequentConfidentialityImpactType`] 机密性影响（C）
   pub confidentiality_impact: SubsequentConfidentialityImpactType,
-  /// [`IntegrityImpactType`] 完整性影响（I）
+  /// [`SubsequentIntegrityImpactType`] 完整性影响（I）
   pub integrity_impact: SubsequentIntegrityImpactType,
-  /// [`AvailabilityImpactType`] 可用性影响（A）
+  /// [`SubsequentAvailabilityImpactType`] 可用性影响（A）
   pub availability_impact: SubsequentAvailabilityImpactType,
 }
 

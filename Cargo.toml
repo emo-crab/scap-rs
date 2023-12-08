@@ -1,14 +1,17 @@
-[package]
-name = "nvd-rs" #改这个
+[workspace.package]
+#name = "nvd-rs" #改这个
 version = "0.1.0"
 edition = "2021"
 authors = ["Kali-Team <root@kali-team.cn>"]
 include = ["LICENSE", "Cargo.toml", "src/**/*.rs"]
+license-file = "LICENSE"
+license = "GPLv3"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["cpe", "cve", "cvss", "cwe", "helper", "nvd-server", "nvd-yew", "nvd-api"]
-default-members = ["nvd-server"]
+members = ["nvd-api", "nvd-cpe", "nvd-cve", "nvd-cvss", "nvd-cwe"]
+exclude = ["helper", "nvd-cpe/schema", "nvd-server", "nvd-yew"]
+resolver = "2"
 
 #https://github.com/johnthagen/min-sized-rust
 [profile.release]
@@ -29,5 +32,8 @@ lto = true
 codegen-units = 1
 opt-level = 3
 
-
-[dependencies]
+[workspace.dependencies]
+nvd-cve = { path = "nvd-cve" }
+nvd-cpe = { path = "nvd-cpe" }
+nvd-cvss = { path = "nvd-cvss" }
+nvd-cwe = { path = "nvd-cwe" }

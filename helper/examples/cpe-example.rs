@@ -1,4 +1,4 @@
-use cpe::dictionary::CPEList;
+use nvd_cpe::dictionary::CPEList;
 use std::fs::File;
 use std::io::BufReader;
 

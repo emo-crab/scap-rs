@@ -1,8 +1,13 @@
 [package]
-name = "cpe"
-version = "0.1.0"
+name = "nvd-cpe"
 edition = "2021"
-
+description = "A rust implementation of the nvd-cpe."
+homepage = "https://github.com/emo-crab/nvd-rs"
+repository = "https://github.com/emo-crab/nvd-rs"
+authors = ["Kali-Team <root@kali-team.cn>"]
+readme = "README.md"
+license.workspace = true
+version.workspace = true
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
