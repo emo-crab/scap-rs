@@ -22,14 +22,23 @@ pub struct CVE {
   pub references: Vec<Reference>,
 }
 
+// 漏洞状态，最新的有很多都是正在分析这个漏洞，没有什么数据，TODO： 可以在前端添加个过滤条件
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
 pub enum VulnStatus {
+  /// 已修改
   Modified,
+  /// 已经分析
   Analyzed,
+  /// 正在进行分析
   #[serde(rename = "Undergoing Analysis")]
   UndergoingAnalysis,
+  /// 已拒绝
   Rejected,
+  /// 被认可的
   Received,
+  /// 等待分析
+  #[serde(rename = "Awaiting Analysis")]
+  AwaitingAnalysis,
 }
 
 #[cfg(test)]

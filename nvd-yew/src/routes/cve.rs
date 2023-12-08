@@ -116,12 +116,18 @@ impl Component for CVEDetails {
 
 impl CVEDetails {
   fn cvss(&self, cve: Cve) -> Html {
+    let cvss_v31 = cve.metrics.base_metric_v31.inner();
     let cvss_v3 = cve.metrics.base_metric_v3.inner();
     let cvss_v2 = cve.metrics.base_metric_v2.inner();
     html! {
       <>
       <div class="card-tabs p-1">
       <ul class="nav nav-tabs p-1" role="tablist">
+      if let Some(v3) = cvss_v31{
+        <li class="nav-item">
+          <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v3)}</a>
+        </li>
+      }
       if let Some(v3) = cvss_v3{
         <li class="nav-item">
           <a href="#tabs-cvss3" class="nav-link" data-bs-toggle="tab" aria-selected="true" role="tab">{format!("CVSS v{}",v3.cvss_v3.version.to_string())} {cvss3(cvss_v3)}</a>
@@ -134,6 +140,11 @@ impl CVEDetails {
       }
       </ul>
         <div class="tab-content">
+        if let Some(v3) = cvss_v31{
+          <div class="tab-pane show active" id="tabs-cvss3">
+            <CVSS3 v3={Some(v3.clone())}/>
+          </div>
+        }
         if let Some(v3) = cvss_v3{
           <div class="tab-pane show active" id="tabs-cvss3">
             <CVSS3 v3={Some(v3.clone())}/>

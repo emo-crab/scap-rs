@@ -165,8 +165,8 @@ pub fn import_from_api(
     weaknesses: serde_json::json!(cve_item.weaknesses),
     timeline: Default::default(),
   };
-  // 插入到数据库
-  match Cve::create(connection, &new_post) {
+  // 插入或者更新到数据库
+  match Cve::create_or_update(connection, &new_post) {
     Ok(cve_id) => {
       // 插入cpe_match关系表
       for node in cve_item.configurations {
@@ -182,7 +182,7 @@ pub fn import_from_api(
       }
     }
     Err(err) => {
-      println!("Cve::create: {err:?}");
+      println!("Cve::create_or_update: {err:?}");
     }
   }
   Ok(new_post.id)

@@ -116,6 +116,37 @@ impl Cve {
     // mysql 不支持 get_result，要再查一次得到插入结果
     Self::query_by_id(conn, &args.id)
   }
+  pub fn create_or_update(conn: &mut MysqlConnection, args: &CreateCve) -> DBResult<Self> {
+    if let Err(err) = diesel::insert_into(cves::table).values(args).execute(conn) {
+      // 重复了，说明已经存在CVE
+      return match err {
+        DieselError::DatabaseError(DatabaseErrorKind::UniqueViolation, _) => {
+          // 更新这个CVE
+          let id = diesel::update(cves::table.filter(cves::id.eq(&args.id)))
+            .set((
+              cves::assigner.eq(&args.assigner),
+              cves::description.eq(&args.description),
+              cves::severity.eq(&args.severity),
+              cves::metrics.eq(&args.metrics),
+              cves::weaknesses.eq(&args.weaknesses),
+              cves::configurations.eq(&args.configurations),
+              cves::references.eq(&args.references),
+              cves::timeline.eq(&args.timeline),
+              cves::created_at.eq(&args.created_at),
+              cves::updated_at.eq(&args.updated_at),
+            ))
+            .execute(conn);
+          match id {
+            Ok(_id) => Self::query_by_id(conn, &args.id),
+            Err(err) => Err(DBError::DieselError { source: err }),
+          }
+        }
+        _ => Err(DBError::DieselError { source: err }),
+      };
+    }
+    // mysql 不支持 get_result，要再查一次得到插入结果
+    Self::query_by_id(conn, &args.id)
+  }
   // 查单个cve不联cvss表
   pub fn query_by_id(conn: &mut MysqlConnection, id: &str) -> DBResult<Self> {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)

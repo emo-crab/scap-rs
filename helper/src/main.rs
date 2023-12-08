@@ -12,8 +12,8 @@ use std::ops::DerefMut;
 #[tokio::main]
 async fn main() {
   // import_cwe();
-  with_archive();
-  std::process::exit(0);
+  // with_archive();
+  // std::process::exit(0);
 
   let connection_pool = init_db_pool();
   let api = nvd_api::NVDApi::new(None, ApiVersion::default()).unwrap();
@@ -30,6 +30,7 @@ async fn main() {
   let resp = api.cve(param).await.unwrap();
   if let Object::Vulnerabilities(vs) = resp.results {
     for v in vs {
+      println!("正在同步：{:?} {:?}", v.cve.vuln_status, v.cve.id);
       import_from_api(connection_pool.get().unwrap().deref_mut(), v.cve).unwrap();
     }
   }

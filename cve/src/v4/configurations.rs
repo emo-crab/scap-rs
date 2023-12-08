@@ -103,6 +103,16 @@ impl Default for Operator {
 }
 
 impl Match {
+  pub fn is_vulnerable(&self) -> bool {
+    if self.vulnerable {
+      true
+    } else {
+      self.version_start_including.is_some()
+        || self.version_start_excluding.is_some()
+        || self.version_end_including.is_some()
+        || self.version_end_excluding.is_some()
+    }
+  }
   pub fn has_version_range(&self) -> bool {
     self.version_start_including.is_some()
       || self.version_start_excluding.is_some()
@@ -239,7 +249,12 @@ impl Node {
     false
   }
   pub fn vendor_product(&self) -> HashSet<cpe::Product> {
-    let product = self.cpe_match.iter().map(|m| m.product());
+    // 只获取有漏洞的组件，运行环境不关联cve
+    let product = self
+      .cpe_match
+      .iter()
+      .filter(|m| m.is_vulnerable())
+      .map(|m| m.product());
     let children = self.children.iter().flat_map(|node| node.vendor_product());
     product.chain(children).collect()
   }

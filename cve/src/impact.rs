@@ -14,9 +14,11 @@ pub struct ImpactMetrics {
   // cvssV2 过期
   #[serde(alias = "cvssMetricV2", default)]
   pub base_metric_v2: OneOrMany<ImpactMetricV2>,
-  // cvssV3
-  #[serde(alias = "cvssMetricV31", alias = "cvssMetricV30", default)]
+  // cvssV3 会出现同时有V3.0和V3.1的，看是否要分为枚举版本 数组
+  #[serde(alias = "cvssMetricV30", default)]
   pub base_metric_v3: OneOrMany<ImpactMetricV3>,
+  #[serde(alias = "cvssMetricV31", default)]
+  pub base_metric_v31: OneOrMany<ImpactMetricV3>,
   // TODO: Implement V4?
 }
 
@@ -31,6 +33,7 @@ impl ImpactMetrics {
     String::from("None")
   }
 }
+
 // 为了兼容API接口返回的数据和json归档数据结构
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(untagged)]
@@ -55,6 +58,7 @@ impl<T> OneOrMany<T> {
     }
   }
 }
+
 impl<T> From<OneOrMany<T>> for Vec<T> {
   fn from(from: OneOrMany<T>) -> Self {
     match from {
