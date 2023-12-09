@@ -23,12 +23,15 @@ web-sys = { version = "0.3.63", features = [
     "HtmlSpanElement",
     "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
-nvd-cpe = { path = "../nvd-cpe" }
-nvd-cves = { path = "../nvd-cves" }
-nvd-cvss = { path = "../nvd-cvss" }
+nvd-cpe = { version = "0.1.0" }
+nvd-cves = { version = "0.1.0" }
+nvd-cvss = { version = "0.1.0" }
 chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
 js-sys = "0.3.65"
 reqwest = { version = "0.11", features = ["json", "cookies"] }
 serde = "1"
 thiserror = "1.0"
 wasm-bindgen-futures = "0.4.37"
+[[bin]]
+name = "nvd-yew"
+path = "src/main.rs"

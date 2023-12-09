@@ -19,12 +19,12 @@ RUN rustup target add wasm32-unknown-unknown
 RUN cargo install --locked trunk
 RUN cargo install --locked wasm-bindgen-cli
 # 其他模块需要工作区配置
-COPY Cargo.toml Cargo.toml
-COPY Trunk.toml Trunk.toml
-COPY nvd-cpe nvd-cpe
-COPY nvd-cves nvd-cve
-COPY nvd-cvss nvd-cvss
-COPY nvd-yew nvd-yew
+COPY nvd-yew/Cargo.toml Cargo.toml
+RUN cargo fetch
+COPY nvd-yew/index.html index.html
+COPY nvd-yew/Trunk.toml Trunk.toml
+COPY nvd-yew/static static
+COPY nvd-yew/src src
 RUN trunk build --release
 
 # Use any runner as you want
