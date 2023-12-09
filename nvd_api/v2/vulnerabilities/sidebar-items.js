@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["Action","EventName","VersionType"],"struct":["Change","ChangeDate","CveChanges","CveHistoryParameters","CveParameters","Details","PubDate","VersionEnd","VersionStart","VirtualMatch","Vulnerabilities"]};

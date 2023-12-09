@@ -1,0 +1,3 @@
+(function() {var implementors = {
+"nvd_api":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/alloc/string/trait.ToString.html\" title=\"trait alloc::string::ToString\">ToString</a> for <a class=\"enum\" href=\"nvd_api/enum.ApiVersion.html\" title=\"enum nvd_api::ApiVersion\">ApiVersion</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

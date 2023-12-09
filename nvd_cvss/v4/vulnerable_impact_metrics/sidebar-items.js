@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["VulnerableAvailabilityImpactType","VulnerableConfidentialityImpactType","VulnerableIntegrityImpactType"],"struct":["VulnerableImpact"]};

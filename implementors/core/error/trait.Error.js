@@ -1,0 +1,6 @@
+(function() {var implementors = {
+"nvd_api":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"nvd_api/error/enum.Error.html\" title=\"enum nvd_api::error::Error\">Error</a>"]],
+"nvd_cpe":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"nvd_cpe/error/enum.CPEError.html\" title=\"enum nvd_cpe::error::CPEError\">CPEError</a>"]],
+"nvd_cves":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"nvd_cves/error/enum.CVEError.html\" title=\"enum nvd_cves::error::CVEError\">CVEError</a>"]],
+"nvd_cvss":[["impl <a class=\"trait\" href=\"https://doc.rust-lang.org/1.74.1/core/error/trait.Error.html\" title=\"trait core::error::Error\">Error</a> for <a class=\"enum\" href=\"nvd_cvss/error/enum.CVSSError.html\" title=\"enum nvd_cvss::error::CVSSError\">CVSSError</a>"]]
+};if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

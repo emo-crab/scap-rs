@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["attack_complexity","attack_vector","impact_metrics","privileges_required","scope","user_interaction"],"struct":["CVSS","CVSSBuilder","ExploitAbility","ImpactMetricV3"]};

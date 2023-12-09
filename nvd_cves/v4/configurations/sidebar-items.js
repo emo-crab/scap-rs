@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["MatchStatus","Operator"],"struct":["Configurations","Match","Matches","Node"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["UsageEnum"],"struct":["MappingNotes","Reason","Reasons","Suggestion","Suggestions","Usage"]};

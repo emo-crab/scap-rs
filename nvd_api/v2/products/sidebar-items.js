@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["RefType"],"struct":["Cpe","CpeMatchParameters","CpeParameters","DeprecatedBy","Deprecates","MatchStrings","Products","Refs","Titles"]};

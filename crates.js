@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["nvd_api","nvd_cpe","nvd_cves","nvd_cvss","nvd_cwe"];

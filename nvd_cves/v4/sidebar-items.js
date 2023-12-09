@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["configurations"],"struct":["CVE","CVEContainer","CVEItem","Description","Descriptions","Meta","ProblemType","Reference","References","Weaknesses"]};

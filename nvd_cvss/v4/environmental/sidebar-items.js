@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["AvailabilityRequirements","ConfidentialityRequirements","IntegrityRequirements"],"struct":["Environmental"]};

@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["attack_complexity","attack_requirements","attack_vector","environmental","exploit_maturity","privileges_required","subsequent_impact_metrics","user_interaction","vulnerable_impact_metrics"],"struct":["CVSS","ExploitAbility"]};

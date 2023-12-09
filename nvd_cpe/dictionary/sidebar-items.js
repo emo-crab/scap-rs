@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"fn":["attribute_to_uri","uri_to_attribute"],"struct":["CPE23Item","CPEItem","CPEList","Check","DeprecatedInfo","Deprecation","Generator","Notes","Reference","References","Title"]};

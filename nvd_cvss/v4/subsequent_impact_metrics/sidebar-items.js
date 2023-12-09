@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"enum":["SubsequentAvailabilityImpactType","SubsequentConfidentialityImpactType","SubsequentIntegrityImpactType"],"struct":["SubsequentImpact"]};

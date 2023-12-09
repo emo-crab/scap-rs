@@ -1,0 +1,1 @@
+window.SIDEBAR_ITEMS = {"mod":["categories","content_history","external_references","mapping_notes","notes","relationships","structured_text","views","weakness_catalog","weaknesses"]};
