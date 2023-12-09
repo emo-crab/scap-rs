@@ -4,6 +4,7 @@ use crate::console_log;
 use crate::modules::cve::Cve;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
+use std::collections::HashSet;
 use yew::prelude::*;
 use yew_router::prelude::*;
 
@@ -119,6 +120,21 @@ impl CVEDetails {
     let cvss_v31 = cve.metrics.base_metric_v31.inner();
     let cvss_v3 = cve.metrics.base_metric_v3.inner();
     let cvss_v2 = cve.metrics.base_metric_v2.inner();
+    let active_v31: Vec<&str> = if cvss_v31.is_some() {
+      vec!["tab-pane", "show", "active"]
+    } else {
+      vec!["tab-pane", "show"]
+    };
+    let active_v30: Vec<&str> = if cvss_v31.is_none() && cvss_v3.is_some() {
+      vec!["tab-pane", "show", "active"]
+    } else {
+      vec!["tab-pane", "show"]
+    };
+    let active_v2: Vec<&str> = if cvss_v31.is_none() && cvss_v3.is_none() {
+      vec!["tab-pane", "show", "active"]
+    } else {
+      vec!["tab-pane", "show"]
+    };
     html! {
       <>
       <div class="card-tabs p-1">
@@ -141,17 +157,17 @@ impl CVEDetails {
       </ul>
         <div class="tab-content">
         if let Some(v3) = cvss_v31{
-          <div class="tab-pane show active" id="tabs-cvss31">
+          <div class={classes!(active_v31)} id="tabs-cvss31">
             <CVSS3 v3={Some(v3.clone())}/>
           </div>
         }
         if let Some(v3) = cvss_v3{
-          <div class="tab-pane show active" id="tabs-cvss30">
+          <div class={classes!(active_v30)} id="tabs-cvss30">
             <CVSS3 v3={Some(v3.clone())}/>
           </div>
         }
         if let Some(v2) = cvss_v2{
-          <div class="tab-pane show" id="tabs-cvss2">
+          <div class={classes!(active_v2)} id="tabs-cvss2">
             <CVSS2 v2={Some(v2.clone())}/>
           </div>
         }
@@ -226,6 +242,11 @@ impl CVEDetails {
 
   fn weaknesses(&self, ws: Vec<nvd_cves::v4::Weaknesses>) -> Html {
     // CVE-2006-5757有多个cwe
+    let ws_set = ws
+      .into_iter()
+      .flat_map(|w| w.description)
+      .map(|d| d.value)
+      .collect::<HashSet<String>>();
     html! {
       <div>
       <div class="accordion" id="accordion-weaknesses" role="tablist" aria-multiselectable="true">
@@ -237,10 +258,9 @@ impl CVEDetails {
           </h2>
           <div id="collapse-weaknesses" class="accordion-collapse collapse show" data-bs-parent="#accordion-weaknesses" style="">
             <div class="accordion-body pt-0">
-            {ws.into_iter().flat_map(|w|w.description).map(|d|{
-                html!{<CWEDetails id={d.value}/>}
+            {ws_set.into_iter().map(|d|{
+                html!{<CWEDetails id={d}/>}
             }).collect::<Html>()}
-
             </div>
           </div>
         </div>
