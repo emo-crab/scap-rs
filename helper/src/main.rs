@@ -1,5 +1,5 @@
 use chrono::{Duration, Utc};
-use nvd_cve::v4::CVEContainer;
+use nvd_cves::v4::CVEContainer;
 use helper::{import_from_api, import_from_archive, init_db_pool};
 use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;

@@ -1,6 +1,6 @@
 use cached::proc_macro::cached;
 use cached::SizedCache;
-use nvd_cve::v4::CVEItem;
+use nvd_cves::v4::CVEItem;
 use diesel::mysql::MysqlConnection;
 use nvd_server::error::DBResult;
 use nvd_server::modules::cve_db::CreateCve;
@@ -147,7 +147,7 @@ pub fn import_from_archive(
 
 pub fn import_from_api(
   connection: &mut MysqlConnection,
-  cve_item: nvd_cve::api::CVE,
+  cve_item: nvd_cves::api::CVE,
 ) -> DBResult<String> {
   let id = cve_item.id;
   let y = id.split('-').nth(1).unwrap_or_default();

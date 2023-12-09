@@ -1,4 +1,4 @@
-use cwe::weakness_catalog::WeaknessCatalog;
+use nvd_cwe::weakness_catalog::WeaknessCatalog;
 use std::fs::File;
 use std::io::BufReader;
 
