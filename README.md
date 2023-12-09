@@ -11,13 +11,13 @@
 ## Libraries
 
 ### cvss 通用漏洞评分系统
-- [doc](https://emo-crab.github.io/nvd-rs/cvss/)
+- [doc](https://emo-crab.github.io/nvd-rs/nvd_cvss/)
 
 ### cve 通用漏洞披露
-- [doc](https://emo-crab.github.io/nvd-rs/cve/)
+- [doc](https://emo-crab.github.io/nvd-rs/nvd_cves/)
 
 ### cpe 通用平台枚举
-- [doc](https://emo-crab.github.io/nvd-rs/cpe/)
+- [doc](https://emo-crab.github.io/nvd-rs/nvd_cpe/)
 
 ### cwe 通用弱点枚举
-- [doc](https://emo-crab.github.io/nvd-rs/cwe/)
+- [doc](https://emo-crab.github.io/nvd-rs/nvd_cwe/)

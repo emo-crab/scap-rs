@@ -1,3 +1,4 @@
+//! nvd api error
 use crate::pagination::Object;
 use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
