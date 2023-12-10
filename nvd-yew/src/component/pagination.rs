@@ -61,7 +61,7 @@ impl Component for Pagination {
     }
     html! {
         <div class="card-footer card-footer-sm d-flex align-items-center">
-          <p class="m-0 text-muted">{"展示"} <span>{page+1}</span> {"到"} <span>{page+size}</span> {"条"} <span>{"总数"}</span>{total} </p>
+          <p class="m-0 text-muted">{"展示"} <span class="badge">{page*size+1}</span> {"到"} <span class="badge">{(page+1)*size}</span> {"条"} {"总数"}<span class="badge">{total}</span></p>
           <ul class="pagination m-0 ms-auto">
             <li class={classes!(["page-item",if page == 0 { "disabled" } else { "" }])}>
               <button class="btn page-link" onclick={prev_page}>
