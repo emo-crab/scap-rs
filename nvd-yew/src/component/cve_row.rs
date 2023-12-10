@@ -38,7 +38,7 @@ impl Component for CVERow {
             .map(|d| d.value.clone())
             .collect::<Vec<String>>();
         let update = props.created_at.to_string();
-        let cwe: Vec<String> = props
+        let cwe: HashSet<String> = props
             .weaknesses
             .iter()
             .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
@@ -91,7 +91,9 @@ impl Component for CVERow {
           {if vendor_product.len()>3{html!(<i>{format!("{} and more",vendor_product.len()-2)}</i>)}else{html!()}}
           </td>
           <td>
-            {cwe}
+            {cwe.iter().map(|w|{
+                html!(<span class={classes!(["badge"])}><b style="font-size:larger">{w}</b></span>)
+            }).collect::<Html>()}
           </td>
           <td>
             {cvss2(metrics.base_metric_v2.inner())}
