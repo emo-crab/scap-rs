@@ -43,9 +43,9 @@ pub struct QueryCve {
   // 评分等级
   pub severity: Option<String>,
   // 分页每页
-  pub limit: Option<i64>,
+  pub size: Option<i64>,
   // 分页偏移
-  pub offset: Option<i64>,
+  pub page: Option<i64>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -53,9 +53,9 @@ pub struct CveInfoCount {
   // 结果数据
   pub result: Vec<Cve>,
   // 分页每页
-  pub limit: i64,
+  pub size: i64,
   // 分页偏移
-  pub offset: i64,
+  pub page: i64,
   // 结果总数
   pub total: i64,
 }
@@ -155,20 +155,20 @@ impl Cve {
   pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> DBResult<CveInfoCount> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
-    let offset = args.offset.unwrap_or(0).abs();
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10).abs(), 10);
+    let page = args.page.unwrap_or(0).abs();
+    let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;
       query
         .order(cves::id.desc())
-        .offset(offset)
-        .limit(limit)
+        .offset(page * size)
+        .limit(size)
         .load::<Cve>(conn)?
     };
     Ok(CveInfoCount {
       result,
-      limit,
-      offset,
+      size,
+      page,
       total,
     })
   }

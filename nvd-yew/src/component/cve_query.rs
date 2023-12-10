@@ -61,8 +61,8 @@ impl Component for CVEQuery {
           } else {
             Some(severity)
           },
-          limit: query.limit,
-          offset: query.offset,
+          size: query.size,
+          page: query.page,
         })
       })
     };

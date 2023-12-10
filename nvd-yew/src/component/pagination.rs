@@ -3,9 +3,9 @@ use yew::prelude::*;
 // 通用分页组件
 #[derive(PartialEq, Clone, Properties)]
 pub struct PaginationProps {
-  pub limit: i64,
+  pub size: i64,
   pub total: i64,
-  pub offset: i64,
+  pub page: i64,
   pub next_page: Callback<MouseEvent>,
   pub prev_page: Callback<MouseEvent>,
   pub to_page: Callback<MouseEvent>,
@@ -23,8 +23,8 @@ impl Component for Pagination {
 
   fn view(&self, ctx: &Context<Self>) -> Html {
     let total = ctx.props().total;
-    let limit = ctx.props().limit;
-    let offset = ctx.props().offset;
+    let size = ctx.props().size;
+    let page = ctx.props().page;
     let to_page = ctx.props().to_page.clone();
     let next_page = ctx.props().next_page.clone();
     let prev_page = ctx.props().prev_page.clone();
@@ -36,7 +36,7 @@ impl Component for Pagination {
     for n in 1..=page_count {
       let mut class_list = Vec::new();
       // 当前激活的页面
-      let active = offset / 10 + 1;
+      let active = page + 1;
       if active == n {
         class_list.push("active".to_string());
       }
@@ -61,9 +61,9 @@ impl Component for Pagination {
     }
     html! {
         <div class="card-footer card-footer-sm d-flex align-items-center">
-          <p class="m-0 text-muted">{"展示"} <span>{offset+1}</span> {"到"} <span>{offset+limit}</span> {"条"} <span>{"总数"}</span>{total} </p>
+          <p class="m-0 text-muted">{"展示"} <span>{page+1}</span> {"到"} <span>{page+size}</span> {"条"} <span>{"总数"}</span>{total} </p>
           <ul class="pagination m-0 ms-auto">
-            <li class={classes!(["page-item",if offset == 0 { "disabled" } else { "" }])}>
+            <li class={classes!(["page-item",if page == 0 { "disabled" } else { "" }])}>
               <button class="btn page-link" onclick={prev_page}>
                 {"prev"}
                 <i class="ti ti-chevron-left"></i>
@@ -74,7 +74,7 @@ impl Component for Pagination {
               html!{<li class={classes!(active)}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
             }).collect::<Html>()
             }
-            <li class={classes!(["page-item",if offset+10>=total { "disabled" } else { "" }])}>
+            <li class={classes!(["page-item",if page>=total { "disabled" } else { "" }])}>
               <button class="btn page-link" onclick={next_page}>
                 {"next"}
                 <i class="ti ti-chevron-right"></i>

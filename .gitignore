@@ -22,3 +22,4 @@ Cargo.lock
 /helper/target/
 /nvd-server/target/
 /nvd-yew/target/
+/nvd-yew/dist/

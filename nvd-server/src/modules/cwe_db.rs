@@ -24,8 +24,8 @@ pub struct CweCount {
 pub struct QueryCwe {
   pub id: Option<i32>,
   pub name: Option<String>,
-  pub limit: Option<i64>,
-  pub offset: Option<i64>,
+  pub size: Option<i64>,
+  pub page: Option<i64>,
 }
 
 impl QueryCwe {
@@ -82,13 +82,13 @@ impl Cwe {
   }
   pub fn query(conn: &mut MysqlConnection, args: &QueryCwe) -> DBResult<CweCount> {
     let total = args.total(conn)?;
-    let offset = args.offset.unwrap_or(0).abs();
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10).abs(), 10);
+    let page = args.page.unwrap_or(0).abs();
+    let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
     let result = {
       let query = args.query(conn, cwes::table.into_boxed())?;
       query
-        .offset(offset)
-        .limit(limit)
+        .offset(page)
+        .limit(size)
         .order(cwes::name.asc())
         .load::<Cwe>(conn)?
     };

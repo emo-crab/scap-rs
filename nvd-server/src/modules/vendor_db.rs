@@ -25,8 +25,8 @@ pub struct VendorCount {
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,
-  pub limit: Option<i64>,
-  pub offset: Option<i64>,
+  pub size: Option<i64>,
+  pub page: Option<i64>,
 }
 
 impl QueryVendor {
@@ -87,13 +87,13 @@ impl Vendor {
   // 查询提供商从查询参数
   pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<VendorCount> {
     let total = args.total(conn)?;
-    let offset = args.offset.unwrap_or(0).abs();
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10).abs(), 10);
+    let page = args.page.unwrap_or(0).abs();
+    let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
     let result = {
       let query = args.query(conn, vendors::table.into_boxed())?;
       query
-        .offset(offset)
-        .limit(limit)
+        .offset(page * size)
+        .limit(size)
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };

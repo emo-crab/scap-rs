@@ -41,11 +41,11 @@ impl Component for CveInfoList {
     match msg {
       Msg::SetFetchState(FetchState::Success(cil)) => {
         self.total = cil.total;
-        self.offset = cil.offset;
-        self.limit = cil.limit;
+        self.page = cil.page;
+        self.size = cil.size;
         self.result = cil.result;
-        self.query.offset = Some(cil.offset);
-        self.query.limit = Some(cil.limit);
+        self.query.page = Some(cil.page);
+        self.query.size = Some(cil.size);
         return true;
       }
       Msg::SetFetchState(FetchState::Failed(err)) => {
@@ -63,15 +63,13 @@ impl Component for CveInfoList {
       Msg::Page(page) => {
         match page {
           PageMsg::Next => {
-            self.query.offset =
-              Some(self.query.offset.unwrap_or(0) + self.query.limit.unwrap_or(10));
+            self.query.page = Some(self.query.page.unwrap_or(0) + 1);
           }
           PageMsg::Prev => {
-            self.query.offset =
-              Some(self.query.offset.unwrap_or(0) - self.query.limit.unwrap_or(10));
+            self.query.page = Some(self.query.page.unwrap_or(0) - 1);
           }
           PageMsg::To(page) => {
-            self.query.offset = Some((page - 1) * self.query.limit.unwrap_or(10));
+            self.query.page = Some(page - 1);
           }
         }
         ctx
@@ -160,8 +158,8 @@ impl Component for CveInfoList {
 impl CveInfoList {
   fn pagination(&self, ctx: &Context<Self>) -> Html {
     let total = self.total;
-    let limit = self.limit;
-    let offset = self.offset;
+    let size = self.size;
+    let page = self.page;
     let next_page = ctx.link().callback(|_| Msg::Page(PageMsg::Next));
     let prev_page = ctx.link().callback(|_| Msg::Page(PageMsg::Prev));
     let to_page = ctx.link().callback(|event: MouseEvent| {
@@ -171,9 +169,9 @@ impl CveInfoList {
       Msg::Page(PageMsg::To(page))
     });
     let p = PaginationProps {
-      limit,
+      size,
       total,
-      offset,
+      page,
       next_page,
       prev_page,
       to_page,

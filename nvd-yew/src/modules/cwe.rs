@@ -11,20 +11,21 @@ pub struct CweInfoList {
   // 结果数据
   pub result: Vec<Cwe>,
   // 分页每页
-  pub limit: i64,
+  pub size: i64,
   // 分页偏移
-  pub offset: i64,
+  pub page: i64,
   // 结果总数
   pub total: i64,
   #[serde(skip)]
   pub query: QueryCwe,
 }
+
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]
 pub struct QueryCwe {
   // 精准CWE编号
   pub id: Option<i32>,
   // 分页每页
-  pub limit: Option<i64>,
+  pub size: Option<i64>,
   // 分页偏移
-  pub offset: Option<i64>,
+  pub page: Option<i64>,
 }

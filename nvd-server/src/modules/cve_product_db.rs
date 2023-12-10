@@ -41,8 +41,8 @@ pub struct QueryCveProduct {
   pub cve_id: Option<String>,
   pub vendor: Option<String>,
   pub product: Option<String>,
-  pub limit: Option<i64>,
-  pub offset: Option<i64>,
+  pub size: Option<i64>,
+  pub page: Option<i64>,
 }
 
 impl QueryCveProduct {
@@ -149,8 +149,8 @@ impl CveProduct {
       cve_id: None,
       vendor: vendor.clone(),
       product: product.clone(),
-      limit: None,
-      offset: None,
+      size: None,
+      page: None,
     };
     let query = args.query(conn, cve_product::table.into_boxed())?;
     let cve_id = query.select(cve_product::cve_id).load::<String>(conn)?;
@@ -163,13 +163,13 @@ impl CveProduct {
   ) -> DBResult<CveProductInfoCount> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
-    let offset = args.offset.unwrap_or(0);
-    let limit = std::cmp::min(args.limit.to_owned().unwrap_or(10), 10);
+    let page = args.page.unwrap_or(0);
+    let size = std::cmp::min(args.size.to_owned().unwrap_or(10), 10);
     let result = {
       let cve_ids_query = args.query(conn, cve_product::table.into_boxed())?;
       let cve_ids = cve_ids_query
-        .offset(offset)
-        .limit(limit)
+        .offset(page * size)
+        .limit(size)
         .select(cve_product::cve_id)
         .load::<String>(conn)?;
       // 联表查要把表写在前面，但是这样就用不了query了，所以先查处cve编号列表再eq_any过滤
