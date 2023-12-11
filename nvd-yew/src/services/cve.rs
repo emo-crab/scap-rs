@@ -1,5 +1,6 @@
 use super::request_get;
 use crate::error::Error;
+use crate::modules::cpe::{QueryVendor, VendorInfoList};
 use crate::modules::cve::{Cve, CveInfoList, QueryCve};
 use crate::modules::cwe::Cwe;
 
@@ -12,4 +13,7 @@ pub async fn cve_details(id: String) -> Result<Cve, Error> {
 
 pub async fn cwe_details(id: i32) -> Result<Cwe, Error> {
   request_get::<(), Cwe>(format!("cwe/{}", id), ()).await
+}
+pub async fn vendor_list(query: QueryVendor) -> Result<VendorInfoList, Error> {
+  request_get::<QueryVendor, VendorInfoList>("vendor".to_string(), query).await
 }
