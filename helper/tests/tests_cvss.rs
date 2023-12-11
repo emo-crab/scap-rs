@@ -25,7 +25,8 @@ mod tests {
   }
   #[test]
   fn test_cvss() {
-    let cvss3 = nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H").unwrap();
+    let cvss3 =
+      nvd_cvss::v3::CVSS::from_str("CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H").unwrap();
     assert_eq!(
       cvss3.to_string(),
       "CVSS:3.1/AV:L/AC:L/PR:H/UI:N/S:U/C:H/I:H/A:H"

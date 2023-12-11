@@ -1,7 +1,7 @@
 use crate::init_db_pool;
+use diesel::MysqlConnection;
 use nvd_cwe::weakness_catalog::WeaknessCatalog;
 use nvd_cwe::weaknesses::Weakness;
-use diesel::MysqlConnection;
 use nvd_server::modules::cwe_db::CreateCwe;
 use nvd_server::modules::Cwe;
 use std::fs::File;

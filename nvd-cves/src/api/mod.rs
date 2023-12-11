@@ -18,8 +18,13 @@ pub struct CVE {
   #[serde(default)]
   pub weaknesses: Vec<Weaknesses>,
   #[serde(default)]
-  pub configurations: Vec<Node>,
+  pub configurations: Vec<Nodes>,
   pub references: Vec<Reference>,
+}
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+pub struct Nodes {
+  #[serde(default)]
+  pub nodes: Vec<Node>,
 }
 
 // 漏洞状态，最新的有很多都是正在分析这个漏洞，没有什么数据，TODO： 可以在前端添加个过滤条件

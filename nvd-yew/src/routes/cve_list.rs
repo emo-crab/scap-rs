@@ -122,7 +122,7 @@ impl Component for CveInfoList {
       <div class="card">
         {self.query(ctx)}
         <div class="table-responsive">
-          <table class="table card-table table-vcenter table-striped table-sm">
+          <table class="table card-table table-vcenter table-striped table-sm table-hover">
             <thead class="sticky-top">
               <tr>
                 <th scope="col">{"CVE"}</th>

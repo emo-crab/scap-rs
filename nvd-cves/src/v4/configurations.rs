@@ -35,7 +35,7 @@ pub struct Node {
   #[serde(default)]
   pub negate: bool,
   // 子节点
-  #[serde(default, alias = "nodes")]
+  #[serde(default)]
   pub children: Vec<Node>,
   // CPE 匹配列表
   #[serde(alias = "cpeMatch", default)]

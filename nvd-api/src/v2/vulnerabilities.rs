@@ -7,7 +7,6 @@ use crate::v2::{Keyword, LastModDate, LimitOffset};
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 
-
 /// The CVE API is used to easily retrieve information on a single CVE or a collection of CVE from the NVD. The NVD contains 232,639 CVE records. Because of this, its APIs enforce offset-based pagination to answer requests for large collections. Through a series of smaller “chunked” responses controlled by an offset startIndex and a page limit resultsPerPage users may page through all the CVE in the NVD.
 ///
 /// The URL stem for retrieving CVE information is shown below.
