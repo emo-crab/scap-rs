@@ -56,7 +56,6 @@ pub struct Product {
 
 #[derive(Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Vendor {
-  #[serde(skip)]
   pub id: Vec<u8>,
   pub official: u8,
   pub name: String,

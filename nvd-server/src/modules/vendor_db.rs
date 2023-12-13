@@ -19,6 +19,11 @@ pub struct CreateVendors {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct VendorCount {
   pub result: Vec<Vendor>,
+  // 分页每页
+  pub size: i64,
+  // 分页偏移
+  pub page: i64,
+  // 结果总数
   pub total: i64,
 }
 #[derive(Debug, Serialize, Deserialize)]
@@ -97,6 +102,6 @@ impl Vendor {
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };
-    Ok(VendorCount { result, total })
+    Ok(VendorCount { result, size, page, total })
   }
 }
