@@ -79,7 +79,7 @@ impl Component for VendorInfoList {
           .link()
           .navigator()
           .unwrap()
-          .push_with_query(&Route::CveList, &self.query)
+          .push_with_query(&Route::Vendor, &self.query)
           .unwrap();
         ctx.link().send_message(Msg::Send);
       }
@@ -122,7 +122,7 @@ impl Component for VendorInfoList {
             <thead class="sticky-top">
               <tr>
                 <th scope="col">{"Name"}</th>
-                <th scope="col">{"De"}</th>
+                <th scope="col">{"Description"}</th>
                 <th scope="col">{"Products"}</th>
                 <th scope="col">{"CWE"}</th>
                 <th scope="col">{"CVSS v2"}</th>
@@ -133,7 +133,12 @@ impl Component for VendorInfoList {
             <tbody>
             {
               self.result.iter().map(|item| {
-              html!{item.name.clone()}
+              html!{
+                <tr class="table-group-divider">
+                <th scope="row">{item.name.clone()}</th>
+                <th scope="row">{item.description.clone()}</th>
+                </tr>
+                }
                 }).collect::<Html>()
               }
             </tbody>
