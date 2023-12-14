@@ -44,14 +44,12 @@ impl Component for Nav {
                   <span class="nav-link-title">{"CVE"}</span>
                 </Link<Route>>
               </li>
-              // <li class="nav-item">
-              //   <a class="nav-link" href="/cpe">
-              //     <span class="nav-link-icon d-md-none d-lg-inline-block ti ti-timeline"></span>
-              //     <span class="nav-link-title">
-              //       {"CPE"}
-              //     </span>
-              //   </a>
-              // </li>
+              <li class="nav-item">
+                <Link<Route> classes={classes!("nav-link")} to={Route::Cpe}>
+                  <span class="nav-link-icon d-md-none d-lg-inline-block ti ti-asset"></span>
+                  <span class="nav-link-title">{"CPE"}</span>
+                </Link<Route>>
+              </li>
             </ul>
           </div>
         </div>
