@@ -29,6 +29,11 @@ pub struct QueryProductByVendorName {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ProductCount {
   pub result: Vec<Product>,
+  // 分页每页
+  pub size: i64,
+  // 分页偏移
+  pub page: i64,
+  // 结果总数
   pub total: i64,
 }
 // 产品查询参数
@@ -132,6 +137,6 @@ impl Product {
         .order(products::name.asc())
         .load::<Product>(conn)?
     };
-    Ok(ProductCount { result, total })
+    Ok(ProductCount { result, size, page, total })
   }
 }

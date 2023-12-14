@@ -41,9 +41,7 @@ pub struct Cve {
 )]
 #[diesel(belongs_to(Vendor))]
 pub struct Product {
-  #[serde(skip)]
   pub id: Vec<u8>,
-  #[serde(skip)]
   pub vendor_id: Vec<u8>,
   pub official: u8,
   pub part: String,
