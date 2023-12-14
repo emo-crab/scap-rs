@@ -1,8 +1,8 @@
 use crate::component::{Pagination, PaginationProps};
 use crate::console_log;
-use crate::modules::cpe::{QueryVendor, VendorInfoList};
+use crate::modules::cpe::{ProductInfoList, QueryProduct};
 use crate::routes::Route;
-use crate::services::cpe::vendor_list;
+use crate::services::cpe::product_list;
 use crate::services::FetchState;
 use std::str::FromStr;
 use wasm_bindgen::JsCast;
@@ -10,7 +10,7 @@ use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 pub enum Msg {
-  SetFetchState(FetchState<VendorInfoList>),
+  SetFetchState(FetchState<ProductInfoList>),
   Send,
   Page(PageMsg),
   Query(QueryMsg),
@@ -24,7 +24,7 @@ pub enum QueryMsg {
   Name(String),
   Official(bool),
 }
-impl Component for VendorInfoList {
+impl Component for ProductInfoList {
   type Message = Msg;
   type Properties = ();
 
@@ -33,11 +33,11 @@ impl Component for VendorInfoList {
       .link()
       .location()
       .unwrap()
-      .query::<QueryVendor>()
+      .query::<QueryProduct>()
       .unwrap();
-    VendorInfoList {
+    ProductInfoList {
       query,
-      ..VendorInfoList::default()
+      ..ProductInfoList::default()
     }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -57,7 +57,7 @@ impl Component for VendorInfoList {
       Msg::Send => {
         let q = self.query.clone();
         ctx.link().send_future(async {
-          match vendor_list(q).await {
+          match product_list(q).await {
             Ok(data) => Msg::SetFetchState(FetchState::Success(data)),
             Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
           }
@@ -155,7 +155,7 @@ impl Component for VendorInfoList {
   }
 }
 
-impl VendorInfoList {
+impl ProductInfoList {
   fn pagination(&self, ctx: &Context<Self>) -> Html {
     let total = self.total;
     let size = self.size;
@@ -186,7 +186,7 @@ impl VendorInfoList {
     // });
     // let query = ctx
     //   .link()
-    //   .callback(|args: QueryVendor| Msg::Query(QueryMsg::Query(args)));
+    //   .callback(|args: QueryProduct| Msg::Query(QueryMsg::Query(args)));
     // let p = CVEQueryProps {
     //   props: self.query.clone(),
     //   query_severity,

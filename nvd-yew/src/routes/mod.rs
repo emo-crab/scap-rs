@@ -1,18 +1,20 @@
 mod cve;
 mod cve_list;
 // mod cvss;
+mod cpe;
 mod home;
 mod page_not_found;
+mod products;
 mod vendor;
 
 use crate::modules::cve::CveInfoList;
 use cve::CVEDetails;
 // use nvd_cvss::Cvss;
+use cpe::VendorProducts;
 use home::Home;
 use page_not_found::PageNotFound;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::modules::cpe::VendorInfoList;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
 pub enum Route {
@@ -20,8 +22,8 @@ pub enum Route {
   Cve { id: String },
   #[at("/cve/")]
   CveList,
-  #[at("/vendor/")]
-  Vendor,
+  #[at("/cpe/")]
+  Cpe,
   #[at("/")]
   Home,
   #[not_found]
@@ -41,8 +43,8 @@ impl Route {
       Route::Cve { id } => {
         html! {<CVEDetails id={id}/ >}
       }
-      Route::Vendor => {
-        html! {<VendorInfoList/>}
+      Route::Cpe => {
+        html! {<VendorProducts/>}
       }
       // Route::Cvss => {
       //   html! { <Cvss /> }
