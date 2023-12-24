@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// Must contain: At least one entry, can be text, CVSSv2, CVSSv3, others may be added
 ///
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone, PartialEq)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct ImpactMetrics {
   // TODO: Implement V1?

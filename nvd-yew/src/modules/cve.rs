@@ -1,7 +1,7 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use yew::prelude::*;
-#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
+#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
 pub struct Cve {
   pub id: String,
   pub year: i32,
@@ -14,19 +14,6 @@ pub struct Cve {
   pub references: Vec<nvd_cves::v4::Reference>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
-}
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
-pub struct CveInfoList {
-  // 结果数据
-  pub result: Vec<Cve>,
-  // 分页每页
-  pub size: i64,
-  // 分页偏移
-  pub page: i64,
-  // 结果总数
-  pub total: i64,
-  #[serde(skip)]
-  pub query: QueryCve,
 }
 
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]

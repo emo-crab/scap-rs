@@ -1,6 +1,7 @@
 use crate::error::{DBError, DBResult};
 use crate::modules::{Product, Vendor};
 use crate::schema::{products, vendors};
+use super::ListResponse;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
@@ -125,7 +126,7 @@ impl Product {
     Ok(p)
   }
 
-  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> DBResult<ProductCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> DBResult<ListResponse<Product>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -137,6 +138,6 @@ impl Product {
         .order(products::name.asc())
         .load::<Product>(conn)?
     };
-    Ok(ProductCount { result, size, page, total })
+    Ok(ListResponse::new(result, total, page, size))
   }
 }

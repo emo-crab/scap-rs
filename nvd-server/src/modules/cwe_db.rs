@@ -1,23 +1,17 @@
 use crate::error::{DBError, DBResult};
+use super::ListResponse;
 use crate::modules::Cwe;
 use crate::schema::cwes;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
-
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
 pub struct CreateCwe {
   pub id: i32,
   pub name: String,
   pub description: String,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CweCount {
-  pub result: Vec<Cwe>,
-  pub total: i64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -80,7 +74,7 @@ impl Cwe {
         .first::<Self>(conn)?,
     )
   }
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCwe) -> DBResult<CweCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCwe) -> DBResult<ListResponse<Cwe>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -92,6 +86,6 @@ impl Cwe {
         .order(cwes::name.asc())
         .load::<Cwe>(conn)?
     };
-    Ok(CweCount { result, total })
+    Ok(ListResponse::new(result, total, page, size))
   }
 }

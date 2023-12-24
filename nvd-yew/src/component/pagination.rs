@@ -1,11 +1,10 @@
 use yew::prelude::*;
+use crate::modules::Paging;
 
 // 通用分页组件
 #[derive(PartialEq, Clone, Properties)]
 pub struct PaginationProps {
-  pub size: i64,
-  pub total: i64,
-  pub page: i64,
+  pub paging: Paging,
   pub next_page: Callback<MouseEvent>,
   pub prev_page: Callback<MouseEvent>,
   pub to_page: Callback<MouseEvent>,
@@ -22,21 +21,19 @@ impl Component for Pagination {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let total = ctx.props().total;
-    let size = ctx.props().size;
-    let page = ctx.props().page;
+    let paging = ctx.props().paging.clone();
     let to_page = ctx.props().to_page.clone();
     let next_page = ctx.props().next_page.clone();
     let prev_page = ctx.props().prev_page.clone();
     let mut page_lists: Vec<(String, Vec<String>)> = Vec::new();
-    let mut page_count = total / 10;
-    if total % 10 != 0 {
+    let mut page_count = paging.total / 10;
+    if paging.total % 10 != 0 {
       page_count += 1;
     }
     for n in 1..=page_count {
       let mut class_list = Vec::new();
       // 当前激活的页面
-      let active = page + 1;
+      let active = paging.page + 1;
       if active == n {
         class_list.push("active".to_string());
       }
@@ -61,9 +58,9 @@ impl Component for Pagination {
     }
     html! {
         <div class="card-footer card-footer-sm d-flex align-items-center">
-          <p class="m-0 text-muted">{"展示"} <span class="badge">{page*size+1}</span> {"到"} <span class="badge">{(page+1)*size}</span> {"条"} {"总数"}<span class="badge">{total}</span></p>
+          <p class="m-0 text-muted">{"展示"} <span class="badge">{paging.page*paging.size+1}</span> {"到"} <span class="badge">{(paging.page+1)*paging.size}</span> {"条"} {"总数"}<span class="badge">{paging.total}</span></p>
           <ul class="pagination m-0 ms-auto">
-            <li class={classes!(["page-item",if page == 0 { "disabled" } else { "" }])}>
+            <li class={classes!(["page-item",if paging.page == 0 { "disabled" } else { "" }])}>
               <button class="btn page-link" onclick={prev_page}>
                 {"prev"}
                 <i class="ti ti-chevron-left"></i>
@@ -74,7 +71,7 @@ impl Component for Pagination {
               html!{<li class={classes!(active)}><button class="page-link" onclick={to_page.clone()} value={n.to_string()}>{n}</button></li>}
             }).collect::<Html>()
             }
-            <li class={classes!(["page-item",if page>=total { "disabled" } else { "" }])}>
+            <li class={classes!(["page-item",if paging.page>=paging.total { "disabled" } else { "" }])}>
               <button class="btn page-link" onclick={next_page}>
                 {"next"}
                 <i class="ti ti-chevron-right"></i>
