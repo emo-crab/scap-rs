@@ -6,9 +6,8 @@ mod home;
 mod page_not_found;
 mod products;
 mod vendor;
-
-use crate::modules::cve::CveInfoList;
 use cve::CVEDetails;
+use cve_list::CveInfoList;
 // use nvd_cvss::Cvss;
 use cpe::VendorProducts;
 use home::Home;

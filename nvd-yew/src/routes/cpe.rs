@@ -1,6 +1,6 @@
-use crate::modules::cpe::{ProductInfoList, VendorInfoList};
 use yew::prelude::*;
-
+use super::products::ProductInfoList;
+use super::vendor::VendorInfoList;
 pub struct VendorProducts;
 impl Component for VendorProducts {
   type Message = ();

@@ -1,5 +1,6 @@
 use crate::error::{DBError, DBResult};
 use crate::modules::cve_product_db::ProductByName;
+use super::ListResponse;
 use crate::modules::{Cve, CveProduct};
 use crate::schema::cves;
 use crate::DB;
@@ -46,18 +47,6 @@ pub struct QueryCve {
   pub size: Option<i64>,
   // 分页偏移
   pub page: Option<i64>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CveInfoCount {
-  // 结果数据
-  pub result: Vec<Cve>,
-  // 分页每页
-  pub size: i64,
-  // 分页偏移
-  pub page: i64,
-  // 结果总数
-  pub total: i64,
 }
 
 impl QueryCve {
@@ -152,7 +141,7 @@ impl Cve {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
   }
   // 按照查询条件返回列表和总数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> DBResult<CveInfoCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> DBResult<ListResponse<Cve>> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
     let page = args.page.unwrap_or(0).abs();
@@ -165,11 +154,6 @@ impl Cve {
         .limit(size)
         .load::<Cve>(conn)?
     };
-    Ok(CveInfoCount {
-      result,
-      size,
-      page,
-      total,
-    })
+    Ok(ListResponse::new(result, total, page, size))
   }
 }

@@ -6,19 +6,6 @@ pub struct Cwe {
   pub name: String,
   pub description: String,
 }
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Default)]
-pub struct CweInfoList {
-  // 结果数据
-  pub result: Vec<Cwe>,
-  // 分页每页
-  pub size: i64,
-  // 分页偏移
-  pub page: i64,
-  // 结果总数
-  pub total: i64,
-  #[serde(skip)]
-  pub query: QueryCwe,
-}
 
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]
 pub struct QueryCwe {

@@ -3,7 +3,8 @@ pub mod cve_product_db;
 pub mod cwe_db;
 pub mod product_db;
 pub mod vendor_db;
-
+mod pagination;
+use pagination::ListResponse;
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;

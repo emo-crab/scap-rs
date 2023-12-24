@@ -9,8 +9,8 @@ license = "GPL-3.0-only"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["nvd-api", "nvd-cpe", "nvd-cves", "nvd-cvss", "nvd-cwe"]
-exclude = ["helper", "nvd-cpe/schema", "nvd-server", "nvd-yew"]
+members = ["nvd-api", "nvd-cpe", "nvd-cves", "nvd-cvss", "nvd-cwe", "helper", "nvd-server", "nvd-yew"]
+exclude = ["nvd-cpe/schema"]
 resolver = "2"
 
 #https://github.com/johnthagen/min-sized-rust
@@ -33,7 +33,13 @@ codegen-units = 1
 opt-level = 3
 
 [workspace.dependencies]
-nvd-cves = { path = "nvd-cves", version = "0.1.0" }
+nvd-cves = { path = "nvd-cves", version = "0.1.1" }
+nvd-cpe = { path = "nvd-cpe", version = "0.1.0" }
+nvd-cvss = { path = "nvd-cvss", version = "0.1.0" }
+nvd-cwe = { path = "nvd-cwe", version = "0.1.0" }
+
+[patch.crates-io]
+nvd-cves = { path = "nvd-cves", version = "0.1.1" }
 nvd-cpe = { path = "nvd-cpe", version = "0.1.0" }
 nvd-cvss = { path = "nvd-cvss", version = "0.1.0" }
 nvd-cwe = { path = "nvd-cwe", version = "0.1.0" }

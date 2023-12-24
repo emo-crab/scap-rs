@@ -1,6 +1,6 @@
 use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
 use crate::console_log;
-use crate::modules::cve::{CveInfoList, QueryCve};
+use crate::modules::cve::{Cve, QueryCve};
 use crate::routes::Route;
 use crate::services::cve::cve_list;
 use crate::services::FetchState;
@@ -9,6 +9,9 @@ use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
+use crate::modules::ListResponse;
+
+pub type CveInfoList= ListResponse<Cve, QueryCve>;
 pub enum Msg {
   SetFetchState(FetchState<CveInfoList>),
   Send,
@@ -40,12 +43,10 @@ impl Component for CveInfoList {
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
       Msg::SetFetchState(FetchState::Success(cil)) => {
-        self.total = cil.total;
-        self.page = cil.page;
-        self.size = cil.size;
+        self.query.page = Some(cil.paging.page);
+        self.query.size = Some(cil.paging.size);
+        self.paging = cil.paging;
         self.result = cil.result;
-        self.query.page = Some(cil.page);
-        self.query.size = Some(cil.size);
         return true;
       }
       Msg::SetFetchState(FetchState::Failed(err)) => {
@@ -157,9 +158,7 @@ impl Component for CveInfoList {
 
 impl CveInfoList {
   fn pagination(&self, ctx: &Context<Self>) -> Html {
-    let total = self.total;
-    let size = self.size;
-    let page = self.page;
+    let paging = self.paging.clone();
     let next_page = ctx.link().callback(|_| Msg::Page(PageMsg::Next));
     let prev_page = ctx.link().callback(|_| Msg::Page(PageMsg::Prev));
     let to_page = ctx.link().callback(|event: MouseEvent| {
@@ -169,9 +168,7 @@ impl CveInfoList {
       Msg::Page(PageMsg::To(page))
     });
     let p = PaginationProps {
-      size,
-      total,
-      page,
+      paging,
       next_page,
       prev_page,
       to_page,

@@ -1,6 +1,7 @@
-use crate::component::{Pagination, PaginationProps};
+use crate::component::{CPEQuery, CPEQueryProps, Pagination, PaginationProps};
 use crate::console_log;
-use crate::modules::cpe::{ProductInfoList, QueryProduct};
+use crate::modules::cpe::{Product, QueryCpe};
+use crate::modules::ListResponse;
 use crate::routes::Route;
 use crate::services::cpe::product_list;
 use crate::services::FetchState;
@@ -9,6 +10,8 @@ use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+pub type ProductInfoList = ListResponse<Product, QueryCpe>;
 pub enum Msg {
   SetFetchState(FetchState<ProductInfoList>),
   Send,
@@ -21,6 +24,8 @@ pub enum PageMsg {
   To(i64),
 }
 pub enum QueryMsg {
+  Query(QueryCpe),
+  Part(String),
   Name(String),
   Official(bool),
 }
@@ -29,12 +34,7 @@ impl Component for ProductInfoList {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let query = ctx
-      .link()
-      .location()
-      .unwrap()
-      .query::<QueryProduct>()
-      .unwrap();
+    let query = ctx.link().location().unwrap().query::<QueryCpe>().unwrap();
     ProductInfoList {
       query,
       ..ProductInfoList::default()
@@ -43,12 +43,10 @@ impl Component for ProductInfoList {
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
       Msg::SetFetchState(FetchState::Success(cil)) => {
-        self.total = cil.total;
-        self.page = cil.page;
-        self.size = cil.size;
+        self.query.page = Some(cil.paging.page);
+        self.query.size = Some(cil.paging.size);
+        self.paging = cil.paging;
         self.result = cil.result;
-        self.query.page = Some(cil.page);
-        self.query.size = Some(cil.size);
         return true;
       }
       Msg::SetFetchState(FetchState::Failed(err)) => {
@@ -91,6 +89,12 @@ impl Component for ProductInfoList {
           QueryMsg::Official(official) => {
             self.query.official = Some(official);
           }
+          QueryMsg::Part(part) => {
+            self.query.part = Some(part);
+          }
+          QueryMsg::Query(query) => {
+            self.query = query;
+          }
         }
         ctx
           .link()
@@ -122,11 +126,8 @@ impl Component for ProductInfoList {
             <thead class="sticky-top">
               <tr>
                 <th scope="col">{"Name"}</th>
+                <th scope="col">{"Part"}</th>
                 <th scope="col">{"Description"}</th>
-                <th scope="col">{"Products"}</th>
-                <th scope="col">{"CWE"}</th>
-                <th scope="col">{"CVSS v2"}</th>
-                <th scope="col">{"CVSS v3"}</th>
                 <th scope="col">{"Updated"}</th>
               </tr>
             </thead>
@@ -136,7 +137,9 @@ impl Component for ProductInfoList {
               html!{
                 <tr class="table-group-divider">
                 <th scope="row">{item.name.clone()}</th>
+                <th scope="row">{item.part.clone()}</th>
                 <th scope="row">{item.description.clone()}</th>
+                <th scope="row">{item.updated_at.to_string()}</th>
                 </tr>
                 }
                 }).collect::<Html>()
@@ -157,9 +160,7 @@ impl Component for ProductInfoList {
 
 impl ProductInfoList {
   fn pagination(&self, ctx: &Context<Self>) -> Html {
-    let total = self.total;
-    let size = self.size;
-    let page = self.page;
+    let paging = self.paging.clone();
     let next_page = ctx.link().callback(|_| Msg::Page(PageMsg::Next));
     let prev_page = ctx.link().callback(|_| Msg::Page(PageMsg::Prev));
     let to_page = ctx.link().callback(|event: MouseEvent| {
@@ -169,29 +170,30 @@ impl ProductInfoList {
       Msg::Page(PageMsg::To(page))
     });
     let p = PaginationProps {
-      size,
-      total,
-      page,
+      paging,
       next_page,
       prev_page,
       to_page,
     };
     html! {<Pagination ..p.clone()/>}
   }
-  fn query(&self, _ctx: &Context<Self>) -> Html {
-    // let query_severity = ctx.link().callback(|e: MouseEvent| {
-    //   let target: EventTarget = e.target().unwrap();
-    //   let severity: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
-    //   Msg::Query(QueryMsg::Severity(severity))
-    // });
-    // let query = ctx
-    //   .link()
-    //   .callback(|args: QueryProduct| Msg::Query(QueryMsg::Query(args)));
-    // let p = CVEQueryProps {
-    //   props: self.query.clone(),
-    //   query_severity,
-    //   query,
-    // };
-    html! {}
+  fn query(&self, ctx: &Context<Self>) -> Html {
+    let query_severity = ctx.link().callback(|e: MouseEvent| {
+      let target: EventTarget = e.target().unwrap();
+      let severity: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
+      Msg::Query(QueryMsg::Part(severity))
+    });
+    let query = ctx
+      .link()
+      .callback(|args: QueryCpe| Msg::Query(QueryMsg::Query(args)));
+    let p = CPEQueryProps {
+      props: self.query.clone(),
+      is_product: Some(true),
+      query_part: query_severity,
+      query,
+    };
+    html! {
+      <CPEQuery ..p.clone()/>
+    }
   }
 }

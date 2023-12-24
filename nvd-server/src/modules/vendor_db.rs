@@ -5,7 +5,7 @@ use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
-
+use super::ListResponse;
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
 pub struct CreateVendors {
@@ -16,16 +16,6 @@ pub struct CreateVendors {
   pub homepage: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct VendorCount {
-  pub result: Vec<Vendor>,
-  // 分页每页
-  pub size: i64,
-  // 分页偏移
-  pub page: i64,
-  // 结果总数
-  pub total: i64,
-}
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryVendor {
   pub name: Option<String>,
@@ -90,7 +80,7 @@ impl Vendor {
     )
   }
   // 查询提供商从查询参数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<VendorCount> {
+  pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<ListResponse<Vendor>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -102,6 +92,6 @@ impl Vendor {
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };
-    Ok(VendorCount { result, size, page, total })
+    Ok(ListResponse::new(result, total, page, size))
   }
 }
