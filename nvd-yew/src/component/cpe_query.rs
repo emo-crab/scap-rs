@@ -21,7 +21,7 @@ impl Component for CPEQuery {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let is_product=ctx.props().is_product.unwrap_or_default();
+    let is_product = ctx.props().is_product.unwrap_or_default();
     let query = ctx.props().props.clone();
     let query_part = ctx.props().query_part.clone();
     let part_input = NodeRef::default();
@@ -113,7 +113,7 @@ impl Component for CPEQuery {
       <div class="d-flex">
         <form class="row g-1 d-flex" onsubmit={on_submit}>
         if is_product{
-            <div class="col input-group input-group-flat">
+        <div class="col input-group input-group-flat">
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
               {"Part"}
@@ -129,17 +129,18 @@ impl Component for CPEQuery {
           <button class="input-group-text" onclick={clean.clone()} value="severity_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
           }
-
           <div class="col input-group input-group-flat text-muted">
             <span class="input-group-text text-info">{"Vendor"}</span>
             <input type="text" class="form-control"  aria-label="vendor" ref={vendor_input} value={query.vendor_name.clone()}/>
             <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
+          if is_product{
           <div class="col input-group input-group-flat text-muted">
             <span class="input-group-text text-success">{"Product"}</span>
             <input type="text" class="form-control" aria-label="product" ref={product_input} value={query.name.clone()}/>
             <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-backspace link-danger"></i></button>
           </div>
+          }
           // <div class="col d-flex">
           // <div class="input-group input-group-flat text-muted">
           //   <span class="input-group-text">{"Search"}</span>

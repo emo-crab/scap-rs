@@ -1,3 +1,4 @@
+use super::ListResponse;
 use crate::error::{DBError, DBResult};
 use crate::modules::Vendor;
 use crate::schema::vendors;
@@ -5,7 +6,6 @@ use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
-use super::ListResponse;
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
 pub struct CreateVendors {

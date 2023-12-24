@@ -92,7 +92,7 @@ impl Component for CVERow {
           </td>
           <td>
             {cwe.iter().map(|w|{
-                html!(<span class={classes!(["badge"])}><b style="font-size:larger">{w}</b></span>)
+                html!(<span class={classes!(["badge"])}><b style="fonts-size:larger">{w}</b></span>)
             }).collect::<Html>()}
           </td>
           <td>
