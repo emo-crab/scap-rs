@@ -1,6 +1,7 @@
 use crate::component::{CPEQuery, CPEQueryProps, Pagination, PaginationProps};
 use crate::console_log;
 use crate::modules::cpe::{QueryCpe, Vendor};
+use crate::modules::ListResponse;
 use crate::routes::Route;
 use crate::services::cpe::vendor_list;
 use crate::services::FetchState;
@@ -9,7 +10,6 @@ use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::modules::ListResponse;
 
 pub type VendorInfoList = ListResponse<Vendor, QueryCpe>;
 pub enum Msg {

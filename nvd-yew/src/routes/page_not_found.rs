@@ -15,9 +15,9 @@ impl Component for PageNotFound {
     html! {
     <div class="empty">
       <div class="empty-img">
-      <i class="bi bi-4-square" style="font-size: 8rem;"></i>
-      <i class="bi bi-0-square" style="font-size: 8rem;"></i>
-      <i class="bi bi-4-square" style="font-size: 8rem;"></i>
+      <i class="bi bi-4-square" style="fonts-size: 8rem;"></i>
+      <i class="bi bi-0-square" style="fonts-size: 8rem;"></i>
+      <i class="bi bi-4-square" style="fonts-size: 8rem;"></i>
       </div>
       <p class="empty-title">{"No page found"}</p>
       <p class="empty-subtitle text-muted">

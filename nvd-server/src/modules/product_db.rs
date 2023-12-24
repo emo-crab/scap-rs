@@ -1,7 +1,7 @@
+use super::ListResponse;
 use crate::error::{DBError, DBResult};
 use crate::modules::{Product, Vendor};
 use crate::schema::{products, vendors};
-use super::ListResponse;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};

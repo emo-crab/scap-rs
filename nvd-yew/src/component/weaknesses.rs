@@ -66,7 +66,7 @@ impl Component for CWEDetails {
               </div>
             </div>
             <div class="card-body">
-                <h3 class="card-title"><span style="font-weight:200;text-shadow:none;display:block;float:left;line-height:24px;width:.7em;font-size:2.1em;font-family:georgia;margin-right:5px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
+                <h3 class="card-title"><span style="fonts-weight:200;text-shadow:none;display:block;float:left;line-height:24px;width:.7em;fonts-size:2.1em;fonts-family:georgia;margin-right:5px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
               </div>
           </div>
       };

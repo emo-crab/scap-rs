@@ -1,6 +1,6 @@
-use yew::prelude::*;
 use super::products::ProductInfoList;
 use super::vendor::VendorInfoList;
+use yew::prelude::*;
 pub struct VendorProducts;
 impl Component for VendorProducts {
   type Message = ();

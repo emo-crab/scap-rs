@@ -1,5 +1,5 @@
-use crate::error::{DBError, DBResult};
 use super::ListResponse;
+use crate::error::{DBError, DBResult};
 use crate::modules::Cwe;
 use crate::schema::cwes;
 use crate::DB;

@@ -1,6 +1,6 @@
+use super::ListResponse;
 use crate::error::{DBError, DBResult};
 use crate::modules::cve_product_db::ProductByName;
-use super::ListResponse;
 use crate::modules::{Cve, CveProduct};
 use crate::schema::cves;
 use crate::DB;

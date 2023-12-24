@@ -183,7 +183,7 @@ impl CVEDetails {
       .collect::<String>();
     let mut description = description.chars();
     html! {
-      <h3 class="card-title"><span style="font-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;font-size:3.1em;font-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
+      <h3 class="card-title"><span style="fonts-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;fonts-size:3.1em;fonts-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
   }
   fn references(&self, reference: Vec<nvd_cves::v4::Reference>) -> Html {

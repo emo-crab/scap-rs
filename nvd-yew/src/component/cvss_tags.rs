@@ -17,7 +17,7 @@ pub fn cvss2(metric: Option<&nvd_cvss::v2::ImpactMetricV2>) -> Html {
       }
     }
   };
-  html!(<span class={classes!(["badge",severity_class])}><b style="font-size:larger">{score}</b></span>)
+  html!(<span class={classes!(["badge",severity_class])}><b style="fonts-size:larger">{score}</b></span>)
 }
 pub fn cvss3(metric: Option<&nvd_cvss::v3::ImpactMetricV3>) -> Html {
   let mut score = String::from("N/A");
@@ -34,7 +34,7 @@ pub fn cvss3(metric: Option<&nvd_cvss::v3::ImpactMetricV3>) -> Html {
       }
     }
   };
-  html!(<span class={classes!(["badge",severity_class])}><b style="font-size:larger">{score}</b></span>)
+  html!(<span class={classes!(["badge",severity_class])}><b style="fonts-size:larger">{score}</b></span>)
 }
 pub enum V3Card {
   AV(nvd_cvss::v3::attack_vector::AttackVectorType),
