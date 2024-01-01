@@ -23,3 +23,4 @@ Cargo.lock
 /nvd-server/target/
 /nvd-yew/target/
 /nvd-yew/dist/
+/nvd-server/migrations/nvd-er.mwb.bak

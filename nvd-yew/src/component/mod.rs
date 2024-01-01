@@ -1,4 +1,5 @@
 mod cpe_query;
+mod cpe_row;
 mod cve_configuration;
 mod cve_query;
 mod cve_row;
@@ -9,6 +10,7 @@ mod tooltip_popover;
 mod weaknesses;
 
 pub use cpe_query::{CPEQuery, CPEQueryProps};
+pub use cpe_row::{CPERow, CpeProps};
 pub use cve_configuration::{CVEConfiguration, CVEConfigurationProps};
 pub use cve_query::{CVEQuery, CVEQueryProps};
 pub use cve_row::{CVERow, CveProps};

@@ -6,6 +6,7 @@ use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -14,11 +15,16 @@ pub struct CreateProduct {
   pub vendor_id: Vec<u8>,
   pub official: u8,
   pub part: String,
+  pub meta: Value,
   pub name: String,
   pub description: Option<String>,
   pub homepage: Option<String>,
 }
-
+#[derive(Debug, PartialEq, Serialize, Deserialize)]
+pub struct ProductWithVendor {
+  pub product: Product,
+  pub vendor: Vendor,
+}
 pub struct QueryProductById {
   pub vendor_id: Vec<u8>,
   pub name: String,
@@ -27,16 +33,7 @@ pub struct QueryProductByVendorName {
   pub vendor_name: String,
   pub name: String,
 }
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ProductCount {
-  pub result: Vec<Product>,
-  // 分页每页
-  pub size: i64,
-  // 分页偏移
-  pub page: i64,
-  // 结果总数
-  pub total: i64,
-}
+
 // 产品查询参数
 #[derive(Debug, Serialize, Deserialize)]
 pub struct QueryProduct {
@@ -126,17 +123,28 @@ impl Product {
     Ok(p)
   }
 
-  pub fn query(conn: &mut MysqlConnection, args: &QueryProduct) -> DBResult<ListResponse<Product>> {
+  pub fn query(
+    conn: &mut MysqlConnection,
+    args: &QueryProduct,
+  ) -> DBResult<ListResponse<ProductWithVendor>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
     let result = {
-      let query = args.query(conn, products::table.into_boxed())?;
-      query
+      let products_with_vendors = args.query(conn, products::table.into_boxed())?;
+      // 联表查要把表写在前面，但是这样就用不了query了，所以先查处产品ID列表再eq_any过滤
+      products_with_vendors
+        .inner_join(vendors::table)
         .offset(page * size)
         .limit(size)
-        .order(products::name.asc())
-        .load::<Product>(conn)?
+        .select((Product::as_select(), Vendor::as_select()))
+        .load(conn)?
+        .into_iter()
+        .map(|(p, v)| ProductWithVendor {
+          vendor: v,
+          product: p,
+        })
+        .collect::<Vec<_>>()
     };
     Ok(ListResponse::new(result, total, page, size))
   }

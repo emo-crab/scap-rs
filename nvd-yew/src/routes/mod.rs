@@ -4,8 +4,6 @@ mod cve_list;
 mod cpe;
 mod home;
 mod page_not_found;
-mod products;
-mod vendor;
 use cve::CVEDetails;
 use cve_list::CveInfoList;
 // use nvd_cvss::Cvss;

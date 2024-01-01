@@ -8,7 +8,7 @@ use nvd_server::modules::cve_product_db::CreateCveProductByName;
 use nvd_server::modules::product_db::{CreateProduct, QueryProductById};
 use nvd_server::modules::vendor_db::CreateVendors;
 use nvd_server::modules::{Cve, CveProduct, Product, Vendor};
-use std::collections::HashSet;
+use std::collections::{HashMap, HashSet};
 use std::str::FromStr;
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
@@ -93,6 +93,7 @@ fn create_product(
   let new_post = CreateProduct {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     vendor_id: vendor,
+    meta:serde_json::json!(Vec::<HashMap<String,String>>::new()),
     name,
     description: None,
     official: u8::from(true),

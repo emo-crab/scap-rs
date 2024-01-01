@@ -49,6 +49,7 @@ pub struct Product {
   pub name: String,
   pub description: Option<String>,
   pub homepage: Option<String>,
+  pub meta: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
