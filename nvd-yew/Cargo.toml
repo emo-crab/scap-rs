@@ -24,9 +24,9 @@ web-sys = { version = "0.3.63", features = [
     "HtmlSpanElement",
     "HtmlButtonElement", ] }
 wasm-bindgen = { version = "0.2.87", features = ["serde"] }
-nvd-cpe = { workspace = true }
-nvd-cves = { workspace = true }
-nvd-cvss = { workspace = true }
+nvd-cves = { version = "0.1.1" }
+nvd-cpe = { version = "0.1.0" }
+nvd-cvss = { version = "0.1.0" }
 chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
 js-sys = "0.3.65"
 reqwest = { version = "0.11", features = ["json", "cookies"] }
