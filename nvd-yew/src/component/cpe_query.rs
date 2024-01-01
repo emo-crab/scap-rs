@@ -31,17 +31,25 @@ impl Component for CPEQuery {
     let submit_button = NodeRef::default();
     // 点击的是b标签，但是事件冒泡会将事件传到按钮
     let on_submit = {
-      let severity_input = part_input.clone();
+      let part_input = part_input.clone();
       let vendor_input = vendor_input.clone();
       let product_input = product_input.clone();
-      // let search_input = search_input.clone();
+      let is_product = is_product;
       let query = query.clone();
       let query_callback = ctx.props().query.clone();
       Callback::from(move |event: SubmitEvent| {
         event.prevent_default();
-        let severity = severity_input.cast::<HtmlInputElement>().unwrap().value();
+        let part = if is_product {
+          part_input.cast::<HtmlInputElement>().unwrap().value()
+        } else {
+          String::new()
+        };
         let vendor = vendor_input.cast::<HtmlInputElement>().unwrap().value();
-        let product = product_input.cast::<HtmlInputElement>().unwrap().value();
+        let product = if is_product {
+          product_input.cast::<HtmlInputElement>().unwrap().value()
+        } else {
+          String::new()
+        };
         // let search = search_input.cast::<HtmlInputElement>().unwrap().value();
         query_callback.emit(QueryCpe {
           vendor_id: None,
@@ -55,11 +63,7 @@ impl Component for CPEQuery {
           } else {
             Some(product)
           },
-          part: if severity.is_empty() {
-            None
-          } else {
-            Some(severity)
-          },
+          part: if part.is_empty() { None } else { Some(part) },
           size: query.size,
           page: query.page,
           official: None,
@@ -67,7 +71,7 @@ impl Component for CPEQuery {
       })
     };
     let clean = {
-      let severity_input = part_input.clone();
+      let part_input = part_input.clone();
       let vendor_input = vendor_input.clone();
       let product_input = product_input.clone();
       let search_input = search_input.clone();
@@ -79,11 +83,8 @@ impl Component for CPEQuery {
           .unwrap();
         let v = target.get_attribute("value").unwrap_or_default();
         match v.as_str() {
-          "severity_input" => {
-            severity_input
-              .cast::<HtmlInputElement>()
-              .unwrap()
-              .set_value("");
+          "part_input" => {
+            part_input.cast::<HtmlInputElement>().unwrap().set_value("");
           }
           "vendor_input" => {
             vendor_input
@@ -112,10 +113,17 @@ impl Component for CPEQuery {
     <div class="card-body border-bottom py-1">
       <div class="d-flex">
         <form class="row g-1 d-flex" onsubmit={on_submit}>
-        if is_product{
-        <div class="col input-group input-group-flat">
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="col input-icon input-group input-group-flat text-muted">
+            <input type="text" class="form-control"  aria-label="vendor" placeholder="Vendor" ref={vendor_input} value={query.vendor_name.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-x link-danger"></i></button>
+          </div>
+          if is_product{
+          <div class="col input-icon input-group input-group-flat text-muted">
+            <input type="text" class="form-control" aria-label="product" placeholder="Product" ref={product_input} value={query.name.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-x link-danger"></i></button>
+          </div>
+          <div class="col input-group input-group-flat">
+            <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {"Part"}
             </button>
             <ul class="dropdown-menu">
@@ -124,31 +132,13 @@ impl Component for CPEQuery {
               <li><button onclick={query_part.clone()} type="button" class="dropdown-item btn bg-warning btn-sm" value="o">{"operating system"}</button></li>
               <li><button onclick={query_part.clone()} type="button" class="dropdown-item btn bg-danger btn-sm" value="h">{"hardware devices"}</button></li>
             </ul>
-          </div>
-          <input class="form-control" readonly=true ref={part_input} value={query.part.clone()}/>
-          <button class="input-group-text" onclick={clean.clone()} value="severity_input"><i class="ti ti-backspace link-danger"></i></button>
-          </div>
-          }
-          <div class="col input-group input-group-flat text-muted">
-            <span class="input-group-text text-info">{"Vendor"}</span>
-            <input type="text" class="form-control"  aria-label="vendor" ref={vendor_input} value={query.vendor_name.clone()}/>
-            <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-backspace link-danger"></i></button>
-          </div>
-          if is_product{
-          <div class="col input-group input-group-flat text-muted">
-            <span class="input-group-text text-success">{"Product"}</span>
-            <input type="text" class="form-control" aria-label="product" ref={product_input} value={query.name.clone()}/>
-            <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-backspace link-danger"></i></button>
+          <input type="text" class="form-control" readonly=true ref={part_input} value={query.part.clone()}/>
+          <button class="input-group-text" onclick={clean.clone()} value="part_input"><i class="ti ti-x link-danger"></i></button>
           </div>
           }
-          // <div class="col d-flex">
-          // <div class="input-group input-group-flat text-muted">
-          //   <span class="input-group-text">{"Search"}</span>
-          //   <input type="text" class="form-control" aria-label="Search invoice" ref={search_input} value={query.id.clone()}/>
-          //   <button class="input-group-text bg-outline-danger" onclick={clean.clone()} value="search_input"><i class="ti ti-backspace link-danger"></i></button>
-          //   <button class="btn" type="submit" ref={submit_button}><i class="ti ti-search"></i></button>
-          // </div>
-          // </div>
+        <div class="col-auto d-flex">
+        <button class="btn" type="submit" ref={submit_button}><i class="ti ti-search"></i></button>
+        </div>
         </form>
       </div>
     </div>

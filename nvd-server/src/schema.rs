@@ -54,6 +54,7 @@ diesel::table! {
         description -> Nullable<Text>,
         #[max_length = 256]
         homepage -> Nullable<Varchar>,
+        meta -> Json,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }

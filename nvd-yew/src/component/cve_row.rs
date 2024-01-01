@@ -37,7 +37,7 @@ impl Component for CVERow {
       .iter()
       .map(|d| d.value.clone())
       .collect::<Vec<String>>();
-    let update = props.created_at.to_string();
+    let update = props.updated_at.to_string();
     let cwe: HashSet<String> = props
       .weaknesses
       .iter()
@@ -59,7 +59,7 @@ impl Component for CVERow {
     html! {
     <>
         <tr class="table-group-divider">
-          <th scope="row">
+          <th scope="row"  rowspan="2">
           <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{cve_id.clone()}}}>
              <i class="ti ti-external-link"></i>
               {cve_id.clone()}

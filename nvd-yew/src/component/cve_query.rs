@@ -114,7 +114,7 @@ impl Component for CVEQuery {
         <form class="row g-1 d-flex" onsubmit={on_submit}>
           <div class="col input-group input-group-flat">
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               {"Severity"}
             </button>
             <ul class="dropdown-menu">
@@ -126,25 +126,20 @@ impl Component for CVEQuery {
             </ul>
           </div>
           <input class="form-control" readonly=true ref={severity_input} value={query.severity.clone()}/>
-          <button class="input-group-text" onclick={clean.clone()} value="severity_input"><i class="ti ti-backspace link-danger"></i></button>
+          <button class="input-group-text" onclick={clean.clone()} value="severity_input"><i class="ti ti-x link-danger"></i></button>
           </div>
-          <div class="col input-group input-group-flat text-muted">
-            <span class="input-group-text text-info">{"Vendor"}</span>
-            <input type="text" class="form-control"  aria-label="vendor" ref={vendor_input} value={query.vendor.clone()}/>
-            <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-backspace link-danger"></i></button>
+          <div class="col input-icon input-group input-group-flat text-muted">
+            <input type="text" class="form-control"  aria-label="vendor" placeholder="Vendor" ref={vendor_input} value={query.vendor.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="vendor_input"><i class="ti ti-x link-danger"></i></button>
           </div>
-          <div class="col input-group input-group-flat text-muted">
-            <span class="input-group-text text-success">{"Product"}</span>
-            <input type="text" class="form-control" aria-label="product" ref={product_input} value={query.product.clone()}/>
-            <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-backspace link-danger"></i></button>
+          <div class="col input-icon input-group input-group-flat text-muted">
+            <input type="text" class="form-control" aria-label="product" placeholder="Product" ref={product_input} value={query.product.clone()}/>
+            <button class="input-group-text" onclick={clean.clone()} value="product_input"><i class="ti ti-x link-danger"></i></button>
           </div>
-          <div class="col d-flex">
-          <div class="input-group input-group-flat text-muted">
-            <span class="input-group-text">{"Search"}</span>
-            <input type="text" class="form-control" aria-label="Search invoice" ref={search_input} value={query.id.clone()}/>
-            <button class="input-group-text bg-outline-danger" onclick={clean.clone()} value="search_input"><i class="ti ti-backspace link-danger"></i></button>
+          <div class="col input-icon input-group input-group-flat text-muted">
+            <input type="text" value="" class="form-control" placeholder="Search" ref={search_input} value={query.id.clone()}/>
+            <button class="input-group-text bg-outline-danger" onclick={clean.clone()} value="search_input"><i class="ti ti-x link-danger"></i></button>
             <button class="btn" type="submit" ref={submit_button}><i class="ti ti-search"></i></button>
-          </div>
           </div>
         </form>
       </div>

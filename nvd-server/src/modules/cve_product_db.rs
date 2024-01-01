@@ -1,4 +1,5 @@
 use crate::error::{DBError, DBResult};
+use crate::modules::pagination::ListResponse;
 use crate::modules::product_db::{QueryProductById, QueryProductByVendorName};
 use crate::modules::{Cve, CveProduct, Product, Vendor};
 use crate::schema::{cve_product, cves, products};
@@ -25,12 +26,6 @@ pub struct CreateCveProductByName {
 pub struct CveProductInfo {
   pub cve: Cve,
   pub product: Product,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CveProductInfoCount {
-  pub result: Vec<CveProductInfo>,
-  pub total: i64,
 }
 pub struct ProductByName {
   pub vendor: Option<String>,
@@ -160,7 +155,7 @@ impl CveProduct {
   pub fn query(
     conn: &mut MysqlConnection,
     args: &QueryCveProduct,
-  ) -> DBResult<CveProductInfoCount> {
+  ) -> DBResult<ListResponse<CveProductInfo>> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
     let page = args.page.unwrap_or(0);
@@ -184,6 +179,6 @@ impl CveProduct {
         .map(|(_cp, c, p)| CveProductInfo { cve: c, product: p })
         .collect::<Vec<_>>()
     };
-    Ok(CveProductInfoCount { total, result })
+    Ok(ListResponse::new(result, total, page, size))
   }
 }

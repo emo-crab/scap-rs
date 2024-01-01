@@ -1,5 +1,6 @@
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
+
 use yew::prelude::*;
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
 pub struct Vendor {
@@ -23,10 +24,15 @@ pub struct Product {
   pub name: String,
   pub description: Option<String>,
   pub homepage: Option<String>,
+  // pub meta:HashMap<String,String>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
-
+#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
+pub struct ProductWithVendor {
+  pub product: Product,
+  pub vendor: Vendor,
+}
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]
 pub struct QueryCpe {
   pub vendor_id: Option<String>,
