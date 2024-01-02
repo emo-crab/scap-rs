@@ -25,7 +25,7 @@ COPY nvd-yew/index.html index.html
 COPY nvd-yew/Trunk.toml Trunk.toml
 COPY nvd-yew/static static
 COPY nvd-yew/src src
-RUN trunk build --release
+RUN trunk build --release --no-sri
 
 # Use any runner as you want
 # But beware that some images have old glibc which makes rust unhappy
