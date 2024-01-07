@@ -92,7 +92,7 @@ pub struct Check {
 #[derive(Deserialize, Serialize, Debug, Clone)]
 #[serde(deny_unknown_fields)]
 pub struct References {
-  reference: Vec<Reference>,
+  pub reference: Vec<Reference>,
 }
 /**
 The ReferencesType complex type defines an element used to hold a
