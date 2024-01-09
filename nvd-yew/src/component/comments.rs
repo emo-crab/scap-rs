@@ -19,7 +19,7 @@ impl Component for Comments {
             data-repo-id="R_kgDOJE0AVw"
             data-category="Announcements"
             data-category-id="DIC_kwDOJE0AV84CcTem"
-            data-mapping="pathname"
+            data-mapping="title"
             data-strict="1"
             data-reactions-enabled="1"
             data-emit-metadata="0"

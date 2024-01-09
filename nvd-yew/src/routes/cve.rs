@@ -29,7 +29,14 @@ impl Component for CVEDetails {
   type Message = Msg;
   type Properties = CVEProps;
 
-  fn create(_ctx: &Context<Self>) -> Self {
+  fn create(ctx: &Context<Self>) -> Self {
+    if let Some(window) = web_sys::window() {
+      if let Some(doc) = window.document() {
+        if let Ok(Some(title)) = doc.query_selector("title") {
+          title.set_inner_html(&ctx.props().id);
+        };
+      }
+    };
     Self { cve: None }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
