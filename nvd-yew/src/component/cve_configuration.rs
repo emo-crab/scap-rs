@@ -1,4 +1,4 @@
-use crate::component::TooltipPopover;
+use crate::component::{Accordion, TooltipPopover};
 use nvd_cves::v4::configurations::Operator;
 use yew::prelude::*;
 
@@ -20,15 +20,7 @@ impl Component for CVEConfiguration {
   fn view(&self, ctx: &Context<Self>) -> Html {
     let configuration = ctx.props().props.clone();
     html! {
-      <div class="accordion" id="accordion-configurations" role="tablist" aria-multiselectable="true">
-        <div class="accordion-item">
-          <h2 class="accordion-header" role="tab">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-configurations" aria-expanded="true">
-              {"Configurations"}
-            </button>
-          </h2>
-          <div id="collapse-configurations" class="accordion-collapse collapse show" data-bs-parent="#accordion-configurations" style="">
-            <div class="accordion-body pt-0">
+        <Accordion name={"Configurations"}>
             <div class="table-responsive">
               <table class="table table-vcenter card-table table-striped">
                 <thead>
@@ -42,10 +34,7 @@ impl Component for CVEConfiguration {
                 </tbody>
               </table>
             </div>
-            </div>
-          </div>
-        </div>
-      </div>
+        </Accordion>
     }
   }
 }

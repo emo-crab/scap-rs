@@ -44,9 +44,19 @@ impl Component for CPEQuery {
         } else {
           String::new()
         };
-        let vendor = vendor_input.cast::<HtmlInputElement>().unwrap().value();
+        let vendor = vendor_input
+          .cast::<HtmlInputElement>()
+          .unwrap()
+          .value()
+          .trim()
+          .to_string();
         let product = if is_product {
-          product_input.cast::<HtmlInputElement>().unwrap().value()
+          product_input
+            .cast::<HtmlInputElement>()
+            .unwrap()
+            .value()
+            .trim()
+            .to_string()
         } else {
           String::new()
         };

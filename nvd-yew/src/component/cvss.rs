@@ -44,12 +44,8 @@ impl Component for CVSS3 {
         </div>
         </div>
         <div class="card-footer text-bg-light text-center text-muted p-2">
-            <ul class="list-group list-group-horizontal">
-            <li class="list-group-item col-sm-6">
-            <span class="badge bg-red">{format!("{:?}",who)}</span></li>
-            <li class="list-group-item col-sm-6">
-            <span class="badge bg-blue">{source}</span></li>
-            </ul>
+            <span class="badge bg-red">{format!("{:?}",who)}</span>
+            <span class="badge bg-blue">{source}</span>
         </div>
         <div class="progress progress-sm card-progress">
           <div class="progress-bar" style={format!( "width: {}%",(score*10.0))} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">
@@ -123,12 +119,8 @@ impl Component for CVSS2 {
         </div>
         </div>
         <div class="card-footer text-bg-light text-center text-muted p-2">
-            <ul class="list-group list-group-horizontal">
-            <li class="list-group-item col-sm-6">
-            <span class="badge bg-red">{format!("{:?}",who)}</span></li>
-            <li class="list-group-item col-sm-6">
-            <span class="badge bg-blue">{source}</span></li>
-            </ul>
+            <span class="badge bg-red">{format!("{:?}",who)}</span>
+            <span class="badge bg-blue">{source}</span>
         </div>
         <div class="progress progress-sm card-progress">
           <div class="progress-bar" style={format!( "width: {}%",(score*10.0))} role="progressbar" aria-valuenow={score.to_string()} aria-valuemin="0" aria-valuemax="10">

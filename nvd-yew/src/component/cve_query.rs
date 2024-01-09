@@ -35,10 +35,30 @@ impl Component for CVEQuery {
       let query_callback = ctx.props().query.clone();
       Callback::from(move |event: SubmitEvent| {
         event.prevent_default();
-        let severity = severity_input.cast::<HtmlInputElement>().unwrap().value();
-        let vendor = vendor_input.cast::<HtmlInputElement>().unwrap().value();
-        let product = product_input.cast::<HtmlInputElement>().unwrap().value();
-        let search = search_input.cast::<HtmlInputElement>().unwrap().value();
+        let severity = severity_input
+          .cast::<HtmlInputElement>()
+          .unwrap()
+          .value()
+          .trim()
+          .to_string();
+        let vendor = vendor_input
+          .cast::<HtmlInputElement>()
+          .unwrap()
+          .value()
+          .trim()
+          .to_string();
+        let product = product_input
+          .cast::<HtmlInputElement>()
+          .unwrap()
+          .value()
+          .trim()
+          .to_string();
+        let search = search_input
+          .cast::<HtmlInputElement>()
+          .unwrap()
+          .value()
+          .trim()
+          .to_string();
         query_callback.emit(QueryCve {
           id: if search.is_empty() {
             None

@@ -1,5 +1,7 @@
 use crate::component::cvss_tags::{cvss2, cvss3};
-use crate::component::{CVEConfiguration, CVEConfigurationProps, CWEDetails, CVSS2, CVSS3};
+use crate::component::{
+  Accordion, CVEConfiguration, CVEConfigurationProps, CWEDetails, Comments, CVSS2, CVSS3,
+};
 use crate::console_log;
 use crate::modules::cve::Cve;
 use crate::services::cve::cve_details;
@@ -101,6 +103,7 @@ impl Component for CVEDetails {
         {self.references(cve.references)}
         {self.weaknesses(cve.weaknesses.clone())}
         {self.configurations(cve.configurations)}
+        <Comments/>
       <div class="card-body">
 
       </div>
@@ -188,49 +191,36 @@ impl CVEDetails {
   }
   fn references(&self, reference: Vec<nvd_cves::v4::Reference>) -> Html {
     html! {
-      <div>
-      <div class="accordion" id="accordion-references" role="tablist" aria-multiselectable="true">
-        <div class="accordion-item">
-          <h2 class="accordion-header" role="tab">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-references" aria-expanded="true">
-              {"References"}
-            </button>
-          </h2>
-          <div id="collapse-references" class="accordion-collapse collapse show" data-bs-parent="#accordion-references" style="">
-            <div class="accordion-body pt-0">
-            <div class="table-responsive">
-              <table class="table table-vcenter card-table table-striped">
-                <thead>
-                  <tr>
-                    <th>{"Link"}</th>
-                    <th>{"Resource"}</th>
-                    <th>{"Tags"}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                {reference.into_iter().map(|r|{
-                  html!{
-                    <tr>
-                    <td><i class="ti ti-external-link"></i><a href={r.url.clone()} target="_blank">{r.url}</a></td>
-                    <td class="text-dark">
-                      {r.source}
-                    </td>
-                    <td class="text-secondary">
-                    <div class="badges-list">
-                      {r.tags.into_iter().map(|t|{html!(<span class="badge bg-blue text-blue-fg">{t}</span>)}).collect::<Html>()}
-                    </div>
-                    </td>
-                  </tr>
-                  }
-                }).collect::<Html>()}
-                </tbody>
-              </table>
-            </div>
-            </div>
-          </div>
-        </div>
+      <Accordion name={"References"}>
+      <div class="table-responsive">
+        <table class="table table-vcenter card-table table-striped">
+          <thead>
+            <tr>
+              <th>{"Link"}</th>
+              <th>{"Resource"}</th>
+              <th>{"Tags"}</th>
+            </tr>
+          </thead>
+          <tbody>
+          {reference.into_iter().map(|r|{
+            html!{
+              <tr>
+              <td><i class="ti ti-external-link"></i><a href={r.url.clone()} target="_blank">{r.url}</a></td>
+              <td class="text-dark">
+                {r.source}
+              </td>
+              <td class="text-secondary">
+              <div class="badges-list">
+                {r.tags.into_iter().map(|t|{html!(<span class="badge bg-blue text-blue-fg">{t}</span>)}).collect::<Html>()}
+              </div>
+              </td>
+            </tr>
+            }
+          }).collect::<Html>()}
+          </tbody>
+        </table>
       </div>
-      </div>
+      </Accordion>
     }
   }
   fn configurations(&self, configuration: Vec<nvd_cves::v4::configurations::Node>) -> Html {
@@ -248,24 +238,11 @@ impl CVEDetails {
       .map(|d| d.value)
       .collect::<HashSet<String>>();
     html! {
-      <div>
-      <div class="accordion" id="accordion-weaknesses" role="tablist" aria-multiselectable="true">
-        <div class="accordion-item">
-          <h2 class="accordion-header" role="tab">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-weaknesses" aria-expanded="true">
-              {"Weaknesses"}
-            </button>
-          </h2>
-          <div id="collapse-weaknesses" class="accordion-collapse collapse show" data-bs-parent="#accordion-weaknesses" style="">
-            <div class="accordion-body pt-0">
-            {ws_set.into_iter().map(|d|{
+      <Accordion name={"Weaknesses"}>
+      {ws_set.into_iter().map(|d|{
                 html!{<CWEDetails id={d}/>}
             }).collect::<Html>()}
-            </div>
-          </div>
-        </div>
-      </div>
-      </div>
+      </Accordion>
     }
   }
 }

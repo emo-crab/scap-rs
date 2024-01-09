@@ -1,3 +1,5 @@
+mod accordion;
+mod comments;
 mod cpe_query;
 mod cpe_row;
 mod cve_configuration;
@@ -9,6 +11,8 @@ mod pagination;
 mod tooltip_popover;
 mod weaknesses;
 
+pub use accordion::Accordion;
+pub use comments::Comments;
 pub use cpe_query::{CPEQuery, CPEQueryProps};
 pub use cpe_row::{CPERow, CpeProps};
 pub use cve_configuration::{CVEConfiguration, CVEConfigurationProps};
