@@ -60,7 +60,7 @@ impl Component for CVERow {
     <>
         <tr class="table-group-divider">
           <th scope="row"  rowspan="2">
-          <Link<Route> classes={classes!("text-reset")} to={Route::Cve{id:{cve_id.clone()}}}>
+          <Link<Route> classes={classes!(["text-reset", "text-nowrap"])} to={Route::Cve{id:{cve_id.clone()}}}>
              <i class="ti ti-external-link"></i>
               {cve_id.clone()}
           </Link<Route>>
