@@ -14,6 +14,7 @@ pub struct CreateCveProduct {
   pub cve_id: String,
   pub product_id: Vec<u8>,
 }
+
 #[derive(Debug)]
 pub struct CreateCveProductByName {
   pub cve_id: String,
@@ -27,10 +28,12 @@ pub struct CveProductInfo {
   pub cve: Cve,
   pub product: Product,
 }
+
 pub struct ProductByName {
   pub vendor: Option<String>,
   pub product: Option<String>,
 }
+
 #[derive(Debug)]
 pub struct QueryCveProduct {
   pub cve_id: Option<String>,
@@ -59,8 +62,10 @@ impl QueryCveProduct {
             name: product_name.to_string(),
           },
         )?;
+        // 拿到匹配产品ID的全部CVE编号
         query = query.filter(cve_product::product_id.eq(p.id));
       } else {
+        // 没产品就获取当前供应商的全部产品
         let ids = Product::belonging_to(&v)
           .select(products::id)
           .load::<Vec<u8>>(conn)?;
@@ -150,6 +155,37 @@ impl CveProduct {
     let query = args.query(conn, cve_product::table.into_boxed())?;
     let cve_id = query.select(cve_product::cve_id).load::<String>(conn)?;
     Ok(cve_id)
+  }
+  // 根据cve编号获取影响的产品列表
+  pub fn query_product_by_cve(
+    conn: &mut MysqlConnection,
+    cve_id: String,
+  ) -> DBResult<Vec<Vec<u8>>> {
+    let args = QueryCveProduct {
+      cve_id: Some(cve_id),
+      vendor: None,
+      product: None,
+      size: None,
+      page: None,
+    };
+    let query = args.query(conn, cve_product::table.into_boxed())?;
+    let result = query
+      .select(cve_product::product_id)
+      .load::<Vec<u8>>(conn)?;
+    Ok(result)
+  }
+  // 用来删除过期数据
+  pub fn delete(
+    conn: &mut MysqlConnection,
+    cve_id: String,
+    product_id: Vec<u8>,
+  ) -> DBResult<usize> {
+    Ok(
+      diesel::delete(cve_product::table)
+        .filter(cve_product::cve_id.eq(cve_id))
+        .filter(cve_product::product_id.eq(product_id))
+        .execute(conn)?,
+    )
   }
   // 根据供应商，产品和CVE编号 返回CVE和产品信息
   pub fn query(

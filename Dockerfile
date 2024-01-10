@@ -33,7 +33,7 @@ FROM debian:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates
+RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron
 COPY --from=server /prod/target/release/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist
 EXPOSE 8888

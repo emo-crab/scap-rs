@@ -5,7 +5,7 @@ use nvd_server::modules::cve_product_db::CreateCveProductByName;
 use nvd_server::modules::product_db::{CreateProduct, QueryProductById};
 use nvd_server::modules::vendor_db::CreateVendors;
 use nvd_server::modules::{CveProduct, Product, Vendor};
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
 pub fn create_cve_product(
@@ -106,4 +106,16 @@ pub fn create_product(
     println!("create_product: {err:?}");
   }
   new_post.id
+}
+
+// 删除过期的CVE编号和产品关联关系
+pub fn del_expire_product(conn: &mut MysqlConnection, id: String, product_set: HashSet<Vec<u8>>) {
+  if let Ok(cve_products) = CveProduct::query_product_by_cve(conn, id.clone()) {
+    let remote_set: HashSet<Vec<u8>> = HashSet::from_iter(cve_products);
+    for p in remote_set.difference(&product_set) {
+      if let Err(err) = CveProduct::delete(conn, id.clone(), p.clone()) {
+        println!("delete product err: {:?}", err);
+      }
+    }
+  }
 }

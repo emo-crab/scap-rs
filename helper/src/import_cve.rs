@@ -1,5 +1,5 @@
 use crate::create_cve_product;
-use crate::import_cpe::import_vendor_product_to_db;
+use crate::import_cpe::{del_expire_product, import_vendor_product_to_db};
 use diesel::mysql::MysqlConnection;
 use nvd_cves::v4::CVEItem;
 use nvd_server::error::DBResult;
@@ -85,12 +85,16 @@ pub fn import_from_api(
   match Cve::create_or_update(connection, &new_post) {
     Ok(cve_id) => {
       // 插入cpe_match关系表
-      for vendor_product in configurations
+      let vendor_products = configurations
         .iter()
         .flat_map(|n| n.vendor_product())
-        .collect::<HashSet<_>>()
-      {
-        import_vendor_product_to_db(connection, vendor_product.clone());
+        .collect::<HashSet<_>>();
+      let mut product_set = HashSet::new();
+      for vendor_product in vendor_products {
+        // 创建供应商和产品
+        let product_id = import_vendor_product_to_db(connection, vendor_product.clone());
+        product_set.insert(product_id);
+        // CVE编号关联产品
         create_cve_product(
           connection,
           cve_id.id.clone(),
@@ -98,6 +102,7 @@ pub fn import_from_api(
           vendor_product.product,
         );
       }
+      del_expire_product(connection, cve_id.id, product_set);
     }
     Err(err) => {
       println!("Cve::create_or_update: {err:?}");
