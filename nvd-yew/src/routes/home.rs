@@ -1,3 +1,4 @@
+use crate::routes::{set_title, set_token_to_local_storage};
 use yew::prelude::*;
 
 pub struct Home;
@@ -7,22 +8,8 @@ impl Component for Home {
   type Properties = ();
 
   fn create(_ctx: &Context<Self>) -> Self {
-    if let Some(window) = web_sys::window() {
-      if let Ok(location) = web_sys::Url::new(
-        &window
-          .location()
-          .to_string()
-          .as_string()
-          .unwrap_or_default(),
-      ) {
-        if let Some(session) = location.search_params().get("giscus") {
-          if let Ok(Some(s)) = window.local_storage() {
-            s.set_item("giscus-session", &format!("\"{}\"", session))
-              .unwrap_or_default();
-          }
-        }
-      }
-    };
+    set_title("Home");
+    set_token_to_local_storage();
     Self
   }
 

@@ -4,6 +4,7 @@ use crate::component::{
 };
 use crate::console_log;
 use crate::modules::cve::Cve;
+use crate::routes::set_title;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
 use std::collections::HashSet;
@@ -30,13 +31,7 @@ impl Component for CVEDetails {
   type Properties = CVEProps;
 
   fn create(ctx: &Context<Self>) -> Self {
-    if let Some(window) = web_sys::window() {
-      if let Some(doc) = window.document() {
-        if let Ok(Some(title)) = doc.query_selector("title") {
-          title.set_inner_html(&ctx.props().id);
-        };
-      }
-    };
+    set_title(&ctx.props().id);
     Self { cve: None }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {

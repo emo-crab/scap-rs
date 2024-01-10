@@ -2,7 +2,7 @@ use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, Pa
 use crate::console_log;
 use crate::modules::cve::{Cve, QueryCve};
 use crate::modules::ListResponse;
-use crate::routes::Route;
+use crate::routes::{set_title, Route};
 use crate::services::cve::cve_list;
 use crate::services::FetchState;
 use std::str::FromStr;
@@ -34,6 +34,7 @@ impl Component for CveInfoList {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
+    set_title("CVE");
     let query = ctx.link().location().unwrap().query::<QueryCve>().unwrap();
     CveInfoList {
       query,

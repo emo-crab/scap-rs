@@ -4,6 +4,7 @@ mod cve_list;
 mod cpe;
 mod home;
 mod page_not_found;
+
 use cve::CVEDetails;
 use cve_list::CveInfoList;
 // use nvd_cvss::Cvss;
@@ -51,4 +52,32 @@ impl Route {
       }
     }
   }
+}
+
+pub fn set_title(title: &str) {
+  if let Some(window) = web_sys::window() {
+    if let Some(doc) = window.document() {
+      if let Ok(Some(title_el)) = doc.query_selector("title") {
+        title_el.set_inner_html(title);
+      };
+    }
+  };
+}
+pub fn set_token_to_local_storage() {
+  if let Some(window) = web_sys::window() {
+    if let Ok(location) = web_sys::Url::new(
+      &window
+        .location()
+        .to_string()
+        .as_string()
+        .unwrap_or_default(),
+    ) {
+      if let Some(session) = location.search_params().get("giscus") {
+        if let Ok(Some(s)) = window.local_storage() {
+          s.set_item("giscus-session", &format!("\"{}\"", session))
+            .unwrap_or_default();
+        }
+      }
+    }
+  };
 }
