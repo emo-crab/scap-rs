@@ -1,25 +1,27 @@
-mod cli;
-mod import_cpe;
-mod import_cve;
-mod import_cwe;
-
-use chrono::{Duration, Utc};
-pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
-use diesel::r2d2::ConnectionManager;
-use diesel::{r2d2, MysqlConnection};
-pub use import_cpe::{create_cve_product, create_product, create_vendor};
-pub use import_cve::{import_from_api, import_from_archive};
-pub use import_cwe::import_cwe;
-use nvd_api::pagination::Object;
-use nvd_api::v2::vulnerabilities::CveParameters;
-use nvd_api::v2::LastModDate;
-use nvd_api::ApiVersion;
-use nvd_cpe::dictionary::CPEList;
-use nvd_cves::v4::CVEContainer;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::path::PathBuf;
+
+use chrono::{Duration, Utc};
+use diesel::r2d2::ConnectionManager;
+use diesel::{r2d2, MysqlConnection};
+use nvd_api::pagination::Object;
+use nvd_api::v2::vulnerabilities::CveParameters;
+use nvd_api::v2::LastModDate;
+use nvd_api::ApiVersion;
+
+pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
+pub use import_cpe::{create_cve_product, create_product, create_vendor};
+pub use import_cve::{import_from_api, import_from_archive};
+pub use import_cwe::import_cwe;
+use nvd_cpe::dictionary::CPEList;
+use nvd_cves::v4::CVEContainer;
+
+mod cli;
+mod import_cpe;
+mod import_cve;
+mod import_cwe;
 
 pub type Connection = MysqlConnection;
 
@@ -97,11 +99,11 @@ fn with_archive_cpe(path: PathBuf) {
       continue;
     }
     println!("{:?}", cpe_item.title);
-    if let Some(references) = cpe_item.references {
-      for reference in references.reference {
-        println!("{:#?}", reference.href);
-      }
-    }
+    // if let Some(references) = cpe_item.references {
+    //   for reference in references.reference {
+    //     println!("{:#?}", reference.href);
+    //   }
+    // }
     break;
   }
 }
