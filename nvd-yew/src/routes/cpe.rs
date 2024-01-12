@@ -1,15 +1,17 @@
-use crate::component::{CPEQuery, CPEQueryProps, CPERow, CpeProps, Pagination, PaginationProps};
-use crate::console_log;
-use crate::modules::cpe::{ProductWithVendor, QueryCpe};
-use crate::modules::ListResponse;
-use crate::routes::{set_title, Route};
-use crate::services::cpe::product_list;
-use crate::services::FetchState;
 use std::str::FromStr;
+
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use crate::component::{CPEQuery, CPEQueryProps, CPERow, CpeProps, Pagination, PaginationProps};
+use crate::console_log;
+use crate::modules::cpe::{ProductWithVendor, QueryCpe};
+use crate::modules::ListResponse;
+use crate::routes::Route;
+use crate::services::cpe::product_list;
+use crate::services::FetchState;
 
 pub type VendorProducts = ListResponse<ProductWithVendor, QueryCpe>;
 pub enum Msg {
@@ -32,7 +34,6 @@ impl Component for VendorProducts {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    set_title("CPE");
     let query = ctx.link().location().unwrap().query::<QueryCpe>().unwrap();
     VendorProducts {
       query,

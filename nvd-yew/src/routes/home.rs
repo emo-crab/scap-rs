@@ -1,4 +1,3 @@
-use crate::routes::{set_title, set_token_to_local_storage};
 use yew::prelude::*;
 
 pub struct Home;
@@ -8,8 +7,6 @@ impl Component for Home {
   type Properties = ();
 
   fn create(_ctx: &Context<Self>) -> Self {
-    set_title("Home");
-    set_token_to_local_storage();
     Self
   }
 

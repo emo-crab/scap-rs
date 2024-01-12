@@ -1,15 +1,16 @@
+use std::collections::HashSet;
+
+use yew::prelude::*;
+use yew_router::prelude::*;
+
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
   Accordion, CVEConfiguration, CVEConfigurationProps, CWEDetails, Comments, CVSS2, CVSS3,
 };
 use crate::console_log;
 use crate::modules::cve::Cve;
-use crate::routes::set_title;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
-use std::collections::HashSet;
-use yew::prelude::*;
-use yew_router::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, Eq, Properties)]
 pub struct CVEProps {
@@ -30,8 +31,7 @@ impl Component for CVEDetails {
   type Message = Msg;
   type Properties = CVEProps;
 
-  fn create(ctx: &Context<Self>) -> Self {
-    set_title(&ctx.props().id);
+  fn create(_ctx: &Context<Self>) -> Self {
     Self { cve: None }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {

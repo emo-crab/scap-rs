@@ -1,15 +1,17 @@
-use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
-use crate::console_log;
-use crate::modules::cve::{Cve, QueryCve};
-use crate::modules::ListResponse;
-use crate::routes::{set_title, Route};
-use crate::services::cve::cve_list;
-use crate::services::FetchState;
 use std::str::FromStr;
+
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
+use crate::console_log;
+use crate::modules::cve::{Cve, QueryCve};
+use crate::modules::ListResponse;
+use crate::routes::Route;
+use crate::services::cve::cve_list;
+use crate::services::FetchState;
 
 pub type CveInfoList = ListResponse<Cve, QueryCve>;
 pub enum Msg {
@@ -34,7 +36,6 @@ impl Component for CveInfoList {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    set_title("CVE");
     let query = ctx.link().location().unwrap().query::<QueryCve>().unwrap();
     CveInfoList {
       query,

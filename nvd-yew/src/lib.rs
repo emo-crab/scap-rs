@@ -1,3 +1,8 @@
+use yew::prelude::*;
+use yew_router::prelude::*;
+
+use layout::{Main, Nav};
+
 mod component;
 mod debug;
 mod error;
@@ -6,9 +11,6 @@ mod modules;
 mod routes;
 mod services;
 
-use layout::{Main, Nav};
-use yew::prelude::*;
-use yew_router::prelude::*;
 pub struct App;
 
 /// 因为是单页应用，所以使用HashRouter，这样只要使用actix
@@ -23,10 +25,10 @@ impl Component for App {
   fn view(&self, _ctx: &Context<Self>) -> Html {
     html! {
     <div class="page">
-        <HashRouter>
+        <BrowserRouter>
         <Nav />
         <Main />
-        </HashRouter>
+        </BrowserRouter>
     </div>
     }
   }

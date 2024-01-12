@@ -1,13 +1,54 @@
-use crate::routes::Route;
 use yew::prelude::*;
 use yew_router::prelude::*;
-pub struct Nav;
+
+use crate::routes::Route;
+
+pub enum NavMsg {
+  Title,
+}
+
+pub struct Nav {
+  _listener: LocationHandle,
+}
+
+pub fn set_title(title: &str) {
+  if let Some(window) = web_sys::window() {
+    if let Some(doc) = window.document() {
+      if let Ok(Some(title_el)) = doc.query_selector("title") {
+        title_el.set_inner_html(title);
+      };
+    }
+  };
+}
+
 impl Component for Nav {
-  type Message = ();
+  type Message = NavMsg;
   type Properties = ();
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self {}
+  fn create(ctx: &Context<Self>) -> Self {
+    let listener = ctx
+      .link()
+      .add_location_listener(ctx.link().callback(move |_| NavMsg::Title))
+      .unwrap();
+    Self {
+      _listener: listener,
+    }
+  }
+  fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    match msg {
+      NavMsg::Title => {
+        let route = ctx.link().route::<Route>().unwrap(); // handle event
+        let title = match route {
+          Route::Cve { id } => id,
+          Route::CveList => String::from("CVE"),
+          Route::Cpe => String::from("CPE"),
+          Route::Home => String::from("Home"),
+          Route::NotFound => String::from("NotFound"),
+        };
+        set_title(&title);
+      }
+    }
+    true
   }
   fn view(&self, _ctx: &Context<Self>) -> Html {
     let Self { .. } = *self;
