@@ -4,9 +4,12 @@
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
 //! [docs-rs]: https://img.shields.io/badge/docs.rs-66c2a5?style=for-the-badge&labelColor=555555&logo=docs.rs
 //!
+use std::fmt::Display;
+
+use reqwest::{ClientBuilder, RequestBuilder};
+
 use crate::error::Error;
 use crate::pagination::ListResponse;
-use reqwest::{ClientBuilder, RequestBuilder};
 
 pub mod error;
 pub mod pagination;
@@ -31,11 +34,15 @@ impl Default for ApiVersion {
   }
 }
 
-impl ToString for ApiVersion {
-  fn to_string(&self) -> String {
-    match self {
-      ApiVersion::V2_0 => String::from("2.0"),
-    }
+impl Display for ApiVersion {
+  fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    write!(
+      f,
+      "{}",
+      match self {
+        ApiVersion::V2_0 => String::from("2.0"),
+      }
+    )
   }
 }
 

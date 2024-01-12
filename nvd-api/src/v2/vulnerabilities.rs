@@ -1,19 +1,21 @@
+use chrono::NaiveDateTime;
+use derive_builder::Builder;
+use serde::{Deserialize, Serialize};
+
 /// <https://nvd.nist.gov/developers/vulnerabilities>
 /// This documentation assumes that you already understand at least one common programming language and are generally familiar with JSON RESTful services. JSON specifies the format of the data returned by the REST service. REST refers to a style of services that allow computers to communicate via HTTP over the Internet. Click here for a list of best practices and additional information on where to start. The NVD is also documenting popular workflows to assist developers working with the APIs.
 ///
 /// Please note, new users are discouraged from starting with the 1.0 API as it will be retired in 2023 but you may still view documentation for the 1.0 Vulnerability and 1.0 Product APIs.
 ///
 use crate::v2::{Keyword, LastModDate, LimitOffset};
-use chrono::NaiveDateTime;
-use serde::{Deserialize, Serialize};
 
 /// The CVE API is used to easily retrieve information on a single CVE or a collection of CVE from the NVD. The NVD contains 232,639 CVE records. Because of this, its APIs enforce offset-based pagination to answer requests for large collections. Through a series of smaller “chunked” responses controlled by an offset startIndex and a page limit resultsPerPage users may page through all the CVE in the NVD.
 ///
 /// The URL stem for retrieving CVE information is shown below.
 ///
-
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
+#[builder(setter(into))]
 pub struct CveParameters {
   /// This parameter returns all CVE associated with a specific CPE. The exact value provided with cpeName is compared against the CPE Match Criteria within a CVE applicability statement. If the value of cpeName is considered to match, the CVE is included in the results.
   pub cpe_name: Option<String>,
@@ -72,6 +74,7 @@ pub struct VirtualMatch {
   #[serde(flatten)]
   pub version_end: Option<VersionEnd>,
 }
+
 /// The virtualMatchString parameter may be combined with versionStart and versionStartType to return only the CVEs associated with CPEs in specific version ranges.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -79,6 +82,7 @@ pub struct VersionStart {
   pub version_start: String,
   pub version_start_type: String,
 }
+
 /// The virtualMatchString parameter may be combined with versionEnd and versionEndType to return only the CVEs associated with CPEs in specific version ranges.
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
 #[serde(rename_all = "camelCase")]
@@ -93,6 +97,7 @@ pub enum VersionType {
   Including,
   Excluding,
 }
+
 /// If filtering by the published date, both pubStartDate and pubEndDate are required. The maximum allowable range when using any date range parameters is 120 consecutive days.
 /// Values must be entered in the extended ISO-8601 date/time format:
 #[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
@@ -107,8 +112,9 @@ pub struct Vulnerabilities {
   pub cve: nvd_cves::api::CVE,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
+#[builder(setter(into))]
 pub struct CveHistoryParameters {
   pub cve_id: Option<String>,
   #[serde(flatten)]

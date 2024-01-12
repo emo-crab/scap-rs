@@ -1,14 +1,17 @@
-use crate::v2::{Keyword, LastModDate, LimitOffset};
 use chrono::NaiveDateTime;
+use derive_builder::Builder;
 use serde::{Deserialize, Serialize};
+
+use crate::v2::{Keyword, LastModDate, LimitOffset};
 
 ///  # Products
 /// This documentation assumes that you already understand at least one common programming language and are generally familiar with JSON RESTful services. JSON specifies the format of the data returned by the REST service. REST refers to a style of services that allow computers to communicate via HTTP over the Internet. Click here for a list of best practices and additional information on where to start. The NVD is also documenting popular workflows to assist developers working with the APIs.
 ///
 /// Please note, new users are discouraged from starting with the 1.0 API as it will be retired in 2023 but you may still view documentation for the 1.0 Vulnerability and 1.0 Product APIs.
 ///
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
+#[builder(setter(into))]
 pub struct CpeParameters {
   pub cpe_name_id: Option<String>,
   pub cpe_match_string: Option<String>,
@@ -22,8 +25,9 @@ pub struct CpeParameters {
   pub limit_offset: Option<LimitOffset>,
 }
 
-#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq)]
+#[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
+#[builder(setter(into))]
 pub struct CpeMatchParameters {
   pub cve_id: Option<String>,
   #[serde(flatten)]
