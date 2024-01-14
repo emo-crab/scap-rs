@@ -29,7 +29,7 @@ pub struct CreateCve {
 }
 
 // CVE查询参数
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct QueryCve {
   // 精准CVE编号
   pub id: Option<String>,
