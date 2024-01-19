@@ -1,5 +1,6 @@
 use super::ListResponse;
 use crate::error::{DBError, DBResult};
+
 use crate::modules::{Product, Vendor};
 use crate::schema::{products, vendors};
 use crate::DB;
@@ -7,6 +8,7 @@ use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use utoipa::IntoParams;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -20,22 +22,25 @@ pub struct CreateProduct {
   pub description: Option<String>,
   pub homepage: Option<String>,
 }
+
 #[derive(Debug, PartialEq, Serialize, Deserialize)]
 pub struct ProductWithVendor {
   pub product: Product,
   pub vendor: Vendor,
 }
+
 pub struct QueryProductById {
   pub vendor_id: Vec<u8>,
   pub name: String,
 }
+
 pub struct QueryProductByVendorName {
   pub vendor_name: String,
   pub name: String,
 }
 
 // 产品查询参数
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, IntoParams)]
 pub struct QueryProduct {
   pub vendor_name: Option<String>,
   pub name: Option<String>,
@@ -77,6 +82,7 @@ impl QueryProduct {
     )
   }
 }
+
 impl Product {
   // 创建产品
   pub fn create(conn: &mut MysqlConnection, args: &CreateProduct) -> DBResult<Self> {

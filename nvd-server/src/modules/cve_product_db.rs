@@ -7,6 +7,7 @@ use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use utoipa::IntoParams;
 
 #[derive(Insertable)]
 #[diesel(table_name = cve_product)]
@@ -34,7 +35,7 @@ pub struct ProductByName {
   pub product: Option<String>,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize, IntoParams)]
 pub struct QueryCveProduct {
   pub cve_id: Option<String>,
   pub vendor: Option<String>,

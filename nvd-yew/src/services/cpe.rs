@@ -6,6 +6,6 @@ use crate::modules::ListResponse;
 pub async fn product_list(
   query: QueryCpe,
 ) -> Result<ListResponse<ProductWithVendor, QueryCpe>, Error> {
-  request_get::<QueryCpe, ListResponse<ProductWithVendor, QueryCpe>>("product".to_string(), query)
+  request_get::<QueryCpe, ListResponse<ProductWithVendor, QueryCpe>>("product/".to_string(), query)
     .await
 }

@@ -1,11 +1,14 @@
 use super::ListResponse;
 use crate::error::{DBError, DBResult};
+
 use crate::modules::Vendor;
 use crate::schema::vendors;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use utoipa::IntoParams;
+
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
 pub struct CreateVendors {
@@ -16,7 +19,7 @@ pub struct CreateVendors {
   pub homepage: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, IntoParams)]
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,
@@ -49,6 +52,7 @@ impl QueryVendor {
     )
   }
 }
+
 impl Vendor {
   // 创建提供商
   pub fn create(conn: &mut MysqlConnection, args: &CreateVendors) -> DBResult<Self> {

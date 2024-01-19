@@ -1,6 +1,7 @@
 use super::ListResponse;
 use crate::error::{DBError, DBResult};
 use crate::modules::cve_product_db::ProductByName;
+
 use crate::modules::{Cve, CveProduct};
 use crate::schema::cves;
 use crate::DB;
@@ -9,6 +10,7 @@ use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use utoipa::IntoParams;
 
 // 创建CVE
 #[derive(Debug, Insertable)]
@@ -29,7 +31,7 @@ pub struct CreateCve {
 }
 
 // CVE查询参数
-#[derive(Default, Debug, Serialize, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize, IntoParams)]
 pub struct QueryCve {
   // 精准CVE编号
   pub id: Option<String>,

@@ -4,12 +4,15 @@ pub mod cwe_db;
 mod pagination;
 pub mod product_db;
 pub mod vendor_db;
+
 use crate::schema::*;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use pagination::ListResponse;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use utoipa::ToSchema;
+
 #[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Cve))]
 #[diesel(belongs_to(Product))]
@@ -20,7 +23,7 @@ pub struct CveProduct {
   pub product_id: Vec<u8>,
 }
 
-#[derive(Queryable, Serialize, Deserialize, Identifiable, Debug, PartialEq)]
+#[derive(Queryable, Serialize, Deserialize, Identifiable, Debug, PartialEq, ToSchema)]
 #[diesel(table_name = cves)]
 pub struct Cve {
   pub id: String,
@@ -38,7 +41,15 @@ pub struct Cve {
 }
 
 #[derive(
-  Queryable, Selectable, Identifiable, Associations, Debug, PartialEq, Serialize, Deserialize,
+  Queryable,
+  Selectable,
+  Identifiable,
+  Associations,
+  Debug,
+  PartialEq,
+  Serialize,
+  Deserialize,
+  ToSchema,
 )]
 #[diesel(belongs_to(Vendor))]
 pub struct Product {
@@ -54,7 +65,9 @@ pub struct Product {
   pub updated_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(
+  Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize, ToSchema,
+)]
 pub struct Vendor {
   pub id: Vec<u8>,
   pub official: u8,
@@ -65,7 +78,9 @@ pub struct Vendor {
   pub created_at: NaiveDateTime,
 }
 
-#[derive(Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(
+  Queryable, Identifiable, Selectable, Debug, PartialEq, Serialize, Deserialize, ToSchema,
+)]
 pub struct Cwe {
   pub id: i32,
   pub name: String,

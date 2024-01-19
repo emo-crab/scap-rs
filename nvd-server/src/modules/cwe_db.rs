@@ -1,11 +1,14 @@
 use super::ListResponse;
 use crate::error::{DBError, DBResult};
+
 use crate::modules::Cwe;
 use crate::schema::cwes;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use utoipa::IntoParams;
+
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
 pub struct CreateCwe {
@@ -14,7 +17,7 @@ pub struct CreateCwe {
   pub description: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, IntoParams)]
 pub struct QueryCwe {
   pub id: Option<i32>,
   pub name: Option<String>,
