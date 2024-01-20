@@ -50,19 +50,19 @@ async fn sitemap(req: HttpRequest, pool: web::Data<Pool>) -> ApiResponse {
 pub fn api_route(cfg: &mut web::ServiceConfig) {
   cfg
     .service(
-      web::scope("/cve")
+      web::scope("cve")
         .service(cve_api::api_cve_id)
         .service(cve_api::api_cve_list),
     )
     .service(
-      web::scope("/vendor")
+      web::scope("vendor")
         .service(vendor_api::api_vendor_name)
         .service(vendor_api::api_vendor_list),
     )
     .service(
-      web::scope("/cwe")
+      web::scope("cwe")
         .service(cwe_api::api_cwe_id)
         .service(cwe_api::api_cwe_list),
     )
-    .service(web::scope("/product").service(product_api::api_product_list));
+    .service(web::scope("product").service(product_api::api_product_list));
 }

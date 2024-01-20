@@ -1,6 +1,8 @@
 use actix_cors::Cors;
+use actix_session::{storage::CookieSessionStore, SessionMiddleware};
+use actix_web::cookie::Key;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
-use actix_web::{http, middleware, web, App, HttpServer};
+use actix_web::{guard, http, middleware, web, App, HttpServer};
 use nvd_server::api::{api_route, sitemap, ApiDoc};
 use nvd_server::init_db_pool;
 use utoipa::OpenApi;
@@ -17,16 +19,28 @@ async fn main() -> std::io::Result<()> {
       .allowed_headers(vec![http::header::ACCEPT])
       .allowed_header(http::header::CONTENT_TYPE)
       .max_age(3600);
+    let secret_key = Key::generate();
+    let session = SessionMiddleware::builder(CookieSessionStore::default(), secret_key)
+      .cookie_http_only(false)
+      .build();
     App::new()
       .wrap(cors)
       .wrap(middleware::Logger::default())
+      .wrap(session)
       .app_data(web::Data::new(connection_pool.clone()))
-      .service(web::scope("/api").configure(api_route))
+      .service(
+        web::scope("api")
+          .guard(guard::Get())
+          .guard(guard::Any(guard::Host("nvd.kali-team.cn")).or(guard::Host("127.0.0.1")))
+          .configure(api_route),
+      )
       .service(sitemap)
       .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))
       .service(
         actix_files::Files::new("/", "dist")
+          .prefer_utf8(true)
           .index_file("index.html")
+          .show_files_listing()
           .default_handler(index),
       )
   })
