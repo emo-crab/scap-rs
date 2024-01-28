@@ -94,16 +94,64 @@ fn with_archive_cpe(path: PathBuf) {
   let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
   let file = BufReader::new(gz_decoder);
   let c: CPEList = quick_xml::de::from_reader(file).unwrap();
+  let mut current = None;
+  let mut all_references = vec![];
+  let mut all_titles = vec![];
   for cpe_item in c.cpe_item.into_iter() {
+    let product = nvd_cpe::Product::from(&cpe_item.cpe23_item.name);
     if cpe_item.deprecated {
       continue;
     }
-    println!("{:?}", cpe_item.title);
-    // if let Some(references) = cpe_item.references {
-    //   for reference in references.reference {
-    //     println!("{:#?}", reference.href);
-    //   }
-    // }
-    break;
+    if current == Some(product.clone()) {
+      if let Some(references) = cpe_item.references {
+        all_references.extend(references.reference);
+      }
+      all_titles.extend(cpe_item.title)
+    } else if current.is_none() {
+      current = Some(product.clone());
+      if let Some(references) = cpe_item.references {
+        all_references.extend(references.reference);
+      }
+      all_titles.extend(cpe_item.title)
+    } else {
+      current = Some(product.clone());
+      let count = all_references.len();
+      println!("{:?}", all_references);
+      println!("{:?}", all_titles);
+      if count > 2 {
+        break;
+      }
+      all_references = vec![];
+      all_titles = vec![];
+    }
+  }
+}
+
+fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) {
+  // TextDiff::from_lines()
+
+  // similar::
+}
+#[cfg(test)]
+mod tests {
+  use super::*;
+  use std::str::FromStr;
+
+  #[test]
+  fn it_works() {
+    let v1 = "@thi.ng/egf Project @thi.ng/egf 0.2.2 for Node.js";
+    let v2 = "@thi.ng/egf Project @thi.ng/egf 0.3.4 for Node.js";
+    let v1s: Vec<&str> = v1.split_ascii_whitespace().collect();
+    let v2s: Vec<&str> = v2.split_ascii_whitespace().collect();
+    // let diffs = similar::capture_diff_slices(similar::Algorithm::Myers, &v1s, &v2s);
+    let diffs = similar::TextDiff::from_slices(&v1s, &v2s);
+    println!("{}", diffs.ratio());
+    for diff in diffs.iter_all_changes() {
+      // println!("{:?}", diff.tag());
+      if diff.tag() != similar::ChangeTag::Equal {
+        println!("{}", diff);
+      }
+    }
+    // assert_eq!(result, 4);
   }
 }
