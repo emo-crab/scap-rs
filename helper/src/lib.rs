@@ -119,19 +119,22 @@ fn with_archive_cpe(path: PathBuf) {
     if cpe_item.deprecated {
       continue;
     }
+    // 如果当前产品和上一个产品一样，合并
     if current == Some(product.clone()) {
       if let Some(references) = cpe_item.references {
         all_references.extend(references.reference);
       }
       all_titles.extend(cpe_item.title)
     } else if current.is_none() {
+      // 初始化，第一次的
       current = Some(product.clone());
       if let Some(references) = cpe_item.references {
         all_references.extend(references.reference);
       }
       all_titles.extend(cpe_item.title)
     } else {
-      current = Some(product.clone());
+      // 当这次的产品和上面的不一样，说明要更新了
+      let current_product = current.unwrap();
       let description = get_title(all_titles);
       let meta = get_href(all_references);
       if let Ok(p) = update_products(
@@ -139,9 +142,9 @@ fn with_archive_cpe(path: PathBuf) {
         UpdateProduct {
           id: vec![],
           vendor_id: vec![],
-          vendor_name: product.product,
+          vendor_name: current_product.vendor,
           meta: serde_json::json!(meta),
-          name: product.vendor,
+          name: current_product.product,
           description,
         },
       ) {
@@ -149,6 +152,7 @@ fn with_archive_cpe(path: PathBuf) {
       }
       all_references = vec![];
       all_titles = vec![];
+      current = Some(product.clone());
     }
   }
 }
