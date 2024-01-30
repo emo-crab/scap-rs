@@ -1,7 +1,11 @@
+use std::collections::HashMap;
+
 use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
-
 use yew::prelude::*;
+
+pub type MetaType = HashMap<String, HashMap<String, String>>;
+
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
 pub struct Vendor {
   #[serde(with = "uuid_serde")]
@@ -9,10 +13,11 @@ pub struct Vendor {
   pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub homepage: Option<String>,
+  pub meta: MetaType,
   pub updated_at: NaiveDateTime,
   pub created_at: NaiveDateTime,
 }
+
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
 pub struct Product {
   #[serde(with = "uuid_serde")]
@@ -23,16 +28,17 @@ pub struct Product {
   pub part: String,
   pub name: String,
   pub description: Option<String>,
-  pub homepage: Option<String>,
-  // pub meta:HashMap<String,String>,
+  pub meta: MetaType,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
+
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq, Properties)]
 pub struct ProductWithVendor {
   pub product: Product,
   pub vendor: Vendor,
 }
+
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Eq, Clone, Properties)]
 pub struct QueryCpe {
   pub vendor_id: Option<String>,
@@ -46,6 +52,7 @@ pub struct QueryCpe {
   // 分页偏移
   pub page: Option<i64>,
 }
+
 mod uuid_serde {
   use serde::{Deserializer, Serializer};
 

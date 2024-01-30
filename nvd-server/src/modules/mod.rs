@@ -1,17 +1,19 @@
+use chrono::NaiveDateTime;
+use diesel::prelude::*;
+use serde::{Deserialize, Serialize};
+use serde_json::Value;
+use utoipa::ToSchema;
+
+use pagination::ListResponse;
+
+use crate::schema::*;
+
 pub mod cve_db;
 pub mod cve_product_db;
 pub mod cwe_db;
 mod pagination;
 pub mod product_db;
 pub mod vendor_db;
-
-use crate::schema::*;
-use chrono::NaiveDateTime;
-use diesel::prelude::*;
-use pagination::ListResponse;
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-use utoipa::ToSchema;
 
 #[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
 #[diesel(belongs_to(Cve))]
@@ -59,7 +61,6 @@ pub struct Product {
   pub part: String,
   pub name: String,
   pub description: Option<String>,
-  pub homepage: Option<String>,
   pub meta: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
@@ -73,7 +74,7 @@ pub struct Vendor {
   pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub homepage: Option<String>,
+  pub meta: Value,
   pub updated_at: NaiveDateTime,
   pub created_at: NaiveDateTime,
 }

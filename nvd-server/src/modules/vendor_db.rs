@@ -1,13 +1,15 @@
-use super::ListResponse;
-use crate::error::{DBError, DBResult};
-
-use crate::modules::Vendor;
-use crate::schema::vendors;
-use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 use utoipa::IntoParams;
+
+use crate::error::{DBError, DBResult};
+use crate::modules::Vendor;
+use crate::schema::vendors;
+use crate::DB;
+
+use super::ListResponse;
 
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
@@ -16,7 +18,7 @@ pub struct CreateVendors {
   pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub homepage: Option<String>,
+  pub meta: Value,
 }
 
 #[derive(Debug, Serialize, Deserialize, IntoParams)]
