@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
@@ -17,6 +18,9 @@ pub use import_cve::{import_from_api, import_from_archive};
 pub use import_cwe::import_cwe;
 use nvd_cpe::dictionary::CPEList;
 use nvd_cves::v4::CVEContainer;
+use nvd_server::modules::product_db::UpdateProduct;
+
+use crate::import_cpe::update_products;
 
 mod cli;
 mod import_cpe;
@@ -24,8 +28,20 @@ mod import_cve;
 mod import_cwe;
 
 pub type Connection = MysqlConnection;
-
+pub type MetaType = HashMap<String, HashMap<String, String>>;
 pub type Pool = r2d2::Pool<ConnectionManager<Connection>>;
+
+pub struct Meta {
+  inner: MetaType,
+}
+
+impl Meta {
+  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> Meta {
+    let mut i = MetaType::new();
+    i.insert(name, hm);
+    Meta { inner: i }
+  }
+}
 
 pub fn init_db_pool() -> Pool {
   let database_url = dotenvy::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -97,6 +113,7 @@ fn with_archive_cpe(path: PathBuf) {
   let mut current = None;
   let mut all_references = vec![];
   let mut all_titles = vec![];
+  let connection_pool = init_db_pool();
   for cpe_item in c.cpe_item.into_iter() {
     let product = nvd_cpe::Product::from(&cpe_item.cpe23_item.name);
     if cpe_item.deprecated {
@@ -115,11 +132,20 @@ fn with_archive_cpe(path: PathBuf) {
       all_titles.extend(cpe_item.title)
     } else {
       current = Some(product.clone());
-      let count = all_references.len();
-      println!("{:?}", all_references);
-      println!("{:?}", all_titles);
-      if count > 2 {
-        break;
+      let description = get_title(all_titles);
+      let meta = get_href(all_references);
+      if let Ok(p) = update_products(
+        connection_pool.get().unwrap().deref_mut(),
+        UpdateProduct {
+          id: vec![],
+          vendor_id: vec![],
+          vendor_name: product.product,
+          meta: serde_json::json!(meta),
+          name: product.vendor,
+          description,
+        },
+      ) {
+        println!("更新产品：{}", p.name);
       }
       all_references = vec![];
       all_titles = vec![];
@@ -127,31 +153,62 @@ fn with_archive_cpe(path: PathBuf) {
   }
 }
 
-fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) {
-  // TextDiff::from_lines()
-
-  // similar::
+fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) -> Option<String> {
+  let title_map: HashMap<String, f32> = titles.iter().map(|t| (t.value.clone(), 0.0)).collect();
+  merge_diff(title_map)
 }
-#[cfg(test)]
-mod tests {
-  use super::*;
-  use std::str::FromStr;
 
-  #[test]
-  fn it_works() {
-    let v1 = "@thi.ng/egf Project @thi.ng/egf 0.2.2 for Node.js";
-    let v2 = "@thi.ng/egf Project @thi.ng/egf 0.3.4 for Node.js";
-    let v1s: Vec<&str> = v1.split_ascii_whitespace().collect();
-    let v2s: Vec<&str> = v2.split_ascii_whitespace().collect();
-    // let diffs = similar::capture_diff_slices(similar::Algorithm::Myers, &v1s, &v2s);
-    let diffs = similar::TextDiff::from_slices(&v1s, &v2s);
-    println!("{}", diffs.ratio());
-    for diff in diffs.iter_all_changes() {
-      // println!("{:?}", diff.tag());
-      if diff.tag() != similar::ChangeTag::Equal {
-        println!("{}", diff);
+fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaType {
+  let mut href_map: HashMap<String, String> = HashMap::new();
+  for href in hrefs {
+    href_map.entry(href.href).or_insert(href.value);
+  }
+  Meta::from_hashmap("references".to_string(), href_map).inner
+}
+
+// 从多个相似字符串提取相同信息，合并为一个字符串
+fn merge_diff(diff_map: HashMap<String, f32>) -> Option<String> {
+  let mut diff_map = diff_map;
+  if diff_map.is_empty() {
+    return None;
+  }
+  let backup = diff_map.clone();
+  while diff_map.len() != 1 {
+    let title_list: Vec<String> = diff_map.keys().map(|k| k.to_string()).collect();
+    diff_map.clear();
+    for (title_index_new, title_new) in title_list.iter().enumerate() {
+      for (title_index_old, title_old) in title_list.iter().enumerate() {
+        if title_index_new < title_index_old {
+          let v1s: Vec<&str> = title_new.split_ascii_whitespace().collect();
+          let v2s: Vec<&str> = title_old.split_ascii_whitespace().collect();
+          let diffs = similar::TextDiff::from_slices(&v1s, &v2s);
+          if diffs.ratio() < 0.5 {
+            continue;
+          }
+          let mut merge = vec![];
+          for diff in diffs.iter_all_changes() {
+            if diff.tag() == similar::ChangeTag::Equal {
+              merge.push(diff.value());
+            }
+          }
+          diff_map.insert(merge.join(" "), diffs.ratio());
+        }
       }
     }
+    if diff_map.is_empty() {
+      break;
+    }
+  }
+  if diff_map.is_empty() {
+    diff_map = backup;
+  }
+  return diff_map.keys().next().map(|k| k.to_string());
+}
+
+#[cfg(test)]
+mod tests {
+  #[test]
+  fn it_works() {
     // assert_eq!(result, 4);
   }
 }

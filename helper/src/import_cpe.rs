@@ -1,11 +1,18 @@
+use std::collections::{HashMap, HashSet};
+
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use diesel::mysql::MysqlConnection;
+
+use nvd_server::error::DBResult;
 use nvd_server::modules::cve_product_db::CreateCveProductByName;
-use nvd_server::modules::product_db::{CreateProduct, QueryProductById};
+use nvd_server::modules::product_db::{
+  CreateProduct, QueryProductById, QueryProductByVendorName, UpdateProduct,
+};
 use nvd_server::modules::vendor_db::CreateVendors;
 use nvd_server::modules::{CveProduct, Product, Vendor};
-use std::collections::{HashMap, HashSet};
+
+use crate::MetaType;
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
 pub fn create_cve_product(
@@ -57,12 +64,13 @@ pub fn create_vendor(
     return v.id;
   }
   // 构建待插入对象
+  let meta: MetaType = HashMap::new();
   let new_post = CreateVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     name,
     description,
+    meta: serde_json::json!(meta),
     official: u8::from(true),
-    homepage: None,
   };
   // 插入到数据库
   if let Err(err) = Vendor::create(conn, &new_post) {
@@ -89,7 +97,7 @@ pub fn create_product(
   if let Ok(v) = Product::query_by_id(conn, &q) {
     return v.id;
   }
-  let meta: Vec<HashMap<String, Vec<String>>> = Vec::new();
+  let meta: MetaType = HashMap::new();
   // 构建待插入对象
   let new_post = CreateProduct {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
@@ -99,7 +107,6 @@ pub fn create_product(
     description: None,
     official: u8::from(true),
     part,
-    homepage: None,
   };
   // 插入到数据库
   if let Err(err) = Product::create(conn, &new_post) {
@@ -118,4 +125,20 @@ pub fn del_expire_product(conn: &mut MysqlConnection, id: String, product_set: H
       }
     }
   }
+}
+
+// 更新产品描述和元数据链接信息
+pub fn update_products(conn: &mut MysqlConnection, args: UpdateProduct) -> DBResult<Product> {
+  let vp = QueryProductByVendorName {
+    vendor_name: args.vendor_name.clone(),
+    name: args.name.clone(),
+  };
+  // 查供应商id
+  let p = Product::query_by_vendor_name(conn, &vp)?;
+  let args = UpdateProduct {
+    id: p.id,
+    vendor_id: p.vendor_id,
+    ..args
+  };
+  Product::update(conn, &args)
 }

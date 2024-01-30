@@ -52,8 +52,6 @@ diesel::table! {
         #[max_length = 128]
         name -> Varchar,
         description -> Nullable<Text>,
-        #[max_length = 256]
-        homepage -> Nullable<Varchar>,
         meta -> Json,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -68,8 +66,7 @@ diesel::table! {
         #[max_length = 128]
         name -> Varchar,
         description -> Nullable<Text>,
-        #[max_length = 256]
-        homepage -> Nullable<Varchar>,
+        meta -> Json,
         updated_at -> Timestamp,
         created_at -> Timestamp,
     }
