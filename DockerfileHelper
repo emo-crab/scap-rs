@@ -20,4 +20,4 @@ ENV TZ=Asia/Shanghai
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates
 COPY --from=helper /prod/target/release/helper /prod
-CMD [ "/prod/helper" ]
+ENTRYPOINT [ "/prod/helper" ]
