@@ -5,6 +5,8 @@
 
 app = "nvd-rs"
 primary_region = "hkg"
+[build]
+dockerfile = "DockerfileFly"
 
 [http_service]
   internal_port = 8888
