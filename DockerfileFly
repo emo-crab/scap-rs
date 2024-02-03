@@ -7,6 +7,6 @@ WORKDIR /prod
 ENV TZ=Asia/Shanghai
 COPY --from=helper /prod/helper /prod
 COPY entrypoint.sh entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x entrypoint.sh
 EXPOSE 8888
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["entrypoint.sh"]
