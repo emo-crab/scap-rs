@@ -65,26 +65,26 @@ impl Component for CVERow {
               {cve_id.clone()}
           </Link<Route>>
           </th>
-          <td>
+          <td class="w-25 text-truncate text-nowrap">
           {
             vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
               <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
-              <b class="text-truncate" value={value.clone()}>{ value }</b>
+              <b value={value.clone()}>{ value }</b>
               </button>
               }
             }).collect::<Html>()
           }
           {if vendor.len()>3{html!(<i>{format!("{} and more",vendor.len()-2)}</i>)}else{html!()}}
           </td>
-          <td>
+          <td class="w-25 text-truncate text-nowrap">
           {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
           {
             if !vendor_product.is_empty(){
               vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
                 html!{
                 <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
-                <b class="text-truncate" product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
+                <b product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
                 </button>
                 }
               }).collect::<Html>()
@@ -109,8 +109,8 @@ impl Component for CVERow {
           <td>
             {cvss3(v3)}
           </td>
-          <td>
-            {update}
+          <td class="text-truncate text-nowrap">
+            <span>{update}</span>
           </td>
         </tr>
         <tr class="table-success">
