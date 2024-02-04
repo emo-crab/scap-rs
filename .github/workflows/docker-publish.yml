@@ -29,8 +29,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/nvd-rs:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/nvd-rs:latest
-          cache-to: type=inline
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Build and push helper
         uses: docker/build-push-action@v5
         with:
@@ -39,5 +39,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/nvd-helper-rs:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/nvd-helper-rs:latest
-          cache-to: type=inline
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
