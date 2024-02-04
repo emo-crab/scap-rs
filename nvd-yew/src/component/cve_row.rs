@@ -80,13 +80,21 @@ impl Component for CVERow {
           <td>
           {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
           {
-            vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
-              html!{
-              <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
-              <b class="text-truncate" product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
-              </button>
+            if !vendor_product.is_empty(){
+              vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
+                html!{
+                <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
+                <b class="text-truncate" product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
+                </button>
+                }
+              }).collect::<Html>()
+            }else{
+            html!{
+                <button  disabled=true data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success">
+                <b class="text-truncate">{ "N/A" }</b>
+                </button>
               }
-            }).collect::<Html>()
+            }
           }
           {if vendor_product.len()>3{html!(<i>{format!("{} and more",vendor_product.len()-2)}</i>)}else{html!()}}
           </td>
