@@ -25,7 +25,6 @@ pub struct CreateCve {
   pub weaknesses: Value,
   pub configurations: Value,
   pub references: Value,
-  pub timeline: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
@@ -122,7 +121,6 @@ impl Cve {
               cves::weaknesses.eq(&args.weaknesses),
               cves::configurations.eq(&args.configurations),
               cves::references.eq(&args.references),
-              cves::timeline.eq(&args.timeline),
               cves::created_at.eq(&args.created_at),
               cves::updated_at.eq(&args.updated_at),
             ))

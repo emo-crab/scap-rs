@@ -26,7 +26,6 @@ pub fn import_from_archive(
     configurations: serde_json::json!(cve_item.configurations.nodes),
     year: i32::from_str(y).unwrap_or_default(),
     weaknesses: serde_json::json!(cve_item.cve.problem_type.problem_type_data),
-    timeline: Default::default(),
   };
   // 插入到数据库
   match Cve::create(connection, &new_post) {
@@ -79,7 +78,6 @@ pub fn import_from_api(
     configurations: serde_json::json!(configurations),
     year: i32::from_str(y).unwrap_or_default(),
     weaknesses: serde_json::json!(cve_item.weaknesses),
-    timeline: Default::default(),
   };
   // 插入或者更新到数据库
   match Cve::create_or_update(connection, &new_post) {

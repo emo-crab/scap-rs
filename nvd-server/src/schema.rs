@@ -23,7 +23,6 @@ diesel::table! {
         weaknesses -> Json,
         configurations -> Json,
         references -> Json,
-        timeline -> Json,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }

@@ -37,7 +37,6 @@ pub struct Cve {
   pub weaknesses: Value,
   pub configurations: Value,
   pub references: Value,
-  pub timeline: Value,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
