@@ -1,4 +1,4 @@
-create table nvd.vendors
+create table vendors
 (
     id          binary(16)                                    not null comment '供应商ID'
         primary key,

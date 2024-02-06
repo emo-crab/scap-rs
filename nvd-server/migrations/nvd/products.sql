@@ -1,4 +1,4 @@
-create table nvd.products
+create table products
 (
     id          binary(16)                                    not null comment '产品ID'
         primary key,
@@ -15,11 +15,11 @@ create table nvd.products
     constraint name_UNIQUE
         unique (vendor_id, name),
     constraint product_vendor
-        foreign key (vendor_id) references nvd.vendors (id)
+        foreign key (vendor_id) references vendors (id)
             on delete cascade
 )
     comment '产品表';
 
 create index vendor_idx
-    on nvd.products (vendor_id);
+    on products (vendor_id);
 
