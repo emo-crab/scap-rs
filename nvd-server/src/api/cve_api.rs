@@ -2,7 +2,6 @@ use crate::modules::Cve;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpResponse};
 use std::ops::DerefMut;
-#[cfg(feature = "openapi")]
 use crate::modules::cve_db::QueryCve;
 #[cfg_attr(feature = "openapi", utoipa::path(
 context_path = "/api/cve",

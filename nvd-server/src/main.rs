@@ -42,15 +42,15 @@ async fn main() -> std::io::Result<()> {
       .service(sitemap);
     #[cfg(feature = "openapi")]
     let app = app
-      .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))
-      .service(
-        actix_files::Files::new("/", "dist")
-          .prefer_utf8(true)
-          .index_file("index.html")
-          .show_files_listing()
-          .default_handler(crate::index),
-      );
-    app
+      .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()));
+    
+    app.service(
+      actix_files::Files::new("/", "dist")
+        .prefer_utf8(true)
+        .index_file("index.html")
+        .show_files_listing()
+        .default_handler(index),
+    )
   })
   .bind(("0.0.0.0", 8888))?
   .run()

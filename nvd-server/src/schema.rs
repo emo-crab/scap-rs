@@ -78,6 +78,8 @@ diesel::table! {
         #[max_length = 128]
         name -> Varchar,
         description -> Nullable<Text>,
+        #[max_length = 32]
+        source -> Varchar,
         #[max_length = 512]
         path -> Varchar,
         meta -> Json,
