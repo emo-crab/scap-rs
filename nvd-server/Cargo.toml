@@ -12,10 +12,8 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-actix-web = { version = "4.4.0", features = ["openssl","cookies"] }
+actix-web = { version = "4.4.0", features = ["openssl", "cookies"] }
 actix-session = { version = "0.9.0", features = ["cookie-session"] }
-utoipa = { version = "4.2.0", features = ["actix_extras", "chrono", "uuid", "openapi_extensions"] }
-utoipa-swagger-ui = { version = "6.0.0", features = ["actix-web"] }
 openssl-sys = "0.9"
 openssl = { version = "0.10", features = ["vendored"] }
 actix-files = "0.6.2"
@@ -29,6 +27,10 @@ chrono = { version = "0.4", default-features = false, features = ["serde"] }
 thiserror = "1.0"
 uuid = { version = "1.6.1", features = ["v4", "serde", "v7"] }
 env_logger = "0.11.1"
+utoipa = { version = "4.2.0", features = ["actix_extras", "chrono", "uuid", "openapi_extensions"], optional = true }
+utoipa-swagger-ui = { version = "6.0.0", features = ["actix-web"], optional = true }
+[features]
+openapi = ["utoipa", "utoipa-swagger-ui"]
 [[bin]]
 name = "nvd-server"
 path = "src/main.rs"

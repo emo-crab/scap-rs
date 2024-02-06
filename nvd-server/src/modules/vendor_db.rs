@@ -2,6 +2,7 @@ use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+#[cfg(feature = "openapi")]
 use utoipa::IntoParams;
 
 use crate::error::{DBError, DBResult};
@@ -20,8 +21,8 @@ pub struct CreateVendors {
   pub description: Option<String>,
   pub meta: Value,
 }
-
-#[derive(Debug, Serialize, Deserialize, IntoParams)]
+#[cfg_attr(feature = "openapi", derive(IntoParams))]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,

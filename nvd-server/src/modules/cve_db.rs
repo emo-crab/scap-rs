@@ -10,7 +10,8 @@ use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use utoipa::IntoParams;
+#[cfg(feature = "openapi")]
+use utoipa::{IntoParams, ToSchema};
 
 // 创建CVE
 #[derive(Debug, Insertable)]
@@ -28,9 +29,9 @@ pub struct CreateCve {
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
-
 // CVE查询参数
-#[derive(Default, Debug, Serialize, Deserialize, IntoParams)]
+#[cfg_attr(feature = "openapi", derive(ToSchema, IntoParams))]
+#[derive(Default, Debug, Serialize, Deserialize)]
 pub struct QueryCve {
   // 精准CVE编号
   pub id: Option<String>,

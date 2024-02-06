@@ -3,15 +3,20 @@ use actix_session::{storage::CookieSessionStore, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::{guard, http, middleware, web, App, HttpServer};
-use nvd_server::api::{api_route, sitemap, ApiDoc};
+#[cfg(feature = "openapi")]
+use nvd_server::api::ApiDoc;
+use nvd_server::api::{api_route, sitemap};
 use nvd_server::init_db_pool;
+#[cfg(feature = "openapi")]
 use utoipa::OpenApi;
+#[cfg(feature = "openapi")]
 use utoipa_swagger_ui::SwaggerUi;
 
 #[actix_web::main] // or #[tokio::main]
 async fn main() -> std::io::Result<()> {
   let connection_pool = init_db_pool();
   env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
+  #[cfg(feature = "openapi")]
   let openapi = ApiDoc::openapi();
   HttpServer::new(move || {
     let cors = Cors::default()
@@ -23,7 +28,7 @@ async fn main() -> std::io::Result<()> {
     let session = SessionMiddleware::builder(CookieSessionStore::default(), secret_key)
       .cookie_http_only(false)
       .build();
-    App::new()
+    let app = App::new()
       .wrap(cors)
       .wrap(middleware::Logger::default())
       .wrap(session)
@@ -34,15 +39,18 @@ async fn main() -> std::io::Result<()> {
           .guard(guard::Any(guard::Host("nvd.kali-team.cn")).or(guard::Host("127.0.0.1")))
           .configure(api_route),
       )
-      .service(sitemap)
+      .service(sitemap);
+    #[cfg(feature = "openapi")]
+    let app = app
       .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()))
       .service(
         actix_files::Files::new("/", "dist")
           .prefer_utf8(true)
           .index_file("index.html")
           .show_files_listing()
-          .default_handler(index),
-      )
+          .default_handler(crate::index),
+      );
+    app
   })
   .bind(("0.0.0.0", 8888))?
   .run()

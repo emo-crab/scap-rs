@@ -2,6 +2,7 @@ use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+#[cfg(feature = "openapi")]
 use utoipa::IntoParams;
 
 use crate::error::{DBError, DBResult};
@@ -47,9 +48,9 @@ pub struct QueryProductByVendorName {
   pub vendor_name: String,
   pub name: String,
 }
-
+#[cfg_attr(feature = "openapi", derive(IntoParams))]
 // 产品查询参数
-#[derive(Debug, Serialize, Deserialize, IntoParams)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct QueryProduct {
   pub vendor_name: Option<String>,
   pub name: Option<String>,

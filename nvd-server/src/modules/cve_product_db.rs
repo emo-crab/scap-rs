@@ -7,6 +7,7 @@ use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "openapi")]
 use utoipa::IntoParams;
 
 #[derive(Insertable)]
@@ -34,8 +35,8 @@ pub struct ProductByName {
   pub vendor: Option<String>,
   pub product: Option<String>,
 }
-
-#[derive(Debug, Serialize, Deserialize, IntoParams)]
+#[cfg_attr(feature = "openapi", derive(IntoParams))]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct QueryCveProduct {
   pub cve_id: Option<String>,
   pub vendor: Option<String>,

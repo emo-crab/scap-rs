@@ -1,7 +1,8 @@
 use serde::{Deserialize, Serialize};
+#[cfg(feature = "openapi")]
 use utoipa::{IntoParams, ToSchema};
-
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, ToSchema)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
 pub struct Paging {
   // 分页每页
   pub size: i64,
@@ -10,16 +11,16 @@ pub struct Paging {
   // 结果总数
   pub total: i64,
 }
-
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, IntoParams, ToSchema, Default)]
+#[cfg_attr(feature = "openapi", derive(IntoParams, ToSchema))]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, Default)]
 pub struct QueryPaging {
   // 分页每页
   pub size: Option<i64>,
   // 分页偏移
   pub page: Option<i64>,
 }
-
-#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone, ToSchema)]
+#[cfg_attr(feature = "openapi", derive(ToSchema))]
+#[derive(Serialize, Deserialize, Eq, PartialEq, Debug, Clone)]
 pub struct ListResponse<T> {
   pub result: Vec<T>,
   #[serde(flatten)]
