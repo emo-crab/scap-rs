@@ -43,7 +43,7 @@ async fn main() -> std::io::Result<()> {
     #[cfg(feature = "openapi")]
     let app = app
       .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()));
-    
+
     app.service(
       actix_files::Files::new("/", "dist")
         .prefer_utf8(true)

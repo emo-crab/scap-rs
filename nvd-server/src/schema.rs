@@ -10,6 +10,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    cve_exploit (cve_id, exploit_id) {
+        #[max_length = 16]
+        cve_id -> Varchar,
+        #[max_length = 16]
+        exploit_id -> Binary,
+    }
+}
+
+diesel::table! {
     cves (id) {
         #[max_length = 32]
         id -> Varchar,
@@ -84,10 +93,6 @@ diesel::table! {
         path -> Varchar,
         meta -> Json,
         verified -> Unsigned<Tinyint>,
-        #[max_length = 32]
-        cve_id -> Varchar,
-        #[max_length = 16]
-        product_id -> Binary,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
@@ -96,7 +101,15 @@ diesel::table! {
 diesel::joinable!(cve_product -> cves (cve_id));
 diesel::joinable!(cve_product -> products (product_id));
 diesel::joinable!(products -> vendors (vendor_id));
-diesel::joinable!(exploits -> cves (cve_id));
-diesel::joinable!(exploits -> products (product_id));
+diesel::joinable!(cve_exploit -> cves (cve_id));
+diesel::joinable!(cve_exploit -> exploits (exploit_id));
 
-diesel::allow_tables_to_appear_in_same_query!(cve_product, cves, cwes, exploits, products, vendors,);
+diesel::allow_tables_to_appear_in_same_query!(
+  cve_product,
+  cves,
+  cwes,
+  exploits,
+  products,
+  vendors,
+  cve_exploit,
+);

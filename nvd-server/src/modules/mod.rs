@@ -9,9 +9,10 @@ use utoipa::ToSchema;
 use crate::schema::*;
 
 pub mod cve_db;
+pub mod cve_exploit_db;
 pub mod cve_product_db;
 pub mod cwe_db;
-mod exploit_db;
+pub mod exploit_db;
 mod pagination;
 pub mod product_db;
 pub mod vendor_db;
@@ -24,6 +25,15 @@ pub mod vendor_db;
 pub struct CveProduct {
   pub cve_id: String,
   pub product_id: Vec<u8>,
+}
+#[derive(Queryable, Selectable, Identifiable, Associations, Debug, PartialEq)]
+#[diesel(belongs_to(Cve))]
+#[diesel(belongs_to(Exploit))]
+#[diesel(table_name = cve_exploit)]
+#[diesel(primary_key(cve_id, exploit_id))]
+pub struct CveExploit {
+  pub cve_id: String,
+  pub exploit_id: Vec<u8>,
 }
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[derive(Queryable, Serialize, Deserialize, Identifiable, Debug, PartialEq)]
@@ -78,11 +88,7 @@ pub struct Cwe {
   pub updated_at: NaiveDateTime,
 }
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
-#[derive(
-  Queryable, Selectable, Identifiable, Associations, Debug, PartialEq, Serialize, Deserialize,
-)]
-#[diesel(belongs_to(Cve))]
-#[diesel(belongs_to(Product))]
+#[derive(Queryable, Selectable, Identifiable, Debug, PartialEq, Serialize, Deserialize)]
 #[diesel(table_name = exploits)]
 pub struct Exploit {
   pub id: Vec<u8>,
@@ -92,8 +98,6 @@ pub struct Exploit {
   pub path: String,
   pub meta: Value,
   pub verified: u8,
-  pub cve_id: String,
-  pub product_id: Vec<u8>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
