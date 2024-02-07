@@ -1,11 +1,15 @@
-use crate::create_cve_product;
 use crate::import_cpe::{del_expire_product, import_vendor_product_to_db};
+use crate::{create_cve_product, init_db_pool};
 use diesel::mysql::MysqlConnection;
-use nvd_cves::v4::CVEItem;
+use nvd_cves::v4::{CVEContainer, CVEItem};
 use nvd_server::error::DBResult;
 use nvd_server::modules::cve_db::CreateCve;
 use nvd_server::modules::Cve;
 use std::collections::HashSet;
+use std::fs::File;
+use std::io::BufReader;
+use std::ops::DerefMut;
+use std::path::PathBuf;
 use std::str::FromStr;
 
 pub fn import_from_archive(
@@ -107,4 +111,14 @@ pub fn import_from_api(
     }
   }
   Ok(new_post.id)
+}
+pub fn with_archive_cve(path: PathBuf) {
+  let connection_pool = init_db_pool();
+  let gz_open_file = File::open(path).unwrap();
+  let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
+  let file = BufReader::new(gz_decoder);
+  let c: CVEContainer = serde_json::from_reader(file).unwrap();
+  for w in c.CVE_Items {
+    import_from_archive(connection_pool.get().unwrap().deref_mut(), w).unwrap_or_default();
+  }
 }

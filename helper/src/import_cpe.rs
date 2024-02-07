@@ -1,8 +1,13 @@
 use std::collections::{HashMap, HashSet};
+use std::fs::File;
+use std::io::BufReader;
+use std::ops::DerefMut;
+use std::path::PathBuf;
 
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use diesel::mysql::MysqlConnection;
+use nvd_cpe::dictionary::CPEList;
 
 use nvd_server::error::DBResult;
 use nvd_server::modules::cve_product_db::CreateCveProductByName;
@@ -11,8 +16,8 @@ use nvd_server::modules::product_db::{
 };
 use nvd_server::modules::vendor_db::CreateVendors;
 use nvd_server::modules::{CveProduct, Product, Vendor};
-
-use crate::MetaType;
+pub type MetaType = HashMap<String, HashMap<String, String>>;
+use crate::init_db_pool;
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
 pub fn create_cve_product(
@@ -141,4 +146,118 @@ pub fn update_products(conn: &mut MysqlConnection, args: UpdateProduct) -> DBRes
     ..args
   };
   Product::update(conn, &args)
+}
+pub struct Meta {
+  inner: MetaType,
+}
+
+impl Meta {
+  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> Meta {
+    let mut i = MetaType::new();
+    i.insert(name, hm);
+    Meta { inner: i }
+  }
+}
+fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) -> Option<String> {
+  let title_map: HashMap<String, f32> = titles.iter().map(|t| (t.value.clone(), 0.0)).collect();
+  merge_diff(title_map)
+}
+
+fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaType {
+  let mut href_map: HashMap<String, String> = HashMap::new();
+  for href in hrefs {
+    href_map.entry(href.href).or_insert(href.value);
+  }
+  Meta::from_hashmap("references".to_string(), href_map).inner
+}
+
+// 从多个相似字符串提取相同信息，合并为一个字符串
+fn merge_diff(diff_map: HashMap<String, f32>) -> Option<String> {
+  let mut diff_map = diff_map;
+  if diff_map.is_empty() {
+    return None;
+  }
+  let backup = diff_map.clone();
+  while diff_map.len() != 1 {
+    let title_list: Vec<String> = diff_map.keys().map(|k| k.to_string()).collect();
+    diff_map.clear();
+    for (title_index_new, title_new) in title_list.iter().enumerate() {
+      for (title_index_old, title_old) in title_list.iter().enumerate() {
+        if title_index_new < title_index_old {
+          let v1s: Vec<&str> = title_new.split_ascii_whitespace().collect();
+          let v2s: Vec<&str> = title_old.split_ascii_whitespace().collect();
+          let diffs = similar::TextDiff::from_slices(&v1s, &v2s);
+          if diffs.ratio() < 0.5 {
+            continue;
+          }
+          let mut merge = vec![];
+          for diff in diffs.iter_all_changes() {
+            if diff.tag() == similar::ChangeTag::Equal {
+              merge.push(diff.value());
+            }
+          }
+          diff_map.insert(merge.join(" "), diffs.ratio());
+        }
+      }
+    }
+    if diff_map.is_empty() {
+      break;
+    }
+  }
+  if diff_map.is_empty() {
+    diff_map = backup;
+  }
+  return diff_map.keys().next().map(|k| k.to_string());
+}
+
+pub fn with_archive_cpe(path: PathBuf) {
+  let gz_open_file = File::open(path).unwrap();
+  let gz_decoder = flate2::read::GzDecoder::new(gz_open_file);
+  let file = BufReader::new(gz_decoder);
+  let c: CPEList = quick_xml::de::from_reader(file).unwrap();
+  let mut current = None;
+  let mut all_references = vec![];
+  let mut all_titles = vec![];
+  let connection_pool = init_db_pool();
+  for cpe_item in c.cpe_item.into_iter() {
+    let product = nvd_cpe::Product::from(&cpe_item.cpe23_item.name);
+    if cpe_item.deprecated {
+      continue;
+    }
+    // 如果当前产品和上一个产品一样，合并
+    if current == Some(product.clone()) {
+      if let Some(references) = cpe_item.references {
+        all_references.extend(references.reference);
+      }
+      all_titles.extend(cpe_item.title)
+    } else if current.is_none() {
+      // 初始化，第一次的
+      current = Some(product.clone());
+      if let Some(references) = cpe_item.references {
+        all_references.extend(references.reference);
+      }
+      all_titles.extend(cpe_item.title)
+    } else {
+      // 当这次的产品和上面的不一样，说明要更新了
+      let current_product = current.unwrap();
+      let description = get_title(all_titles);
+      let meta = get_href(all_references);
+      if let Ok(p) = update_products(
+        connection_pool.get().unwrap().deref_mut(),
+        UpdateProduct {
+          id: vec![],
+          vendor_id: vec![],
+          vendor_name: current_product.vendor,
+          meta: serde_json::json!(meta),
+          name: current_product.product,
+          description,
+        },
+      ) {
+        println!("更新产品：{}", p.name);
+      }
+      all_references = vec![];
+      all_titles = vec![];
+      current = Some(product.clone());
+    }
+  }
 }

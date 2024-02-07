@@ -13,6 +13,7 @@ pub struct TopLevel {
 pub enum NVDHelper {
   CVE(CVECommand),
   CPE(CPECommand),
+  EXP(EXPCommand),
 }
 
 #[derive(FromArgs, PartialEq, Debug)]
@@ -40,5 +41,13 @@ pub struct CPECommand {
     option,
     description = "import cpe from xml.gz. official-cpe-dictionary_v2.3.xml.gz"
   )]
+  pub path: Option<PathBuf>,
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(description = "exp helper")]
+#[argh(subcommand, name = "exp")]
+pub struct EXPCommand {
+  #[argh(option, description = "import exp from files_exploits.csv")]
   pub path: Option<PathBuf>,
 }
