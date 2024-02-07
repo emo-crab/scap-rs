@@ -8,7 +8,7 @@ RUN cargo fetch
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY nvd-server/src src
-RUN cargo build --release
+RUN cargo build --release --all-features
 
 FROM rust:slim-buster AS yew
 
@@ -33,7 +33,7 @@ FROM debian:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron
+RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
 COPY --from=server /prod/target/release/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist
 EXPOSE 8888

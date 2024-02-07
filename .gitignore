@@ -24,3 +24,4 @@ Cargo.lock
 /nvd-yew/target/
 /nvd-yew/dist/
 /nvd-server/migrations/nvd-er.mwb.bak
+/helper/examples/exploit/
