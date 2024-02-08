@@ -8,10 +8,12 @@ use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::v2::LastModDate;
 use nvd_api::ApiVersion;
 
-use crate::cli::EXPCommand;
+use crate::cli::{EXPCommand, SyncCommand};
 use crate::import_cpe::with_archive_cpe;
 use crate::import_cve::with_archive_cve;
-use crate::import_exploit::with_archive_exploit;
+use crate::import_exploit::{
+  import_from_nuclei_templates_path, update_from_github, with_archive_exploit,
+};
 pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
 pub use import_cpe::{create_cve_product, create_product, create_vendor};
 pub use import_cve::{import_from_api, import_from_archive};
@@ -80,6 +82,31 @@ pub async fn cpe_mode(config: CPECommand) {
 pub async fn exploit_mode(config: EXPCommand) {
   if let Some(path) = config.path {
     with_archive_exploit(path)
+  }
+  if config.api {
+    update_from_github().await;
+  }
+  if let Some(path) = config.template {
+    import_from_nuclei_templates_path(path)
+  }
+}
+
+pub async fn sync_mode(config: SyncCommand) {
+  if config.cve {
+    let now = Utc::now();
+    // 每两个小时拉取三小时内的更新数据入库
+    let three_hours = now - Duration::hours(3);
+    let param = CveParameters {
+      last_mod: Some(LastModDate {
+        last_mod_start_date: three_hours.to_rfc3339(),
+        last_mod_end_date: now.to_rfc3339(),
+      }),
+      ..CveParameters::default()
+    };
+    async_cve(param).await
+  }
+  if config.exp {
+    update_from_github().await;
   }
 }
 #[cfg(test)]

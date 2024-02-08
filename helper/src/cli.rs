@@ -14,6 +14,7 @@ pub enum NVDHelper {
   CVE(CVECommand),
   CPE(CPECommand),
   EXP(EXPCommand),
+  Sync(SyncCommand),
 }
 
 #[derive(FromArgs, PartialEq, Debug)]
@@ -50,4 +51,18 @@ pub struct CPECommand {
 pub struct EXPCommand {
   #[argh(option, description = "import exp from files_exploits.csv")]
   pub path: Option<PathBuf>,
+  #[argh(option, description = "import exp from nuclei-templates path")]
+  pub template: Option<PathBuf>,
+  #[argh(switch, description = "update exp from nuclei-templates")]
+  pub api: bool,
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(description = "sync helper")]
+#[argh(subcommand, name = "sync")]
+pub struct SyncCommand {
+  #[argh(switch, description = "sync exp")]
+  pub exp: bool,
+  #[argh(switch, description = "sync cve")]
+  pub cve: bool,
 }

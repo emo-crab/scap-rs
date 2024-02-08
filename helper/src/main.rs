@@ -1,4 +1,4 @@
-use helper::{cpe_mode, cve_mode, exploit_mode, NVDHelper, TopLevel};
+use helper::{cpe_mode, cve_mode, exploit_mode, sync_mode, NVDHelper, TopLevel};
 
 #[tokio::main]
 async fn main() {
@@ -7,5 +7,6 @@ async fn main() {
     NVDHelper::CVE(config) => cve_mode(config).await,
     NVDHelper::CPE(config) => cpe_mode(config).await,
     NVDHelper::EXP(config) => exploit_mode(config).await,
+    NVDHelper::Sync(config) => sync_mode(config).await,
   };
 }
