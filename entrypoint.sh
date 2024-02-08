@@ -5,7 +5,7 @@ set -e
 
 # Create directory for log.
 mkdir -p /app/var/log
-echo "0 */2 * * * /prod/helper cve --api --hours 3 > /app/var/log/helper.log"> /etc/cron.d/crontab
+echo "0 */2 * * * /prod/helper sync --cve --exp > /app/var/log/helper.log"> /etc/cron.d/crontab
 # Load cron configuration.
 crontab /etc/cron.d/crontab
 # Start cron as a daemon.
