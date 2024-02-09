@@ -1,16 +1,12 @@
+use crate::error::{DBError, DBResult};
+use crate::pagination::ListResponse;
+use crate::product::{Product, ProductWithVendor, QueryProduct};
+use crate::schema::{products, vendors};
+use crate::vendor::Vendor;
+use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use serde::{Deserialize, Serialize};
 use serde_json::Value;
-#[cfg(feature = "openapi")]
-use utoipa::IntoParams;
-
-use crate::error::{DBError, DBResult};
-use crate::modules::{Product, Vendor};
-use crate::schema::{products, vendors};
-use crate::DB;
-
-use super::ListResponse;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -33,12 +29,6 @@ pub struct UpdateProduct {
   pub description: Option<String>,
 }
 
-#[derive(Debug, PartialEq, Serialize, Deserialize)]
-pub struct ProductWithVendor {
-  pub product: Product,
-  pub vendor: Vendor,
-}
-
 pub struct QueryProductById {
   pub vendor_id: Vec<u8>,
   pub name: String,
@@ -48,17 +38,7 @@ pub struct QueryProductByVendorName {
   pub vendor_name: String,
   pub name: String,
 }
-#[cfg_attr(feature = "openapi", derive(IntoParams))]
-// 产品查询参数
-#[derive(Debug, Serialize, Deserialize)]
-pub struct QueryProduct {
-  pub vendor_name: Option<String>,
-  pub name: Option<String>,
-  pub part: Option<String>,
-  pub official: Option<u8>,
-  pub size: Option<i64>,
-  pub page: Option<i64>,
-}
+
 
 impl QueryProduct {
   fn query<'a>(

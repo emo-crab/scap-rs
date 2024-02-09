@@ -9,7 +9,7 @@ license = "GPL-3.0-only"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [workspace]
-members = ["nvd-api", "nvd-cpe", "nvd-cves", "nvd-cvss", "nvd-cwe", "helper", "nvd-server", "nvd-yew"]
+members = ["nvd-api", "nvd-cpe", "nvd-cves", "nvd-cvss", "nvd-cwe", "helper", "nvd-server", "nvd-yew", "nvd-model"]
 exclude = ["nvd-cpe/schema"]
 resolver = "2"
 

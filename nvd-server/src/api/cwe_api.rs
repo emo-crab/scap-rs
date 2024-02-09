@@ -1,7 +1,7 @@
-use crate::modules::cwe_db::QueryCwe;
-use crate::modules::Cwe;
+use crate::error::ApiResult;
 use crate::{ApiResponse, Pool};
-use actix_web::{get, web, Error, HttpResponse};
+use actix_web::{get, web, HttpResponse};
+use nvd_model::cwe::{Cwe, QueryCwe};
 use std::ops::DerefMut;
 #[cfg_attr(feature = "openapi", utoipa::path(
 context_path = "/api/cwe",
@@ -11,7 +11,7 @@ params(
 responses((status = 200, description = "List cwe by id", body = [Cwe]))
 ))]
 #[get("/{id}")]
-async fn api_cwe_id(id: web::Path<i32>, pool: web::Data<Pool>) -> Result<HttpResponse, Error> {
+async fn api_cwe_id(id: web::Path<i32>, pool: web::Data<Pool>) -> ApiResult<HttpResponse> {
   let contact = web::block(move || {
     let mut conn = pool.get()?;
     Cwe::query_by_id(conn.deref_mut(), &id)

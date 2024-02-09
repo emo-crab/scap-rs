@@ -1,10 +1,10 @@
 use crate::component::cvss_tags::{cvss2, cvss3};
-use crate::modules::cve::Cve;
 use crate::routes::Route;
 use std::collections::HashSet;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
+use nvd_model::cve::Cve;
 
 // 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]

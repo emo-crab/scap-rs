@@ -1,15 +1,17 @@
+use crate::cve::Cve;
+use crate::cve_product::CveProduct;
 use crate::error::{DBError, DBResult};
-use crate::modules::pagination::ListResponse;
-use crate::modules::product_db::{QueryProductById, QueryProductByVendorName};
-use crate::modules::{Cve, CveProduct, Product, Vendor};
+use crate::pagination::ListResponse;
+use crate::product::db::{QueryProductById, QueryProductByVendorName};
+use crate::product::Product;
 use crate::schema::{cve_product, cves, products};
+use crate::vendor::Vendor;
 use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "openapi")]
 use utoipa::IntoParams;
-
 #[derive(Insertable)]
 #[diesel(table_name = cve_product)]
 pub struct CreateCveProduct {

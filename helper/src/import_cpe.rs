@@ -8,14 +8,16 @@ use cached::proc_macro::cached;
 use cached::SizedCache;
 use diesel::mysql::MysqlConnection;
 use nvd_cpe::dictionary::CPEList;
-
-use nvd_server::error::DBResult;
-use nvd_server::modules::cve_product_db::CreateCveProductByName;
-use nvd_server::modules::product_db::{
+use nvd_model::cve_product::db::CreateCveProductByName;
+use nvd_model::cve_product::CveProduct;
+use nvd_model::error::DBResult;
+use nvd_model::product::db::{
   CreateProduct, QueryProductById, QueryProductByVendorName, UpdateProduct,
 };
-use nvd_server::modules::vendor_db::CreateVendors;
-use nvd_server::modules::{CveProduct, Product, Vendor};
+use nvd_model::product::Product;
+use nvd_model::vendor::db::CreateVendors;
+use nvd_model::vendor::Vendor;
+
 pub type MetaType = HashMap<String, HashMap<String, String>>;
 use crate::init_db_pool;
 

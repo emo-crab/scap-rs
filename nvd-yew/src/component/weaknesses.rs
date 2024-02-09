@@ -1,5 +1,5 @@
 use crate::console_log;
-use crate::modules::cwe::Cwe;
+use nvd_model::cwe::Cwe;
 use crate::services::cve::cwe_details;
 use crate::services::FetchState;
 use std::str::FromStr;

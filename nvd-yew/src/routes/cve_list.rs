@@ -4,10 +4,10 @@ use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
+use nvd_model::cve::{Cve, QueryCve};
 
 use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
 use crate::console_log;
-use crate::modules::cve::{Cve, QueryCve};
 use crate::modules::ListResponse;
 use crate::routes::Route;
 use crate::services::cve::cve_list;

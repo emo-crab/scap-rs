@@ -1,8 +1,8 @@
-use crate::modules::cpe::ProductWithVendor;
 use crate::routes::Route;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
+use nvd_model::product::ProductWithVendor;
 
 // 供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]

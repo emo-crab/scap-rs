@@ -38,7 +38,7 @@ where
         Ok(d) => Ok(d),
         Err(err) => {
           console_log!("{:?}", err);
-          Err(Error::DeserializeError)
+          Err(Error::Deserialize)
         }
       }
       // if let Ok(data) = data {
@@ -52,7 +52,7 @@ where
         403 => Err(Error::Forbidden),
         404 => Err(Error::NotFound),
         422 => Err(Error::UnProcessableEntity),
-        500 => Err(Error::InternalServerError),
+        500 => Err(Error::InternalServer),
         502 => Err(Error::BadGateway),
         503 => Err(Error::ServiceUnavailable),
         504 => Err(Error::GatewayTimeout),

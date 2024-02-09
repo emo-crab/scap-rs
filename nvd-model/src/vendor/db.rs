@@ -1,16 +1,15 @@
-use diesel::prelude::*;
+use crate::error::{DBError, DBResult};
+use crate::pagination::ListResponse;
+use crate::schema::vendors;
+use crate::vendor::Vendor;
+use crate::DB;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use diesel::{
+  ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl, TextExpressionMethods,
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-#[cfg(feature = "openapi")]
 use utoipa::IntoParams;
-
-use crate::error::{DBError, DBResult};
-use crate::modules::Vendor;
-use crate::schema::vendors;
-use crate::DB;
-
-use super::ListResponse;
 
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]

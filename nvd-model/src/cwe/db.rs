@@ -1,14 +1,12 @@
-use super::ListResponse;
+use crate::cwe::{Cwe, QueryCwe};
 use crate::error::{DBError, DBResult};
-
-use crate::modules::Cwe;
+use crate::pagination::ListResponse;
 use crate::schema::cwes;
 use crate::DB;
-use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use serde::{Deserialize, Serialize};
-#[cfg(feature = "openapi")]
-use utoipa::IntoParams;
+use diesel::{
+  ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl, TextExpressionMethods,
+};
 
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
@@ -16,14 +14,6 @@ pub struct CreateCwe {
   pub id: i32,
   pub name: String,
   pub description: String,
-}
-#[cfg_attr(feature = "openapi", derive(IntoParams))]
-#[derive(Debug, Serialize, Deserialize)]
-pub struct QueryCwe {
-  pub id: Option<i32>,
-  pub name: Option<String>,
-  pub size: Option<i64>,
-  pub page: Option<i64>,
 }
 
 impl QueryCwe {

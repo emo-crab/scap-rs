@@ -1,15 +1,15 @@
-use crate::modules::cpe::QueryCpe;
 use web_sys::{HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
+use nvd_model::product::QueryProduct;
 
 // CVE表过滤和查询回调函数
 #[derive(PartialEq, Clone, Properties)]
 pub struct CPEQueryProps {
-  pub props: QueryCpe,
+  pub props: QueryProduct,
   #[prop_or_default]
   pub is_product: Option<bool>,
   pub query_part: Callback<MouseEvent>,
-  pub query: Callback<QueryCpe>,
+  pub query: Callback<QueryProduct>,
 }
 pub struct CPEQuery;
 impl Component for CPEQuery {
@@ -61,7 +61,7 @@ impl Component for CPEQuery {
           String::new()
         };
         // let search = search_input.cast::<HtmlInputElement>().unwrap().value();
-        query_callback.emit(QueryCpe {
+        query_callback.emit(QueryProduct {
           vendor_id: None,
           vendor_name: if vendor.is_empty() {
             None

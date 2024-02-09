@@ -1,55 +1,12 @@
-use super::ListResponse;
+use crate::cve::{CreateCve, Cve, QueryCve};
+use crate::cve_product::db::ProductByName;
+use crate::cve_product::CveProduct;
 use crate::error::{DBError, DBResult};
-use crate::modules::cve_product_db::ProductByName;
-
-use crate::modules::{Cve, CveProduct};
+use crate::pagination::ListResponse;
 use crate::schema::cves;
 use crate::DB;
-use chrono::NaiveDateTime;
-use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use serde::{Deserialize, Serialize};
-use serde_json::Value;
-#[cfg(feature = "openapi")]
-use utoipa::{IntoParams, ToSchema};
-
-// 创建CVE
-#[derive(Debug, Insertable)]
-#[diesel(table_name = cves)]
-pub struct CreateCve {
-  pub id: String,
-  pub year: i32,
-  pub assigner: String,
-  pub description: Value,
-  pub severity: String,
-  pub metrics: Value,
-  pub weaknesses: Value,
-  pub configurations: Value,
-  pub references: Value,
-  pub created_at: NaiveDateTime,
-  pub updated_at: NaiveDateTime,
-}
-// CVE查询参数
-#[cfg_attr(feature = "openapi", derive(ToSchema, IntoParams))]
-#[derive(Default, Debug, Serialize, Deserialize)]
-pub struct QueryCve {
-  // 精准CVE编号
-  pub id: Option<String>,
-  // 年份
-  pub year: Option<i32>,
-  // 是否为官方数据
-  pub official: Option<u8>,
-  // 供应商
-  pub vendor: Option<String>,
-  // 产品
-  pub product: Option<String>,
-  // 评分等级
-  pub severity: Option<String>,
-  // 分页每页
-  pub size: Option<i64>,
-  // 分页偏移
-  pub page: Option<i64>,
-}
+use diesel::{ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
 
 impl QueryCve {
   // 查询参数过滤实现,免得写重复的过滤代码

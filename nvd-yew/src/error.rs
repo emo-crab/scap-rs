@@ -18,7 +18,7 @@ pub enum Error {
   UnProcessableEntity,
   //500
   #[error("Internal Server Error")]
-  InternalServerError,
+  InternalServer,
   //502
   #[error("Bad Gateway")]
   BadGateway,
@@ -30,5 +30,5 @@ pub enum Error {
   GatewayTimeout,
   //deserialize error (unable to parse recieved data)
   #[error("Deserialize Error")]
-  DeserializeError,
+  Deserialize,
 }

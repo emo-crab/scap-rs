@@ -1,17 +1,17 @@
 mod cve_api;
 mod cwe_api;
+mod exploit_api;
 mod product_api;
 mod vendor_api;
-
-use crate::modules::cve_db::QueryCve;
-use crate::modules::Cve;
-#[cfg(feature = "openapi")]
-use crate::modules::{Cwe, Product, Vendor};
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpRequest, HttpResponse};
+use nvd_model::cve::{Cve, QueryCve};
+#[cfg(feature = "openapi")]
+use nvd_model::{cwe::Cwe, product::Product, vendor::Vendor};
 use std::ops::DerefMut;
 #[cfg(feature = "openapi")]
 use utoipa::OpenApi;
+
 #[cfg(feature = "openapi")]
 #[derive(OpenApi)]
 #[openapi(
@@ -57,6 +57,7 @@ pub fn api_route(cfg: &mut web::ServiceConfig) {
         .service(cve_api::api_cve_id)
         .service(cve_api::api_cve_list),
     )
+    .service(web::scope("exp").service(exploit_api::api_exp_list))
     .service(
       web::scope("vendor")
         .service(vendor_api::api_vendor_name)

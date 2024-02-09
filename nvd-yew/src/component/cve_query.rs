@@ -1,6 +1,8 @@
-use crate::modules::cve::QueryCve;
+
 use web_sys::{HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
+use nvd_model::cve::QueryCve;
+
 // CVE表过滤和查询回调函数
 #[derive(PartialEq, Clone, Properties)]
 pub struct CVEQueryProps {
@@ -66,6 +68,7 @@ impl Component for CVEQuery {
             Some(search)
           },
           year: None,
+          official: None,
           vendor: if vendor.is_empty() {
             None
           } else {

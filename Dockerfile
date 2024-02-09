@@ -8,6 +8,7 @@ RUN cargo fetch
 RUN apt-get update
 RUN apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY nvd-server/src src
+COPY nvd-model /nvd-model
 RUN cargo build --release --all-features
 
 FROM rust:slim-buster AS yew
@@ -20,6 +21,7 @@ RUN cargo install --locked trunk
 RUN cargo install --locked wasm-bindgen-cli
 # 其他模块需要工作区配置
 COPY nvd-yew/Cargo.toml Cargo.toml
+COPY nvd-model /nvd-model
 RUN cargo fetch
 COPY nvd-yew/index.html index.html
 COPY nvd-yew/Trunk.toml Trunk.toml

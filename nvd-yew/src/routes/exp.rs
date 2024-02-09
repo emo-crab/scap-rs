@@ -7,13 +7,13 @@ use yew_router::prelude::*;
 
 use crate::component::{CPEQuery, CPEQueryProps, CPERow, CpeProps, Pagination, PaginationProps};
 use crate::console_log;
+use crate::modules::cpe::{ProductWithVendor, QueryCpe};
 use crate::modules::ListResponse;
 use crate::routes::Route;
 use crate::services::cpe::product_list;
 use crate::services::FetchState;
-use nvd_model::product::{ProductWithVendor, QueryProduct};
 
-pub type VendorProducts = ListResponse<ProductWithVendor, QueryProduct>;
+pub type VendorProducts = ListResponse<ProductWithVendor, QueryCpe>;
 pub enum Msg {
   SetFetchState(FetchState<VendorProducts>),
   Send,
@@ -26,7 +26,7 @@ pub enum PageMsg {
   To(i64),
 }
 pub enum QueryMsg {
-  Query(QueryProduct),
+  Query(QueryCpe),
   Part(String),
 }
 impl Component for VendorProducts {
@@ -34,7 +34,7 @@ impl Component for VendorProducts {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let query = ctx.link().location().unwrap().query::<QueryProduct>().unwrap();
+    let query = ctx.link().location().unwrap().query::<QueryCpe>().unwrap();
     VendorProducts {
       query,
       ..VendorProducts::default()
@@ -162,7 +162,7 @@ impl VendorProducts {
     });
     let query = ctx
       .link()
-      .callback(|args: QueryProduct| Msg::Query(QueryMsg::Query(args)));
+      .callback(|args: QueryCpe| Msg::Query(QueryMsg::Query(args)));
     let p = CPEQueryProps {
       props: self.query.clone(),
       is_product: Some(true),

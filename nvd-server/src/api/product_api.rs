@@ -1,8 +1,8 @@
-use crate::modules::product_db::QueryProduct;
-use crate::modules::Product;
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpResponse};
+use nvd_model::product::{Product, QueryProduct};
 use std::ops::DerefMut;
+
 #[cfg_attr(feature = "openapi", utoipa::path(
 context_path = "/api/product",
 params(QueryProduct),

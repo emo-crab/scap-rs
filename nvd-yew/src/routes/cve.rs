@@ -2,13 +2,13 @@ use std::collections::HashSet;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
+use nvd_model::cve::Cve;
 
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
   Accordion, CVEConfiguration, CVEConfigurationProps, CWEDetails, Comments, CVSS2, CVSS3,
 };
 use crate::console_log;
-use crate::modules::cve::Cve;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
 
