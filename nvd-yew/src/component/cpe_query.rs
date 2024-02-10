@@ -1,6 +1,6 @@
+use nvd_model::product::QueryProduct;
 use web_sys::{HtmlButtonElement, HtmlInputElement};
 use yew::prelude::*;
-use nvd_model::product::QueryProduct;
 
 // CVE表过滤和查询回调函数
 #[derive(PartialEq, Clone, Properties)]
@@ -34,7 +34,6 @@ impl Component for CPEQuery {
       let part_input = part_input.clone();
       let vendor_input = vendor_input.clone();
       let product_input = product_input.clone();
-      let is_product = is_product;
       let query = query.clone();
       let query_callback = ctx.props().query.clone();
       Callback::from(move |event: SubmitEvent| {

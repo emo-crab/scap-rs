@@ -1,8 +1,8 @@
 use std::collections::HashSet;
 
+use nvd_model::cve::Cve;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use nvd_model::cve::Cve;
 
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
@@ -99,12 +99,12 @@ impl Component for CVEDetails {
       </div>
       <div class="card card-lg">
       <div class="card-header">
-      {self.description(cve.description.clone())}
+      {self.description(cve.description.inner())}
       </div>
         {self.cvss(cve.clone())}
-        {self.references(cve.references)}
-        {self.weaknesses(cve.weaknesses.clone())}
-        {self.configurations(cve.configurations)}
+        {self.references(cve.references.inner())}
+        {self.weaknesses(cve.weaknesses.inner())}
+        {self.configurations(cve.configurations.inner())}
         <Comments/>
       <div class="card-body">
 
@@ -122,9 +122,10 @@ impl Component for CVEDetails {
 
 impl CVEDetails {
   fn cvss(&self, cve: Cve) -> Html {
-    let cvss_v31 = cve.metrics.base_metric_v31.inner();
-    let cvss_v3 = cve.metrics.base_metric_v3.inner();
-    let cvss_v2 = cve.metrics.base_metric_v2.inner();
+    let metrics = cve.metrics.inner();
+    let cvss_v31 = metrics.base_metric_v31.inner();
+    let cvss_v3 = metrics.base_metric_v3.inner();
+    let cvss_v2 = metrics.base_metric_v2.inner();
     let active_v31: Vec<&str> = if cvss_v31.is_some() {
       vec!["tab-pane", "show", "active"]
     } else {

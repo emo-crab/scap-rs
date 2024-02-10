@@ -2,9 +2,9 @@ use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::routes::Route;
 use std::collections::HashSet;
 
+use nvd_model::cve::Cve;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use nvd_model::cve::Cve;
 
 // 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -34,23 +34,25 @@ impl Component for CVERow {
     let cve_id = props.id;
     let description = props
       .description
+      .into_inner()
       .iter()
       .map(|d| d.value.clone())
       .collect::<Vec<String>>();
     let update = props.updated_at.to_string();
     let cwe: HashSet<String> = props
       .weaknesses
+      .inner()
       .iter()
       .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
       .collect();
-    let vendor_product = unique_vendor_product(props.configurations);
+    let vendor_product = unique_vendor_product(props.configurations.inner());
     let vendor: HashSet<String> = HashSet::from_iter(
       vendor_product
         .iter()
         .map(|v| v.vendor.clone())
         .collect::<Vec<String>>(),
     );
-    let metrics = props.metrics.clone();
+    let metrics = props.metrics.inner();
     let v3 = if metrics.base_metric_v31.inner().is_some() {
       metrics.base_metric_v31.inner()
     } else {

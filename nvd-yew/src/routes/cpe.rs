@@ -34,7 +34,12 @@ impl Component for VendorProducts {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let query = ctx.link().location().unwrap().query::<QueryProduct>().unwrap();
+    let query = ctx
+      .link()
+      .location()
+      .unwrap()
+      .query::<QueryProduct>()
+      .unwrap();
     VendorProducts {
       query,
       ..VendorProducts::default()

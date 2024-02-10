@@ -1,8 +1,8 @@
 use super::request_get;
 use crate::error::Error;
+use crate::modules::ListResponse;
 use nvd_model::cve::{Cve, QueryCve};
 use nvd_model::cwe::Cwe;
-use crate::modules::ListResponse;
 
 pub async fn cve_list(query: QueryCve) -> Result<ListResponse<Cve, QueryCve>, Error> {
   request_get::<QueryCve, ListResponse<Cve, QueryCve>>("cve/".to_string(), query).await

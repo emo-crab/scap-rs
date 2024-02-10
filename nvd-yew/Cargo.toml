@@ -36,7 +36,7 @@ serde = "1"
 thiserror = "1.0"
 wasm-bindgen-futures = "0.4.37"
 uuid = { version = "1.6.1", features = ["serde", "js", "v4"] }
-nvd-model = { path = "../nvd-model", features = ["yew"] }
+nvd-model = { path = "../nvd-model", version = "0.0.0", default-features = false, features = ["yew"] }
 [[bin]]
 name = "nvd-yew"
 path = "src/main.rs"

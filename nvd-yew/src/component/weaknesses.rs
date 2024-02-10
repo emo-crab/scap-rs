@@ -1,7 +1,7 @@
 use crate::console_log;
-use nvd_model::cwe::Cwe;
 use crate::services::cve::cwe_details;
 use crate::services::FetchState;
+use nvd_model::cwe::Cwe;
 use std::str::FromStr;
 use yew::prelude::*;
 

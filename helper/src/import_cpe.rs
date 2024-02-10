@@ -17,6 +17,7 @@ use nvd_model::product::db::{
 use nvd_model::product::Product;
 use nvd_model::vendor::db::CreateVendors;
 use nvd_model::vendor::Vendor;
+use nvd_model::MetaData;
 
 pub type MetaType = HashMap<String, HashMap<String, String>>;
 use crate::init_db_pool;
@@ -149,17 +150,7 @@ pub fn update_products(conn: &mut MysqlConnection, args: UpdateProduct) -> DBRes
   };
   Product::update(conn, &args)
 }
-pub struct Meta {
-  inner: MetaType,
-}
 
-impl Meta {
-  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> Meta {
-    let mut i = MetaType::new();
-    i.insert(name, hm);
-    Meta { inner: i }
-  }
-}
 fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) -> Option<String> {
   let title_map: HashMap<String, f32> = titles.iter().map(|t| (t.value.clone(), 0.0)).collect();
   merge_diff(title_map)
@@ -170,7 +161,7 @@ fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaType {
   for href in hrefs {
     href_map.entry(href.href).or_insert(href.value);
   }
-  Meta::from_hashmap("references".to_string(), href_map).inner
+  MetaData::from_hashmap("references".to_string(), href_map).inner
 }
 
 // 从多个相似字符串提取相同信息，合并为一个字符串

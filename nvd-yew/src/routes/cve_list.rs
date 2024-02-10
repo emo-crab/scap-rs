@@ -1,10 +1,10 @@
 use std::str::FromStr;
 
+use nvd_model::cve::{Cve, QueryCve};
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
-use nvd_model::cve::{Cve, QueryCve};
 
 use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
 use crate::console_log;
