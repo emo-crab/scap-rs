@@ -7,7 +7,7 @@ RUN apt-get update
 RUN apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY .cargo .cargo
 COPY helper/Cargo.toml Cargo.toml
-COPY nvd-server /nvd-server
+COPY nvd-model/ /nvd-model
 RUN cargo fetch
 COPY helper/src src
 RUN cargo build --release
