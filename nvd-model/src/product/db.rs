@@ -39,7 +39,6 @@ pub struct QueryProductByVendorName {
   pub name: String,
 }
 
-
 impl QueryProduct {
   fn query<'a>(
     &'a self,

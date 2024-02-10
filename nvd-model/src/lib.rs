@@ -1,11 +1,12 @@
 #[cfg(feature = "db")]
 use diesel::{r2d2, r2d2::ConnectionManager, MysqlConnection};
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 // wubba lubba dub dub
 // 后端和前端特性不能同时开启
-#[cfg(all(feature = "db", feature = "yew"))]
-compile_error!("feature \"db\" and feature \"yew\" cannot be enabled at the same time");
+// #[cfg(all(feature = "db", feature = "yew"))]
+// compile_error!("feature \"db\" and feature \"yew\" cannot be enabled at the same time");
 
 pub mod cve;
 pub mod cve_exploit;
@@ -18,7 +19,9 @@ pub mod pagination;
 pub mod product;
 #[cfg(feature = "db")]
 pub mod schema;
+mod types;
 pub mod vendor;
+
 #[cfg(feature = "db")]
 pub type DB = diesel::mysql::Mysql;
 #[cfg(feature = "db")]
@@ -26,6 +29,7 @@ pub type Connection = MysqlConnection;
 // PURGE BINARY LOGS BEFORE NOW();
 #[cfg(feature = "db")]
 pub type Pool = r2d2::Pool<ConnectionManager<Connection>>;
+
 #[cfg(feature = "db")]
 pub fn init_db_pool() -> Pool {
   let database_url = dotenvy::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -36,10 +40,25 @@ pub fn init_db_pool() -> Pool {
 }
 
 pub type MetaType = HashMap<String, HashMap<String, String>>;
+
+#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
+pub struct MetaData {
+  pub inner: MetaType,
+}
+
+impl MetaData {
+  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> MetaData {
+    let mut i = MetaType::new();
+    i.insert(name, hm);
+    MetaData { inner: i }
+  }
+}
+
 // 将公共的数据结构放在这里
 pub fn add(left: usize, right: usize) -> usize {
   left + right
 }
+
 pub mod uuid_serde {
   use serde::{Deserializer, Serializer};
 
@@ -57,6 +76,7 @@ pub mod uuid_serde {
     }
   }
 }
+
 #[cfg(test)]
 mod tests {
   use super::*;

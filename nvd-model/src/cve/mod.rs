@@ -1,7 +1,9 @@
 #[cfg(feature = "db")]
 pub mod db;
+
 #[cfg(feature = "db")]
 use crate::schema::cves;
+use crate::types::AnyValue;
 use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Identifiable, Insertable, Queryable};
@@ -13,39 +15,25 @@ use utoipa::{IntoParams, ToSchema};
 use yew::Properties;
 
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
-#[cfg_attr(feature = "db", derive(Queryable,Identifiable),diesel(table_name = cves))]
+#[cfg_attr(feature = "db", derive(Queryable, Identifiable), diesel(table_name = cves))]
 #[cfg_attr(feature = "yew", derive(Properties))]
 #[derive(Default, Serialize, Clone, Deserialize, Debug, PartialEq)]
 pub struct Cve {
   pub id: String,
   pub year: i32,
   pub assigner: String,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub description: Value,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub description: Vec<nvd_cves::v4::Description>,
+  pub description: AnyValue<Vec<nvd_cves::v4::Description>>,
   pub severity: String,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub metrics: Value,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub weaknesses: Value,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub configurations: Value,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub references: Value,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub metrics: nvd_cves::impact::ImpactMetrics,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub weaknesses: Vec<nvd_cves::v4::Weaknesses>,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub configurations: Vec<nvd_cves::v4::configurations::Node>,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub references: Vec<nvd_cves::v4::Reference>,
+  pub metrics: AnyValue<nvd_cves::impact::ImpactMetrics>,
+  pub weaknesses: AnyValue<Vec<nvd_cves::v4::Weaknesses>>,
+  pub configurations: AnyValue<Vec<nvd_cves::v4::configurations::Node>>,
+  pub references: AnyValue<Vec<nvd_cves::v4::Reference>>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
+
 // 创建CVE
-#[cfg_attr(feature = "db", derive(Insertable),diesel(table_name = cves))]
+#[cfg_attr(feature = "db", derive(Insertable), diesel(table_name = cves))]
 #[derive(Debug)]
 pub struct CreateCve {
   pub id: String,
@@ -60,6 +48,7 @@ pub struct CreateCve {
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
+
 // CVE查询参数
 #[cfg_attr(feature = "openapi", derive(ToSchema, IntoParams))]
 #[cfg_attr(feature = "yew", derive(Properties))]

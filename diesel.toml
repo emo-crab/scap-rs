@@ -2,8 +2,8 @@
 # see https://diesel.rs/guides/configuring-diesel-cli
 
 [print_schema]
-file = "nvd-server/src/schema.rs"
-custom_type_derives = ["diesel::query_builder::QueryId", "diesel::sql_types::SqlType"]
+file = "nvd-model/src/schema.rs"
+custom_type_derives = ["diesel::query_builder::QueryId", "diesel::sql_types::SqlType","crate::types::*"]
 
 [migrations_directory]
-dir = "nvd-server/migrations"
+dir = "nvd-model/migrations"

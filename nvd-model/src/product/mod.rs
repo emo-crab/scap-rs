@@ -3,20 +3,18 @@ pub mod db;
 
 #[cfg(feature = "db")]
 use crate::schema::products;
-use crate::uuid_serde;
+use crate::types::AnyValue;
 use crate::vendor::Vendor;
-#[cfg(feature = "yew")]
-use crate::MetaType;
+use crate::{uuid_serde, MetaData};
 use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Associations, Identifiable, Queryable, Selectable};
 use serde::{Deserialize, Serialize};
-#[cfg(feature = "db")]
-use serde_json::Value;
 #[cfg(feature = "openapi")]
 use utoipa::{IntoParams, ToSchema};
 #[cfg(feature = "yew")]
 use yew::Properties;
+
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[cfg_attr(feature = "db",
 derive(Queryable,Identifiable,Associations,Selectable),
@@ -32,10 +30,7 @@ pub struct Product {
   pub part: String,
   pub name: String,
   pub description: Option<String>,
-  #[cfg(all(feature = "db", not(feature = "yew")))]
-  pub meta: Value,
-  #[cfg(all(feature = "yew", not(feature = "db")))]
-  pub meta: MetaType,
+  pub meta: AnyValue<MetaData>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
