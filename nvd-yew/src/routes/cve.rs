@@ -6,7 +6,8 @@ use yew_router::prelude::*;
 
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
-  Accordion, CVEConfiguration, CVEConfigurationProps, CWEDetails, Comments, CVSS2, CVSS3,
+  Accordion, CVEConfiguration, CVEConfigurationProps, CVEExploitInfoList, CWEDetails, Comments,
+  CVSS2, CVSS3,
 };
 use crate::console_log;
 use crate::services::cve::cve_details;
@@ -104,6 +105,7 @@ impl Component for CVEDetails {
         {self.cvss(cve.clone())}
         {self.references(cve.references.inner())}
         {self.weaknesses(cve.weaknesses.inner())}
+        {self.exploit(cve.id)}
         {self.configurations(cve.configurations.inner())}
         <Comments/>
       <div class="card-body">
@@ -245,6 +247,13 @@ impl CVEDetails {
       {ws_set.into_iter().map(|d|{
                 html!{<CWEDetails id={d}/>}
             }).collect::<Html>()}
+      </Accordion>
+    }
+  }
+  fn exploit(&self, id: String) -> Html {
+    html! {
+      <Accordion name={"Exploits"}>
+      <CVEExploitInfoList id={id}/>
       </Accordion>
     }
   }

@@ -5,6 +5,7 @@ use yew_router::prelude::*;
 use cpe::VendorProducts;
 use cve::CVEDetails;
 use cve_list::CveInfoList;
+use exp::ExploitInfoList;
 use home::Home;
 use page_not_found::PageNotFound;
 
@@ -12,7 +13,7 @@ mod cve;
 mod cve_list;
 // mod cvss;
 mod cpe;
-// mod exp;
+mod exp;
 mod home;
 mod page_not_found;
 
@@ -24,6 +25,8 @@ pub enum Route {
   CveList,
   #[at("/cpe/")]
   Cpe,
+  #[at("/exp/")]
+  Exp,
   #[at("/")]
   Home,
   #[not_found]
@@ -46,9 +49,9 @@ impl Route {
       Route::Cpe => {
         html! {<VendorProducts/>}
       }
-      // Route::Cvss => {
-      //   html! { <Cvss /> }
-      // }
+      Route::Exp => {
+        html! { <ExploitInfoList /> }
+      }
       Route::NotFound => {
         html! { <PageNotFound /> }
       }

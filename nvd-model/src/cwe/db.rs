@@ -68,7 +68,10 @@ impl Cwe {
         .first::<Self>(conn)?,
     )
   }
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCwe) -> DBResult<ListResponse<Cwe>> {
+  pub fn query(
+    conn: &mut MysqlConnection,
+    args: &QueryCwe,
+  ) -> DBResult<ListResponse<Cwe, QueryCwe>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -80,6 +83,6 @@ impl Cwe {
         .order(cwes::name.asc())
         .load::<Cwe>(conn)?
     };
-    Ok(ListResponse::new(result, total, page, size))
+    Ok(ListResponse::new(result, total, page, size, args.clone()))
   }
 }

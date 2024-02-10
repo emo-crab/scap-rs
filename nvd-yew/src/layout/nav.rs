@@ -42,6 +42,7 @@ impl Component for Nav {
           Route::Cve { id } => id,
           Route::CveList => String::from("CVE"),
           Route::Cpe => String::from("CPE"),
+          Route::Exp => String::from("EXP"),
           Route::Home => String::from("Home"),
           Route::NotFound => String::from("NotFound"),
         };
@@ -89,6 +90,12 @@ impl Component for Nav {
                 <Link<Route> classes={classes!("nav-link")} to={Route::Cpe}>
                   <span class="nav-link-icon d-md-none d-lg-inline-block ti ti-asset"></span>
                   <span class="nav-link-title">{"CPE"}</span>
+                </Link<Route>>
+              </li>
+              <li class="nav-item">
+                <Link<Route> classes={classes!("nav-link")} to={Route::Exp}>
+                  <span class="nav-link-icon d-md-none d-lg-inline-block ti ti-code"></span>
+                  <span class="nav-link-title">{"EXP"}</span>
                 </Link<Route>>
               </li>
             </ul>

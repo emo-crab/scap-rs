@@ -20,8 +20,9 @@ pub struct CreateVendors {
   pub description: Option<String>,
   pub meta: Value,
 }
+
 #[cfg_attr(feature = "openapi", derive(IntoParams))]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct QueryVendor {
   pub name: Option<String>,
   pub official: Option<u8>,
@@ -86,7 +87,10 @@ impl Vendor {
     )
   }
   // 查询提供商从查询参数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryVendor) -> DBResult<ListResponse<Vendor>> {
+  pub fn query(
+    conn: &mut MysqlConnection,
+    args: &QueryVendor,
+  ) -> DBResult<ListResponse<Vendor, QueryVendor>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -98,6 +102,6 @@ impl Vendor {
         .order(vendors::name.asc())
         .load::<Vendor>(conn)?
     };
-    Ok(ListResponse::new(result, total, page, size))
+    Ok(ListResponse::new(result, total, page, size, args.clone()))
   }
 }

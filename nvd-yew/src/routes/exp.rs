@@ -1,43 +1,52 @@
 use std::str::FromStr;
 
+use crate::modules::ListResponse;
+use nvd_model::exploit::{Exploit, QueryExploit};
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::component::{CPEQuery, CPEQueryProps, CPERow, CpeProps, Pagination, PaginationProps};
+use crate::component::{EXPQuery, EXPQueryProps, EXPRow, ExpProps, Pagination, PaginationProps};
 use crate::console_log;
-use crate::modules::cpe::{ProductWithVendor, QueryCpe};
-use crate::modules::ListResponse;
 use crate::routes::Route;
-use crate::services::cpe::product_list;
+use crate::services::exp::exploit_list;
 use crate::services::FetchState;
 
-pub type VendorProducts = ListResponse<ProductWithVendor, QueryCpe>;
+pub type ExploitInfoList = ListResponse<Exploit, QueryExploit>;
+
 pub enum Msg {
-  SetFetchState(FetchState<VendorProducts>),
+  SetFetchState(FetchState<ExploitInfoList>),
   Send,
   Page(PageMsg),
   Query(QueryMsg),
 }
+
 pub enum PageMsg {
   Next,
   Prev,
   To(i64),
 }
+
 pub enum QueryMsg {
-  Query(QueryCpe),
-  Part(String),
+  Query(QueryExploit),
+  Source(String),
 }
-impl Component for VendorProducts {
+
+impl Component for ExploitInfoList {
   type Message = Msg;
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let query = ctx.link().location().unwrap().query::<QueryCpe>().unwrap();
-    VendorProducts {
+    let query = ctx
+      .link()
+      .location()
+      .unwrap()
+      .query::<QueryExploit>()
+      .unwrap();
+    ExploitInfoList {
       query,
-      ..VendorProducts::default()
+      ..ExploitInfoList::default()
     }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -55,7 +64,7 @@ impl Component for VendorProducts {
       Msg::Send => {
         let q = self.query.clone();
         ctx.link().send_future(async {
-          match product_list(q).await {
+          match exploit_list(q).await {
             Ok(data) => Msg::SetFetchState(FetchState::Success(data)),
             Err(err) => Msg::SetFetchState(FetchState::Failed(err)),
           }
@@ -77,14 +86,14 @@ impl Component for VendorProducts {
           .link()
           .navigator()
           .unwrap()
-          .push_with_query(&Route::Cpe, &self.query)
+          .push_with_query(&Route::Exp, &self.query)
           .unwrap();
         ctx.link().send_message(Msg::Send);
       }
       Msg::Query(query) => {
         match query {
-          QueryMsg::Part(part) => {
-            self.query.part = Some(part);
+          QueryMsg::Source(part) => {
+            self.query.source = Some(part);
           }
           QueryMsg::Query(query) => {
             self.query = query;
@@ -94,7 +103,7 @@ impl Component for VendorProducts {
           .link()
           .navigator()
           .unwrap()
-          .push_with_query(&Route::Cpe, &self.query)
+          .push_with_query(&Route::Exp, &self.query)
           .unwrap();
         ctx.link().send_message(Msg::Send);
       }
@@ -109,16 +118,19 @@ impl Component for VendorProducts {
           <table class="table card-table table-vcenter table-striped table-sm table-hover">
             <thead>
               <tr>
-                <th scope="col" class="w-25">{"Vendor"}</th>
-                <th scope="col">{"Product"}</th>
+                <th scope="col">{"Name"}</th>
+                <th scope="col">{"Source"}</th>
+                <th scope="col">{"Verified"}</th>
+                <th scope="col">{"Path"}</th>
+                <th scope="col">{"Meta"}</th>
                 <th scope="col">{"Updated"}</th>
               </tr>
             </thead>
             <tbody>
             {
               self.result.iter().map(|item| {
-              let p = CpeProps{props:item.clone()};
-              html!{<>{html!( <CPERow ..p/>) }</>}
+              let p = ExpProps{props:item.clone()};
+              html!{<>{html!( <EXPRow ..p/>) }</>}
                 }).collect::<Html>()
               }
             </tbody>
@@ -135,7 +147,7 @@ impl Component for VendorProducts {
   }
 }
 
-impl VendorProducts {
+impl ExploitInfoList {
   fn pagination(&self, ctx: &Context<Self>) -> Html {
     let paging = self.paging.clone();
     let next_page = ctx.link().callback(|_| Msg::Page(PageMsg::Next));
@@ -155,22 +167,22 @@ impl VendorProducts {
     html! {<Pagination ..p.clone()/>}
   }
   fn query(&self, ctx: &Context<Self>) -> Html {
-    let query_severity = ctx.link().callback(|e: MouseEvent| {
+    let query_source = ctx.link().callback(|e: MouseEvent| {
       let target: EventTarget = e.target().unwrap();
       let severity: String = target.clone().unchecked_into::<HtmlButtonElement>().value();
-      Msg::Query(QueryMsg::Part(severity))
+      Msg::Query(QueryMsg::Source(severity))
     });
     let query = ctx
       .link()
-      .callback(|args: QueryCpe| Msg::Query(QueryMsg::Query(args)));
-    let p = CPEQueryProps {
+      .callback(|args: QueryExploit| Msg::Query(QueryMsg::Query(args)));
+    let p = EXPQueryProps {
       props: self.query.clone(),
-      is_product: Some(true),
-      query_part: query_severity,
+      is_verified: Some(true),
+      query_source,
       query,
     };
     html! {
-      <CPEQuery ..p.clone()/>
+      <EXPQuery ..p.clone()/>
     }
   }
 }

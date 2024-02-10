@@ -99,7 +99,10 @@ impl Cve {
     Ok(cves::dsl::cves.filter(cves::id.eq(id)).first::<Cve>(conn)?)
   }
   // 按照查询条件返回列表和总数
-  pub fn query(conn: &mut MysqlConnection, args: &QueryCve) -> DBResult<ListResponse<Cve>> {
+  pub fn query(
+    conn: &mut MysqlConnection,
+    args: &QueryCve,
+  ) -> DBResult<ListResponse<Cve, QueryCve>> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
     let page = args.page.unwrap_or(0).abs();
@@ -112,6 +115,6 @@ impl Cve {
         .limit(size)
         .load::<Cve>(conn)?
     };
-    Ok(ListResponse::new(result, total, page, size))
+    Ok(ListResponse::new(result, total, page, size, args.clone()))
   }
 }

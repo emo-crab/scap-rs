@@ -140,7 +140,7 @@ impl Product {
   pub fn query(
     conn: &mut MysqlConnection,
     args: &QueryProduct,
-  ) -> DBResult<ListResponse<ProductWithVendor>> {
+  ) -> DBResult<ListResponse<ProductWithVendor, QueryProduct>> {
     let total = args.total(conn)?;
     let page = args.page.unwrap_or(0).abs();
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
@@ -160,6 +160,6 @@ impl Product {
         })
         .collect::<Vec<_>>()
     };
-    Ok(ListResponse::new(result, total, page, size))
+    Ok(ListResponse::new(result, total, page, size, args.clone()))
   }
 }

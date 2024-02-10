@@ -1,5 +1,6 @@
 pub mod cpe;
 pub mod cve;
+pub mod exp;
 mod request;
 
 use crate::error::Error;

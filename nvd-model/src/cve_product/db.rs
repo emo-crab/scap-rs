@@ -12,6 +12,7 @@ use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "openapi")]
 use utoipa::IntoParams;
+
 #[derive(Insertable)]
 #[diesel(table_name = cve_product)]
 pub struct CreateCveProduct {
@@ -37,8 +38,9 @@ pub struct ProductByName {
   pub vendor: Option<String>,
   pub product: Option<String>,
 }
+
 #[cfg_attr(feature = "openapi", derive(IntoParams))]
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct QueryCveProduct {
   pub cve_id: Option<String>,
   pub vendor: Option<String>,
@@ -195,7 +197,7 @@ impl CveProduct {
   pub fn query(
     conn: &mut MysqlConnection,
     args: &QueryCveProduct,
-  ) -> DBResult<ListResponse<CveProductInfo>> {
+  ) -> DBResult<ListResponse<CveProductInfo, QueryCveProduct>> {
     let total = args.total(conn)?;
     // 限制最大分页为20,防止拒绝服务攻击
     let page = args.page.unwrap_or(0);
@@ -219,6 +221,6 @@ impl CveProduct {
         .map(|(_cp, c, p)| CveProductInfo { cve: c, product: p })
         .collect::<Vec<_>>()
     };
-    Ok(ListResponse::new(result, total, page, size))
+    Ok(ListResponse::new(result, total, page, size, args.clone()))
   }
 }
