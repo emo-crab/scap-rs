@@ -9,6 +9,7 @@ use diesel::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+#[cfg(feature = "openapi")]
 use utoipa::IntoParams;
 
 #[derive(Insertable)]
