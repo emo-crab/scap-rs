@@ -48,10 +48,8 @@ impl ResponseError for NVDApiError {
 impl From<DBError> for NVDApiError {
   fn from(err: DBError) -> Self {
     match err {
-      DBError::DieselError { source } => match source {
-        _ => NVDApiError::InternalServerError {
-          value: source.to_string(),
-        },
+      DBError::DieselError { source } => NVDApiError::InternalServerError {
+        value: source.to_string(),
       },
       _ => NVDApiError::InternalServerError {
         value: err.to_string(),

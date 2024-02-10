@@ -3,10 +3,10 @@ use actix_session::{storage::CookieSessionStore, SessionMiddleware};
 use actix_web::cookie::Key;
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::{guard, http, middleware, web, App, HttpServer};
+use nvd_model::init_db_pool;
 #[cfg(feature = "openapi")]
 use nvd_server::api::ApiDoc;
 use nvd_server::api::{api_route, sitemap};
-use nvd_server::init_db_pool;
 #[cfg(feature = "openapi")]
 use utoipa::OpenApi;
 #[cfg(feature = "openapi")]
