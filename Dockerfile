@@ -2,6 +2,8 @@ FROM rust:latest AS server
 
 WORKDIR /prod
 #为了命中docker构建缓存，先拷贝这几个文件进去
+RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
+    apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY .cargo .cargo
 COPY nvd-server/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
@@ -9,8 +11,6 @@ RUN --mount=type=cache,target=/var/cache/buildkit \
     CARGO_HOME=/var/cache/buildkit/cargo \
     CARGO_TARGET_DIR=/var/cache/buildkit/target \
     cargo fetch
-RUN --mount=type=cache,target=/var/lib/cache/ apt-get update \
-    apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY nvd-server/src src
 RUN --mount=type=cache,target=/var/cache/buildkit \
     CARGO_HOME=/var/cache/buildkit/cargo \
