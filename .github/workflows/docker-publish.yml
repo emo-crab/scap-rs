@@ -47,3 +47,4 @@ jobs:
     uses: ./.github/workflows/fly.yml
     needs:
       - docker
+    secrets: inherit
