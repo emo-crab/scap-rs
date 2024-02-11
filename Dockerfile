@@ -36,7 +36,7 @@ WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
-COPY --from=server /prod/nvd-server /prod
+COPY --from=server /prod/target/release/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist
 EXPOSE 8888
 CMD [ "/prod/nvd-server" ]
