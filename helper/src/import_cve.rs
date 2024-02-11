@@ -10,6 +10,7 @@ use std::io::BufReader;
 use std::ops::DerefMut;
 use std::path::PathBuf;
 use std::str::FromStr;
+use nvd_model::types::AnyValue;
 
 pub fn import_from_archive(
   connection: &mut MysqlConnection,
@@ -21,14 +22,14 @@ pub fn import_from_archive(
     id: id.clone(),
     created_at: cve_item.published_date,
     updated_at: cve_item.last_modified_date,
-    references: serde_json::json!(cve_item.cve.references.reference_data),
-    description: serde_json::json!(cve_item.cve.description.description_data),
+    references: AnyValue::new(cve_item.cve.references.reference_data),
+    description: AnyValue::new(cve_item.cve.description.description_data),
     severity: cve_item.impact.severity().to_lowercase(),
-    metrics: serde_json::json!(cve_item.impact),
+    metrics: AnyValue::new(cve_item.impact),
     assigner: cve_item.cve.meta.assigner,
-    configurations: serde_json::json!(cve_item.configurations.nodes),
+    configurations: AnyValue::new(cve_item.configurations.nodes.clone()),
     year: i32::from_str(y).unwrap_or_default(),
-    weaknesses: serde_json::json!(cve_item.cve.problem_type.problem_type_data),
+    weaknesses: AnyValue::new(cve_item.cve.problem_type.problem_type_data),
   };
   // 插入到数据库
   match Cve::create(connection, &new_post) {
@@ -73,14 +74,14 @@ pub fn import_from_api(
     id: id.clone(),
     created_at: cve_item.published,
     updated_at: cve_item.last_modified,
-    references: serde_json::json!(cve_item.references),
-    description: serde_json::json!(cve_item.descriptions),
+    references: AnyValue::new(cve_item.references),
+    description: AnyValue::new(cve_item.descriptions),
     severity: cve_item.metrics.severity().to_lowercase(),
-    metrics: serde_json::json!(cve_item.metrics),
+    metrics: AnyValue::new(cve_item.metrics),
     assigner: cve_item.source_identifier,
-    configurations: serde_json::json!(configurations),
+    configurations: AnyValue::new(configurations.clone()),
     year: i32::from_str(y).unwrap_or_default(),
-    weaknesses: serde_json::json!(cve_item.weaknesses),
+    weaknesses: AnyValue::new(cve_item.weaknesses),
   };
   // 插入或者更新到数据库
   match Cve::create_or_update(connection, &new_post) {
@@ -111,6 +112,7 @@ pub fn import_from_api(
   }
   Ok(new_post.id)
 }
+
 pub fn with_archive_cve(path: PathBuf) {
   let connection_pool = init_db_pool();
   let gz_open_file = File::open(path).unwrap();

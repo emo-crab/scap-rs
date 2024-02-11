@@ -8,7 +8,6 @@ use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Identifiable, Insertable, Queryable};
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 #[cfg(feature = "openapi")]
 use utoipa::{IntoParams, ToSchema};
 #[cfg(feature = "yew")]
@@ -39,12 +38,12 @@ pub struct CreateCve {
   pub id: String,
   pub year: i32,
   pub assigner: String,
-  pub description: Value,
+  pub description: AnyValue<Vec<nvd_cves::v4::Description>>,
   pub severity: String,
-  pub metrics: Value,
-  pub weaknesses: Value,
-  pub configurations: Value,
-  pub references: Value,
+  pub metrics: AnyValue<nvd_cves::impact::ImpactMetrics>,
+  pub weaknesses: AnyValue<Vec<nvd_cves::v4::Weaknesses>>,
+  pub configurations: AnyValue<Vec<nvd_cves::v4::configurations::Node>>,
+  pub references: AnyValue<Vec<nvd_cves::v4::Reference>>,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }

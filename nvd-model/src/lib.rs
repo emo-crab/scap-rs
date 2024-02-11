@@ -19,7 +19,7 @@ pub mod pagination;
 pub mod product;
 #[cfg(feature = "db")]
 pub mod schema;
-mod types;
+pub mod types;
 pub mod vendor;
 
 #[cfg(feature = "db")]

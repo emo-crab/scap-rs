@@ -35,6 +35,9 @@ impl<T: Default + for<'de> serde::Deserialize<'de> + Clone> AnyValue<T> {
       AnyValue::Any(a) => a,
     }
   }
+  pub fn new(t: T) -> Self {
+    Self::Any(t)
+  }
 }
 
 impl<T: Default + Clone> Default for AnyValue<T> {

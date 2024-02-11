@@ -3,10 +3,10 @@ use crate::pagination::ListResponse;
 use crate::product::{Product, ProductWithVendor, QueryProduct};
 use crate::schema::{products, vendors};
 use crate::vendor::Vendor;
-use crate::DB;
+use crate::{DB, MetaData};
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use serde_json::Value;
+use crate::types::AnyValue;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -15,7 +15,7 @@ pub struct CreateProduct {
   pub vendor_id: Vec<u8>,
   pub official: u8,
   pub part: String,
-  pub meta: Value,
+  pub meta: AnyValue<MetaData>,
   pub name: String,
   pub description: Option<String>,
 }
@@ -24,7 +24,7 @@ pub struct UpdateProduct {
   pub id: Vec<u8>,
   pub vendor_id: Vec<u8>,
   pub vendor_name: String,
-  pub meta: Value,
+  pub meta: AnyValue<MetaData>,
   pub name: String,
   pub description: Option<String>,
 }

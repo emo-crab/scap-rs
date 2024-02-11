@@ -2,15 +2,15 @@ use crate::error::{DBError, DBResult};
 use crate::pagination::ListResponse;
 use crate::schema::vendors;
 use crate::vendor::Vendor;
-use crate::DB;
+use crate::{DB, MetaData};
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use diesel::{
   ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl, TextExpressionMethods,
 };
 use serde::{Deserialize, Serialize};
-use serde_json::Value;
 #[cfg(feature = "openapi")]
 use utoipa::IntoParams;
+use crate::types::AnyValue;
 
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]
@@ -19,7 +19,7 @@ pub struct CreateVendors {
   pub official: u8,
   pub name: String,
   pub description: Option<String>,
-  pub meta: Value,
+  pub meta: AnyValue<MetaData>,
 }
 
 #[cfg_attr(feature = "openapi", derive(IntoParams))]

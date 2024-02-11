@@ -18,8 +18,7 @@ use nvd_model::product::Product;
 use nvd_model::vendor::db::CreateVendors;
 use nvd_model::vendor::Vendor;
 use nvd_model::MetaData;
-
-pub type MetaType = HashMap<String, HashMap<String, String>>;
+use nvd_model::types::AnyValue;
 use crate::init_db_pool;
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
@@ -72,12 +71,12 @@ pub fn create_vendor(
     return v.id;
   }
   // 构建待插入对象
-  let meta: MetaType = HashMap::new();
+  let meta=MetaData::default() ;
   let new_post = CreateVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     name,
     description,
-    meta: serde_json::json!(meta),
+    meta: AnyValue::new(meta),
     official: u8::from(true),
   };
   // 插入到数据库
@@ -105,12 +104,12 @@ pub fn create_product(
   if let Ok(v) = Product::query_by_id(conn, &q) {
     return v.id;
   }
-  let meta: MetaType = HashMap::new();
+  let meta=MetaData::default();
   // 构建待插入对象
   let new_post = CreateProduct {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     vendor_id: vendor,
-    meta: serde_json::json!(meta),
+    meta: AnyValue::new(meta),
     name,
     description: None,
     official: u8::from(true),
@@ -156,12 +155,12 @@ fn get_title(titles: Vec<nvd_cpe::dictionary::Title>) -> Option<String> {
   merge_diff(title_map)
 }
 
-fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaType {
+fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaData {
   let mut href_map: HashMap<String, String> = HashMap::new();
   for href in hrefs {
     href_map.entry(href.href).or_insert(href.value);
   }
-  MetaData::from_hashmap("references".to_string(), href_map).inner
+  MetaData::from_hashmap("references".to_string(), href_map)
 }
 
 // 从多个相似字符串提取相同信息，合并为一个字符串
@@ -241,7 +240,7 @@ pub fn with_archive_cpe(path: PathBuf) {
           id: vec![],
           vendor_id: vec![],
           vendor_name: current_product.vendor,
-          meta: serde_json::json!(meta),
+          meta: AnyValue::new(meta),
           name: current_product.product,
           description,
         },
