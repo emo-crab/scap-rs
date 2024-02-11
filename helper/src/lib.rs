@@ -103,12 +103,18 @@ pub async fn sync_mode(config: SyncCommand) {
       }),
       ..CveParameters::default()
     };
+    println!(
+      "开始更新从{}到{}的cve",
+      three_hours.to_rfc3339(),
+      now.to_rfc3339()
+    );
     async_cve(param).await
   }
   if config.exp {
     update_from_github().await;
   }
 }
+
 #[cfg(test)]
 mod tests {
   #[test]
