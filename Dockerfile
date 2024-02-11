@@ -23,9 +23,18 @@ FROM rust:slim-buster AS yew
 WORKDIR /prod
 #为了命中docker构建缓存，先拷贝这几个文件进去
 COPY .cargo .cargo
-RUN rustup target add wasm32-unknown-unknown
-RUN cargo install --locked trunk
-RUN cargo install --locked wasm-bindgen-cli
+RUN --mount=type=cache,target=/var/cache/buildkit \
+        CARGO_HOME=/var/cache/buildkit/cargo \
+        CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    rustup target add wasm32-unknown-unknown
+RUN --mount=type=cache,target=/var/cache/buildkit \
+        CARGO_HOME=/var/cache/buildkit/cargo \
+        CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    cargo install --locked trunk
+RUN --mount=type=cache,target=/var/cache/buildkit \
+        CARGO_HOME=/var/cache/buildkit/cargo \
+        CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    cargo install --locked wasm-bindgen-cli
 # 其他模块需要工作区配置
 COPY nvd-yew/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
