@@ -47,6 +47,8 @@ jobs:
     needs:
       - docker
     steps:
+      - name: Git Checkout
+        uses: actions/checkout@v3
       - name: Deploy To Fly
         if: inputs.deploy_to_fly
         uses: ./.github/workflows/fly.yml
