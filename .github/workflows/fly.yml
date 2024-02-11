@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     name: Deploy app
+    if: github.repository == 'emo-crab/nvd-rs'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
