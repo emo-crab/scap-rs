@@ -2,21 +2,14 @@ FROM rust:latest AS server
 
 WORKDIR /prod
 #为了命中docker构建缓存，先拷贝这几个文件进去
-RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
+RUN apt-get update &&\
     apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY .cargo .cargo
 COPY nvd-server/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
-RUN --mount=type=cache,target=/var/cache/buildkit \
-    CARGO_HOME=/var/cache/buildkit/cargo \
-    CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo fetch
+RUN cargo fetch
 COPY nvd-server/src src
-RUN --mount=type=cache,target=/var/cache/buildkit \
-    CARGO_HOME=/var/cache/buildkit/cargo \
-    CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo build --release --all-features &&\
-    cp -v /var/cache/buildkit/target/release/nvd-server .
+RUN cargo build --release --all-features
 
 FROM rust:slim-buster AS yew
 
@@ -41,7 +34,7 @@ RUN trunk build --release --no-sri
 FROM debian:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
-RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
+RUN apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
 COPY --from=server /prod/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist

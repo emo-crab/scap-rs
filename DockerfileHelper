@@ -7,23 +7,16 @@ RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
 COPY .cargo .cargo
 COPY helper/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
-RUN --mount=type=cache,target=/var/cache/buildkit \
-    CARGO_HOME=/var/cache/buildkit/cargo \
-    CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo fetch
+RUN cargo fetch
 COPY helper/src src
-RUN --mount=type=cache,target=/var/cache/buildkit \
-    CARGO_HOME=/var/cache/buildkit/cargo \
-    CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo build --release &&\
-    cp -v /var/cache/buildkit/target/release/helper .
+RUN cargo build --release
 
 # Use any runner as you want
 # But beware that some images have old glibc which makes rust unhappy
 FROM debian:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
-RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
+RUN apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates
 COPY --from=helper /prod/helper /prod
 ENTRYPOINT [ "/prod/helper" ]
