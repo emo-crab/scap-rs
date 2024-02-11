@@ -34,6 +34,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/nvd-rs:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Build and push helper
         uses: docker/build-push-action@v5
         with:
@@ -42,6 +44,8 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/nvd-helper-rs:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
   deploy:
     if: inputs.deploy_to_fly
     uses: ./.github/workflows/fly.yml

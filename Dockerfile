@@ -5,11 +5,17 @@ WORKDIR /prod
 COPY .cargo .cargo
 COPY nvd-server/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
-RUN cargo fetch
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
+RUN --mount=type=cache,target=/var/cache/buildkit \
+    CARGO_HOME=/var/cache/buildkit/cargo \
+    CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    cargo fetch
+RUN --mount=type=cache,target=/var/lib/cache/ apt-get update \
+    apt-get install -y --no-install-recommends gcc-multilib xz-utils liblz4-tool libc6-dev libssl-dev default-libmysqlclient-dev pkg-config musl-tools patchelf build-essential zlib1g-dev ca-certificates
 COPY nvd-server/src src
-RUN cargo build --release --all-features
+RUN --mount=type=cache,target=/var/cache/buildkit \
+    CARGO_HOME=/var/cache/buildkit/cargo \
+    CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    cargo build --release --all-features
 
 FROM rust:slim-buster AS yew
 
@@ -22,12 +28,18 @@ RUN cargo install --locked wasm-bindgen-cli
 # 其他模块需要工作区配置
 COPY nvd-yew/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
-RUN cargo fetch
+RUN --mount=type=cache,target=/var/cache/buildkit \
+    CARGO_HOME=/var/cache/buildkit/cargo \
+    CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    cargo fetch
 COPY nvd-yew/index.html index.html
 COPY nvd-yew/Trunk.toml Trunk.toml
 COPY nvd-yew/static static
 COPY nvd-yew/src src
-RUN trunk build --release --no-sri
+RUN --mount=type=cache,target=/var/cache/buildkit \
+    CARGO_HOME=/var/cache/buildkit/cargo \
+    CARGO_TARGET_DIR=/var/cache/buildkit/target \
+    trunk build --release --no-sri
 
 # Use any runner as you want
 # But beware that some images have old glibc which makes rust unhappy
