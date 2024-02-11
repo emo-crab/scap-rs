@@ -24,5 +24,5 @@ WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates
-COPY --from=helper /prod/target/release/helper /prod
+COPY --from=helper /var/cache/buildkit/target/release/helper /prod
 ENTRYPOINT [ "/prod/helper" ]

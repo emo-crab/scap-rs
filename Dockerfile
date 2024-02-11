@@ -46,9 +46,9 @@ RUN --mount=type=cache,target=/var/cache/buildkit \
 FROM debian:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
-COPY --from=server /prod/target/release/nvd-server /prod
+RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
+    apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
+COPY --from=server /var/cache/buildkit/target/release/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist
 EXPOSE 8888
 CMD [ "/prod/nvd-server" ]
