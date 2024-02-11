@@ -15,7 +15,8 @@ COPY helper/src src
 RUN --mount=type=cache,target=/var/cache/buildkit \
     CARGO_HOME=/var/cache/buildkit/cargo \
     CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo build --release
+    cargo build --release &&\
+    cp -v /var/cache/buildkit/target/release/helper .
 
 # Use any runner as you want
 # But beware that some images have old glibc which makes rust unhappy
@@ -24,5 +25,5 @@ WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates
-COPY --from=helper /var/cache/buildkit/target/release/helper /prod
+COPY --from=helper /prod/helper /prod
 ENTRYPOINT [ "/prod/helper" ]

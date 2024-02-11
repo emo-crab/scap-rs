@@ -15,7 +15,8 @@ COPY nvd-server/src src
 RUN --mount=type=cache,target=/var/cache/buildkit \
     CARGO_HOME=/var/cache/buildkit/cargo \
     CARGO_TARGET_DIR=/var/cache/buildkit/target \
-    cargo build --release --all-features
+    cargo build --release --all-features &&\
+    cp -v /var/cache/buildkit/target/release/nvd-server .
 
 FROM rust:slim-buster AS yew
 
@@ -48,7 +49,7 @@ WORKDIR /prod
 ENV TZ=Asia/Shanghai
 RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
     apt-get install -y --no-install-recommends libssl-dev default-libmysqlclient-dev ca-certificates cron curl
-COPY --from=server /var/cache/buildkit/target/release/nvd-server /prod
+COPY --from=server /prod/nvd-server /prod
 COPY --from=yew /prod/dist /prod/dist
 EXPOSE 8888
 CMD [ "/prod/nvd-server" ]
