@@ -23,7 +23,7 @@ impl Component for EXPQuery {
   }
 
   fn view(&self, ctx: &Context<Self>) -> Html {
-    let is_verified = ctx.props().is_verified.unwrap_or_default();
+    // let is_verified = ctx.props().is_verified.unwrap_or_default();
     let query = ctx.props().props.clone();
     let query_source = ctx.props().query_source.clone();
     let source_input = NodeRef::default();
@@ -58,11 +58,7 @@ impl Component for EXPQuery {
           },
           size: query.size,
           page: query.page,
-          verified: if is_verified {
-            Some(is_verified as u8)
-          } else {
-            None
-          },
+          verified: None,
           path: None,
         })
       })

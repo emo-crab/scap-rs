@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 #[cfg(feature = "db")]
 use crate::DB;
 #[cfg(feature = "db")]
@@ -10,6 +9,7 @@ use diesel::{backend::Backend, deserialize, serialize, sql_types::Json, AsExpres
 #[cfg(feature = "db")]
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use std::fmt::Debug;
 use std::ops::{Deref, DerefMut};
 

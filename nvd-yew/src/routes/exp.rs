@@ -177,7 +177,7 @@ impl ExploitInfoList {
       .callback(|args: QueryExploit| Msg::Query(QueryMsg::Query(args)));
     let p = EXPQueryProps {
       props: self.query.clone(),
-      is_verified: Some(true),
+      is_verified: None,
       query_source,
       query,
     };
