@@ -3,6 +3,7 @@ mod cwe_api;
 mod exploit_api;
 mod product_api;
 mod vendor_api;
+
 use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpRequest, HttpResponse};
 use nvd_model::cve::{Cve, QueryCve};
@@ -23,6 +24,7 @@ cwe_api::api_cwe_list,
 product_api::api_product_list,
 vendor_api::api_vendor_name,
 vendor_api::api_vendor_list,
+exploit_api::api_exp_list,
 ),
 components(schemas(Cve, Cwe, Product, Vendor)),
 tags((name = "nvd-rs open api", description = "National Vulnerability Database (NVD) implemented by rust")),
