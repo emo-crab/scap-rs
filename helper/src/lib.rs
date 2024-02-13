@@ -12,7 +12,7 @@ use crate::cli::{EXPCommand, SyncCommand};
 use crate::import_cpe::with_archive_cpe;
 use crate::import_cve::with_archive_cve;
 use crate::import_exploit::{
-  import_from_nuclei_templates_path, update_from_github, with_archive_exploit,
+  import_from_nuclei_templates_path, update_from_github, update_from_rss, with_archive_exploit,
 };
 pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
 pub use import_cpe::{create_cve_product, create_product, create_vendor};
@@ -111,6 +111,7 @@ pub async fn sync_mode(config: SyncCommand) {
     async_cve(param).await
   }
   if config.exp {
+    update_from_rss().await;
     update_from_github().await;
   }
 }

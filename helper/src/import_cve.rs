@@ -4,13 +4,13 @@ use diesel::mysql::MysqlConnection;
 use nvd_cves::v4::{CVEContainer, CVEItem};
 use nvd_model::cve::{CreateCve, Cve};
 use nvd_model::error::DBResult;
+use nvd_model::types::AnyValue;
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
 use std::ops::DerefMut;
 use std::path::PathBuf;
 use std::str::FromStr;
-use nvd_model::types::AnyValue;
 
 pub fn import_from_archive(
   connection: &mut MysqlConnection,
