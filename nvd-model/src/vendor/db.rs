@@ -1,8 +1,9 @@
 use crate::error::{DBError, DBResult};
 use crate::pagination::ListResponse;
 use crate::schema::vendors;
+use crate::types::{AnyValue, MetaData};
 use crate::vendor::Vendor;
-use crate::{DB, MetaData};
+use crate::DB;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use diesel::{
   ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl, TextExpressionMethods,
@@ -10,7 +11,6 @@ use diesel::{
 use serde::{Deserialize, Serialize};
 #[cfg(feature = "openapi")]
 use utoipa::IntoParams;
-use crate::types::AnyValue;
 
 #[derive(Insertable)]
 #[diesel(table_name = vendors)]

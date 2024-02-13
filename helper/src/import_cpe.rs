@@ -4,6 +4,7 @@ use std::io::BufReader;
 use std::ops::DerefMut;
 use std::path::PathBuf;
 
+use crate::init_db_pool;
 use cached::proc_macro::cached;
 use cached::SizedCache;
 use diesel::mysql::MysqlConnection;
@@ -15,11 +16,9 @@ use nvd_model::product::db::{
   CreateProduct, QueryProductById, QueryProductByVendorName, UpdateProduct,
 };
 use nvd_model::product::Product;
+use nvd_model::types::{AnyValue, MetaData};
 use nvd_model::vendor::db::CreateVendors;
 use nvd_model::vendor::Vendor;
-use nvd_model::MetaData;
-use nvd_model::types::AnyValue;
-use crate::init_db_pool;
 
 // curl --compressed https://nvd.nist.gov/vuln/data-feeds -o-|grep  -Eo '(/feeds\/[^"]*\.json\.gz)'|xargs -I % wget -c https://nvd.nist.gov%
 pub fn create_cve_product(
@@ -71,7 +70,7 @@ pub fn create_vendor(
     return v.id;
   }
   // 构建待插入对象
-  let meta=MetaData::default() ;
+  let meta = MetaData::default();
   let new_post = CreateVendors {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),
     name,
@@ -104,7 +103,7 @@ pub fn create_product(
   if let Ok(v) = Product::query_by_id(conn, &q) {
     return v.id;
   }
-  let meta=MetaData::default();
+  let meta = MetaData::default();
   // 构建待插入对象
   let new_post = CreateProduct {
     id: uuid::Uuid::new_v4().as_bytes().to_vec(),

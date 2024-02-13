@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 #[cfg(feature = "db")]
 use crate::DB;
 #[cfg(feature = "db")]
@@ -10,39 +11,43 @@ use diesel::{backend::Backend, deserialize, serialize, sql_types::Json, AsExpres
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
+use std::ops::{Deref, DerefMut};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "db", derive(AsExpression, FromSqlRow), diesel(sql_type = Json))]
-#[serde(untagged)]
-pub enum AnyValue<T: Clone>
+#[serde(transparent)]
+pub struct AnyValue<T: Clone>
 where
   T: Clone,
 {
-  Value(serde_json::Value),
-  Any(T),
+  inner: T,
 }
 
 impl<T: Default + for<'de> serde::Deserialize<'de> + Clone> AnyValue<T> {
-  pub fn into_inner(self) -> T {
-    match self {
-      AnyValue::Value(v) => serde_json::from_value(v.clone()).unwrap_or_default(),
-      AnyValue::Any(a) => a,
-    }
-  }
-  pub fn inner(&self) -> T {
-    match (*self).clone() {
-      AnyValue::Value(v) => serde_json::from_value(v.clone()).unwrap_or_default(),
-      AnyValue::Any(a) => a,
-    }
-  }
   pub fn new(t: T) -> Self {
-    Self::Any(t)
+    Self { inner: t }
+  }
+}
+
+impl<T: Default + Clone> Deref for AnyValue<T> {
+  type Target = T;
+
+  fn deref(&self) -> &Self::Target {
+    &self.inner
+  }
+}
+
+impl<T: Default + Clone> DerefMut for AnyValue<T> {
+  fn deref_mut(&mut self) -> &mut Self::Target {
+    &mut self.inner
   }
 }
 
 impl<T: Default + Clone> Default for AnyValue<T> {
   fn default() -> Self {
-    AnyValue::Any(T::default())
+    Self {
+      inner: T::default(),
+    }
   }
 }
 
@@ -65,7 +70,39 @@ where
   T: Serialize,
 {
   fn to_sql<'b>(&'b self, out: &mut Output<'b, '_, DB>) -> serialize::Result {
-    let value = serde_json::to_value(self)?;
+    let value = serde_json::to_value(&self.inner)?;
     <serde_json::Value as ToSql<Json, DB>>::to_sql(&value, &mut out.reborrow())
+  }
+}
+pub type MetaType = HashMap<String, HashMap<String, String>>;
+
+#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
+#[serde(transparent)]
+pub struct MetaData {
+  pub inner: MetaType,
+}
+
+impl MetaData {
+  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> MetaData {
+    let mut i = MetaType::new();
+    i.insert(name, hm);
+    MetaData { inner: i }
+  }
+}
+pub mod uuid_serde {
+  use serde::{Deserializer, Serializer};
+
+  pub fn serialize<S: Serializer>(v: &[u8], s: S) -> Result<S::Ok, S::Error> {
+    match uuid::Uuid::from_slice(v) {
+      Ok(u) => uuid::serde::compact::serialize(&u, s),
+      Err(e) => Err(serde::ser::Error::custom(e)),
+    }
+  }
+
+  pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Vec<u8>, D::Error> {
+    match uuid::serde::compact::deserialize(d) {
+      Ok(u) => Ok(u.as_bytes().to_vec()),
+      Err(e) => Err(serde::de::Error::custom(e)),
+    }
   }
 }

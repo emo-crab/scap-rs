@@ -34,25 +34,23 @@ impl Component for CVERow {
     let cve_id = props.id;
     let description = props
       .description
-      .into_inner()
       .iter()
       .map(|d| d.value.clone())
       .collect::<Vec<String>>();
     let update = props.updated_at.to_string();
     let cwe: HashSet<String> = props
       .weaknesses
-      .inner()
       .iter()
       .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
       .collect();
-    let vendor_product = unique_vendor_product(props.configurations.inner());
+    let vendor_product = unique_vendor_product(&props.configurations);
     let vendor: HashSet<String> = HashSet::from_iter(
       vendor_product
         .iter()
         .map(|v| v.vendor.clone())
         .collect::<Vec<String>>(),
     );
-    let metrics = props.metrics.inner();
+    let metrics = props.metrics;
     let v3 = if metrics.base_metric_v31.inner().is_some() {
       metrics.base_metric_v31.inner()
     } else {
@@ -124,7 +122,7 @@ impl Component for CVERow {
 }
 
 pub fn unique_vendor_product(
-  nodes: Vec<nvd_cves::v4::configurations::Node>,
+  nodes: &[nvd_cves::v4::configurations::Node],
 ) -> HashSet<nvd_cpe::Product> {
   nodes
     .iter()

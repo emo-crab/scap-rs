@@ -2,11 +2,11 @@ use crate::error::{DBError, DBResult};
 use crate::pagination::ListResponse;
 use crate::product::{Product, ProductWithVendor, QueryProduct};
 use crate::schema::{products, vendors};
+use crate::types::{AnyValue, MetaData};
 use crate::vendor::Vendor;
-use crate::{DB, MetaData};
+use crate::DB;
 use diesel::prelude::*;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use crate::types::AnyValue;
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]

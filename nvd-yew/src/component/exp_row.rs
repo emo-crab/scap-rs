@@ -23,7 +23,7 @@ impl Component for EXPRow {
     let name = props.name;
     let path = props.path.clone();
     let source = props.source.clone();
-    let meta = props.meta.clone().inner();
+    let meta = props.meta.clone();
     let is_verified = props.verified;
     let description = props.description.unwrap_or(String::from("N/A"));
     html! {

@@ -3,9 +3,8 @@ pub mod db;
 
 #[cfg(feature = "db")]
 use crate::schema::products;
-use crate::types::AnyValue;
+use crate::types::{uuid_serde, AnyValue, MetaData};
 use crate::vendor::Vendor;
-use crate::{uuid_serde, MetaData};
 use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Associations, Identifiable, Queryable, Selectable};
@@ -17,8 +16,8 @@ use yew::Properties;
 
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[cfg_attr(feature = "db",
-derive(Queryable,Identifiable,Associations,Selectable),
-diesel(table_name = products,belongs_to(Vendor)))]
+derive(Queryable, Identifiable, Associations, Selectable),
+diesel(table_name = products, belongs_to(Vendor)))]
 #[cfg_attr(feature = "yew", derive(Properties))]
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct Product {
@@ -34,12 +33,14 @@ pub struct Product {
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
+
 #[cfg_attr(feature = "yew", derive(Properties))]
 #[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
 pub struct ProductWithVendor {
   pub product: Product,
   pub vendor: Vendor,
 }
+
 #[cfg_attr(feature = "openapi", derive(IntoParams))]
 // 产品查询参数
 #[cfg_attr(feature = "yew", derive(Properties))]

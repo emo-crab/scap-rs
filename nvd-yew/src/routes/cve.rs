@@ -100,16 +100,15 @@ impl Component for CVEDetails {
       </div>
       <div class="card card-lg">
       <div class="card-header">
-      {self.description(cve.description.inner())}
+      {self.description(&cve.description)}
       </div>
         {self.cvss(cve.clone())}
-        {self.references(cve.references.inner())}
-        {self.weaknesses(cve.weaknesses.inner())}
+        {self.references(&cve.references)}
+        {self.weaknesses(&cve.weaknesses)}
         {self.exploit(cve.id)}
-        {self.configurations(cve.configurations.inner())}
+        {self.configurations(&cve.configurations)}
         <Comments/>
       <div class="card-body">
-
       </div>
       </div>
       </>
@@ -124,7 +123,7 @@ impl Component for CVEDetails {
 
 impl CVEDetails {
   fn cvss(&self, cve: Cve) -> Html {
-    let metrics = cve.metrics.inner();
+    let metrics = cve.metrics;
     let cvss_v31 = metrics.base_metric_v31.inner();
     let cvss_v3 = metrics.base_metric_v3.inner();
     let cvss_v2 = metrics.base_metric_v2.inner();
@@ -184,7 +183,7 @@ impl CVEDetails {
     </>
     }
   }
-  fn description(&self, description_data: Vec<nvd_cves::v4::Description>) -> Html {
+  fn description(&self, description_data: &[nvd_cves::v4::Description]) -> Html {
     let description = description_data
       .iter()
       .map(|d| d.value.clone())
@@ -194,7 +193,7 @@ impl CVEDetails {
       <h3 class="card-title"><span style="fonts-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;fonts-size:3.1em;fonts-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
     }
   }
-  fn references(&self, reference: Vec<nvd_cves::v4::Reference>) -> Html {
+  fn references(&self, reference: &[nvd_cves::v4::Reference]) -> Html {
     html! {
       <Accordion name={"References"}>
       <div class="table-responsive">
@@ -207,16 +206,16 @@ impl CVEDetails {
             </tr>
           </thead>
           <tbody>
-          {reference.into_iter().map(|r|{
+          {reference.iter().map(|r|{
             html!{
               <tr>
-              <td><i class="ti ti-external-link"></i><a href={r.url.clone()} target="_blank">{r.url}</a></td>
+              <td><i class="ti ti-external-link"></i><a href={r.url.clone()} target="_blank">{r.url.clone()}</a></td>
               <td class="text-dark">
-                {r.source}
+                {r.source.clone()}
               </td>
               <td class="text-secondary">
               <div class="badges-list">
-                {r.tags.into_iter().map(|t|{html!(<span class="badge bg-blue text-blue-fg">{t}</span>)}).collect::<Html>()}
+                {r.tags.clone().into_iter().map(|t|{html!(<span class="badge bg-blue text-blue-fg">{t}</span>)}).collect::<Html>()}
               </div>
               </td>
             </tr>
@@ -228,24 +227,24 @@ impl CVEDetails {
       </Accordion>
     }
   }
-  fn configurations(&self, configuration: Vec<nvd_cves::v4::configurations::Node>) -> Html {
+  fn configurations(&self, configuration: &[nvd_cves::v4::configurations::Node]) -> Html {
     let p = CVEConfigurationProps {
-      props: configuration.clone(),
+      props: configuration.to_vec(),
     };
     html! {<CVEConfiguration ..p.clone()/>}
   }
 
-  fn weaknesses(&self, ws: Vec<nvd_cves::v4::Weaknesses>) -> Html {
+  fn weaknesses(&self, ws: &[nvd_cves::v4::Weaknesses]) -> Html {
     // CVE-2006-5757有多个cwe
     let ws_set = ws
-      .into_iter()
-      .flat_map(|w| w.description)
-      .map(|d| d.value)
-      .collect::<HashSet<String>>();
+      .iter()
+      .flat_map(|w| &w.description)
+      .map(|d| &d.value)
+      .collect::<HashSet<&String>>();
     html! {
       <Accordion name={"Weaknesses"}>
       {ws_set.into_iter().map(|d|{
-                html!{<CWEDetails id={d}/>}
+                html!{<CWEDetails id={d.to_string()}/>}
             }).collect::<Html>()}
       </Accordion>
     }

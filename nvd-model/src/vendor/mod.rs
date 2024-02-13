@@ -3,8 +3,7 @@ pub mod db;
 
 #[cfg(feature = "db")]
 use crate::schema::vendors;
-use crate::uuid_serde;
-use crate::{types::AnyValue, MetaData};
+use crate::types::{uuid_serde, AnyValue, MetaData};
 use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Identifiable, Queryable, Selectable};
