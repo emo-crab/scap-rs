@@ -36,7 +36,7 @@ async fn main() -> std::io::Result<()> {
       .service(
         web::scope("api")
           .guard(guard::Get())
-          .guard(guard::Any(guard::Host("nvd.kali-team.cn")).or(guard::Host("127.0.0.1")))
+          .guard(guard::Any(guard::Host("scap.kali-team.cn")).or(guard::Host("127.0.0.1")))
           .configure(api_route),
       )
       .service(sitemap);

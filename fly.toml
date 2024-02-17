@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for nvd-rs on 2023-12-04T22:33:51+08:00
+# fly.toml app configuration file generated for scap-rs on 2023-12-04T22:33:51+08:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "nvd-rs"
+app = "scap-rs"
 primary_region = "hkg"
 [build]
 dockerfile = "DockerfileFly"

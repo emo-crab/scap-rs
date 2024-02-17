@@ -2,8 +2,8 @@
 name = "nvd-server"
 edition = "2021"
 description = "A rust implementation of the nvd-server."
-homepage = "https://github.com/emo-crab/nvd-rs"
-repository = "https://github.com/emo-crab/nvd-rs"
+homepage = "https://github.com/emo-crab/scap-rs"
+repository = "https://github.com/emo-crab/scap-rs"
 authors = ["Kali-Team <root@kali-team.cn>"]
 readme = "README.md"
 license = "GPLv3"

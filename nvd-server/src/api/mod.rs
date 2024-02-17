@@ -27,7 +27,7 @@ vendor_api::api_vendor_list,
 exploit_api::api_exp_list,
 ),
 components(schemas(Cve, Cwe, Product, Vendor)),
-tags((name = "nvd-rs open api", description = "National Vulnerability Database (NVD) implemented by rust")),
+tags((name = "scap-rs open api", description = "National Vulnerability Database (NVD) implemented by rust")),
 )]
 pub struct ApiDoc;
 

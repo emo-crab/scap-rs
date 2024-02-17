@@ -71,7 +71,7 @@ impl Component for Nav {
               <a href="https://blog.kali-team.cn/donate" class="btn btn-light" target="_blank" rel="noreferrer">
                 <i class="ti ti-shield-heart text-pink"></i>{"Sponsor"}
               </a>
-              <a href="https://github.com/emo-crab/nvd-rs" class="btn btn-light" target="_blank" rel="noreferrer">
+              <a href="https://github.com/emo-crab/scap-rs" class="btn btn-light" target="_blank" rel="noreferrer">
                 <i class="ti ti-brand-github" style="color: light;"></i>{"Source code"}
               </a>
             </div>

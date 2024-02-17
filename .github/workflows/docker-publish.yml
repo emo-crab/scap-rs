@@ -33,8 +33,8 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/nvd-rs:latest
-          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/nvd-rs:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/scap-rs:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/scap-rs:latest
           cache-to: type=inline
       - name: Build and push helper
         uses: docker/build-push-action@v5

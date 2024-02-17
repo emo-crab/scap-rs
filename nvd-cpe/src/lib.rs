@@ -1,4 +1,4 @@
-//! [![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cpe)&ensp;[![docs-rs]](crate)
+//! [![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cpe)&ensp;[![docs-rs]](crate)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
@@ -14,7 +14,7 @@
 //! The CPE Dictionary hosted and maintained at NIST may be used by nongovernmental organizations on a voluntary basis and is not subject to copyright in the United States. Attribution would, however, be appreciated by NIST.
 //!
 
-#![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cpe")]
+#![doc(html_root_url = "https://emo-crab.github.io/scap-rs/cpe")]
 
 // Package wfn provides a representation, bindings and matching of the Well-Formed CPE names as per
 // https://nvlpubs.nist.gov/nistpubs/Legacy/IR/nistir7695.pdf and

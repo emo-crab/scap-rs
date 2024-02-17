@@ -1,5 +1,5 @@
 [workspace.package]
-#name = "nvd-rs" #改这个
+#name = "scap-rs" #改这个
 version = "0.1.0"
 edition = "2021"
 authors = ["Kali-Team <root@kali-team.cn>"]

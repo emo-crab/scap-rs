@@ -2,7 +2,7 @@ FROM kaliteam/nvd-helper-rs:latest AS helper
 
 # Use any runner as you want
 # But beware that some images have old glibc which makes rust unhappy
-FROM kaliteam/nvd-rs:latest AS runner
+FROM kaliteam/scap-rs:latest AS runner
 WORKDIR /prod
 ENV TZ=Asia/Shanghai
 COPY --from=helper /prod/helper /prod

@@ -1,6 +1,6 @@
 ## CPE
 
-[![github]](https://github.com/emo-crab/nvd-rs)
+[![github]](https://github.com/emo-crab/scap-rs)
 [![crates-io]](https://crates.io/crates/nvd-cpe)
 [![docs-rs]](crate)
 

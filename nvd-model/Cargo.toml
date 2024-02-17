@@ -1,8 +1,8 @@
 [package]
 edition = "2021"
 description = "A rust implementation of the nvd-model."
-homepage = "https://github.com/emo-crab/nvd-rs"
-repository = "https://github.com/emo-crab/nvd-rs"
+homepage = "https://github.com/emo-crab/scap-rs"
+repository = "https://github.com/emo-crab/scap-rs"
 name = "nvd-model"
 authors = ["Kali-Team <root@kali-team.cn>"]
 readme = "README.md"

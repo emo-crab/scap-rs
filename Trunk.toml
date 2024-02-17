@@ -3,4 +3,4 @@ target = "nvd-yew/index.html"
 dist = "dist"
 
 [[proxy]]
-backend = "https://nvd.kali-team.cn/api/"
+backend = "https://scap.kali-team.cn/api/"

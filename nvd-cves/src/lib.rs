@@ -1,4 +1,4 @@
-//! [![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cves)&ensp;[![docs-rs]](crate)
+//! [![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cves)&ensp;[![docs-rs]](crate)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
@@ -14,7 +14,7 @@
 //!
 //! <https://nvd.nist.gov/vuln/vulnerability-detail-pages>
 
-#![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cve")]
+#![doc(html_root_url = "https://emo-crab.github.io/scap-rs/cve")]
 
 pub mod api;
 pub mod error;

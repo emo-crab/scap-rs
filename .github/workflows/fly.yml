@@ -9,7 +9,7 @@ on:
 jobs:
   deploy:
     name: Deploy app
-    if: github.repository == 'emo-crab/nvd-rs'
+    if: github.repository == 'emo-crab/scap-rs'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

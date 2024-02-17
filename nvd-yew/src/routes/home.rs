@@ -28,7 +28,7 @@ impl Component for Home {
                 {"The NVD is the U.S. government repository of standards based vulnerability management data represented using the Security Content Automation Protocol (SCAP)."}
               </div>
               <div class="mt-3">
-                <a href="https://github.com/emo-crab/nvd-rs/" class="btn btn-primary" target="_blank" rel="noopener">{"Source code"}</a>
+                <a href="https://github.com/emo-crab/scap-rs/" class="btn btn-primary" target="_blank" rel="noopener">{"Source code"}</a>
               </div>
             </div>
           </div>

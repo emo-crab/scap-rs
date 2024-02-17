@@ -1,4 +1,4 @@
-# nvd-rs
+# scap-rs
 ---
 
 - A collection of lib for working with [National Vulnerability Database](https://nvd.nist.gov/).
@@ -7,7 +7,7 @@
 
 ### cvss 通用漏洞评分系统
 
-[![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cvss)
+[![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cvss)
 &ensp;[![docs-rs]](crate)
 
 [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
@@ -18,7 +18,7 @@
 
 ### cve 通用漏洞披露
 
-[![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cves)
+[![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cves)
 &ensp;[![docs-rs]](crate)
 
 [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
@@ -29,7 +29,7 @@
 
 ### cpe 通用平台枚举
 
-[![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cpe)
+[![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cpe)
 &ensp;[![docs-rs]](crate)
 
 [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
@@ -40,7 +40,7 @@
 
 ### cwe 通用弱点枚举
 
-[![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cwe)
+[![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cwe)
 &ensp;[![docs-rs]](crate)
 
 [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github

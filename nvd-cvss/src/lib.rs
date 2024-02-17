@@ -1,4 +1,4 @@
-//! [![github]](https://github.com/emo-crab/nvd-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cvss)&ensp;[![docs-rs]](crate)
+//! [![github]](https://github.com/emo-crab/scap-rs)&ensp;[![crates-io]](https://crates.io/crates/nvd-cvss)&ensp;[![docs-rs]](crate)
 //!
 //! [github]: https://img.shields.io/badge/github-8da0cb?style=for-the-badge&labelColor=555555&logo=github
 //! [crates-io]: https://img.shields.io/badge/crates.io-fc8d62?style=for-the-badge&labelColor=555555&logo=rust
@@ -11,7 +11,7 @@
 //!
 //! CVSS is owned and managed by FIRST.Org, Inc. (FIRST), a US-based non-profit organization, whose mission is to help computer security incident response teams across the world. The official CVSS documentation can be found at  <https://www.first.org/cvss/>.
 
-#![doc(html_root_url = "https://emo-crab.github.io/nvd-rs/cvss")]
+#![doc(html_root_url = "https://emo-crab.github.io/scap-rs/cvss")]
 // 通用漏洞评分系统
 // https://csrc.nist.gov/schema/nvd/feed/1.1-Beta/cvss-v3.x_beta.json
 // https://www.first.org/cvss/specification-document

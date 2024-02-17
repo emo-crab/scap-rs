@@ -15,7 +15,7 @@ impl Component for Comments {
     html! {
         <Accordion name={"Comments"}>
         <script src="https://giscus.app/client.js"
-            data-repo="emo-crab/nvd-rs"
+            data-repo="emo-crab/scap-rs"
             data-repo-id="R_kgDOJE0AVw"
             data-category="Announcements"
             data-category-id="DIC_kwDOJE0AV84CcTem"
