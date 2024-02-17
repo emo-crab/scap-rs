@@ -9,11 +9,11 @@ use diesel::{backend::Backend, deserialize, serialize, sql_types::Json, AsExpres
 #[cfg(feature = "db")]
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::fmt::Debug;
+use std::collections::{HashMap, HashSet};
+use std::fmt::{Debug, Display, Formatter};
 use std::ops::{Deref, DerefMut};
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "db", derive(AsExpression, FromSqlRow), diesel(sql_type = Json))]
 #[serde(transparent)]
 pub struct AnyValue<T: Clone>
@@ -21,6 +21,18 @@ where
   T: Clone,
 {
   inner: T,
+}
+
+impl<T: Debug + Clone> Display for AnyValue<T> {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.write_fmt(format_args!("{:?}", self.inner))
+  }
+}
+
+impl<T: Debug + Clone> Debug for AnyValue<T> {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    f.write_fmt(format_args!("{:?}", self.inner))
+  }
 }
 
 impl<T: Default + for<'de> serde::Deserialize<'de> + Clone> AnyValue<T> {
@@ -74,21 +86,65 @@ where
     <serde_json::Value as ToSql<Json, DB>>::to_sql(&value, &mut out.reborrow())
   }
 }
-pub type MetaType = HashMap<String, HashMap<String, String>>;
 
-#[derive(Default, Serialize, Deserialize, Debug, Clone, PartialEq)]
-#[serde(transparent)]
-pub struct MetaData {
-  pub inner: MetaType,
+#[derive(Serialize, Deserialize, Clone, PartialEq)]
+#[serde(untagged)]
+pub enum MetaData {
+  HashMap(HashMap<String, HashMap<String, String>>),
+  HashSet(HashMap<String, HashSet<String>>),
+}
+
+impl Debug for MetaData {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    match self {
+      MetaData::HashMap(m) => f.write_fmt(format_args!("{:?}", m)),
+      MetaData::HashSet(s) => f.write_fmt(format_args!("{:?}", s)),
+    }
+  }
+}
+
+impl Display for MetaData {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    match self {
+      MetaData::HashMap(m) => f.write_fmt(format_args!("{:?}", m)),
+      MetaData::HashSet(s) => f.write_fmt(format_args!("{:?}", s)),
+    }
+  }
+}
+
+impl Default for MetaData {
+  fn default() -> Self {
+    MetaData::HashSet(HashMap::default())
+  }
 }
 
 impl MetaData {
-  pub fn from_hashmap(name: String, hm: HashMap<String, String>) -> MetaData {
-    let mut i = MetaType::new();
-    i.insert(name, hm);
-    MetaData { inner: i }
+  pub fn from_hashmap(name: impl Into<String>, hm: HashMap<String, String>) -> MetaData {
+    let mut i: HashMap<String, HashMap<String, String>> = HashMap::new();
+    i.insert(name.into(), hm);
+    MetaData::HashMap(i)
+  }
+  pub fn from_hashset(name: impl Into<String>, hm: impl Into<HashSet<String>>) -> MetaData {
+    let mut i: HashMap<String, HashSet<String>> = HashMap::new();
+    i.insert(name.into(), hm.into());
+    MetaData::HashSet(i)
+  }
+  pub fn get_hashmap(&self, key: &str) -> Option<&HashMap<String, String>> {
+    match self {
+      MetaData::HashMap(m) => {
+        return m.get(key);
+      }
+      MetaData::HashSet(_) => None,
+    }
+  }
+  pub fn get_hashset(&self, key: &str) -> Option<&HashSet<String>> {
+    match self {
+      MetaData::HashMap(_) => None,
+      MetaData::HashSet(s) => s.get(key),
+    }
   }
 }
+
 pub mod uuid_serde {
   use serde::{Deserializer, Serializer};
 

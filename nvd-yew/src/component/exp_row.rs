@@ -35,7 +35,7 @@ impl Component for EXPRow {
           <td class="w-25 text-truncate text-nowrap">{self.source(&source)}</td>
           <td class="w-25 text-truncate text-nowrap">{self.verified(is_verified)}</td>
           <td class="w-25 text-truncate text-nowrap">{self.path(&source,&name,&path)}</td>
-          <td class="w-25 text-truncate text-nowrap">{format!("{:?}",meta.inner)}</td>
+          <td class="w-25 text-truncate text-nowrap">{format!("{:?}",meta)}</td>
           <td class="w-25 text-truncate text-nowrap">
             {update}
           </td>
