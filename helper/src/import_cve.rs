@@ -1,4 +1,5 @@
 use crate::import_cpe::{del_expire_product, import_vendor_product_to_db};
+use crate::import_exploit::associate_cve_and_exploit;
 use crate::{create_cve_product, init_db_pool};
 use diesel::mysql::MysqlConnection;
 use nvd_cves::v4::{CVEContainer, CVEItem};
@@ -104,7 +105,8 @@ pub fn import_from_api(
           vendor_product.product,
         );
       }
-      del_expire_product(connection, cve_id.id, product_set);
+      del_expire_product(connection, &cve_id.id, product_set);
+      associate_cve_and_exploit(connection, &cve_id.id);
     }
     Err(err) => {
       println!("Cve::create_or_update: {err:?}");

@@ -122,11 +122,11 @@ pub fn create_product(
 }
 
 // 删除过期的CVE编号和产品关联关系
-pub fn del_expire_product(conn: &mut MysqlConnection, id: String, product_set: HashSet<Vec<u8>>) {
-  if let Ok(cve_products) = CveProduct::query_product_by_cve(conn, id.clone()) {
+pub fn del_expire_product(conn: &mut MysqlConnection, id: &str, product_set: HashSet<Vec<u8>>) {
+  if let Ok(cve_products) = CveProduct::query_product_by_cve(conn, id.to_string()) {
     let remote_set: HashSet<Vec<u8>> = HashSet::from_iter(cve_products);
     for p in remote_set.difference(&product_set) {
-      if let Err(err) = CveProduct::delete(conn, id.clone(), p.clone()) {
+      if let Err(err) = CveProduct::delete(conn, id.to_string(), p.clone()) {
         println!("delete product err: {:?}", err);
       }
     }
@@ -159,7 +159,7 @@ fn get_href(hrefs: Vec<nvd_cpe::dictionary::Reference>) -> MetaData {
   for href in hrefs {
     href_map.entry(href.href).or_insert(href.value);
   }
-  MetaData::from_hashmap("references".to_string(), href_map)
+  MetaData::from_hashmap("references", href_map)
 }
 
 // 从多个相似字符串提取相同信息，合并为一个字符串
