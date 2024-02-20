@@ -1,3 +1,6 @@
+use diesel::prelude::*;
+use diesel::result::{DatabaseErrorKind, Error as DieselError};
+
 use crate::error::{DBError, DBResult};
 use crate::pagination::ListResponse;
 use crate::product::{Product, ProductWithVendor, QueryProduct};
@@ -5,8 +8,6 @@ use crate::schema::{products, vendors};
 use crate::types::{AnyValue, MetaData};
 use crate::vendor::Vendor;
 use crate::DB;
-use diesel::prelude::*;
-use diesel::result::{DatabaseErrorKind, Error as DieselError};
 
 #[derive(Insertable)]
 #[diesel(table_name = products)]
@@ -26,7 +27,7 @@ pub struct UpdateProduct {
   pub vendor_name: String,
   pub meta: AnyValue<MetaData>,
   pub name: String,
-  pub description: Option<String>,
+  pub description: String,
 }
 
 pub struct QueryProductById {

@@ -59,7 +59,7 @@ diesel::table! {
         part -> Char,
         #[max_length = 128]
         name -> Varchar,
-        description -> Nullable<Text>,
+        description -> Text,
         meta -> Json,
         created_at -> Timestamp,
         updated_at -> Timestamp,
@@ -73,7 +73,7 @@ diesel::table! {
         official -> Unsigned<Tinyint>,
         #[max_length = 128]
         name -> Varchar,
-        description -> Nullable<Text>,
+        description -> Text,
         meta -> Json,
         updated_at -> Timestamp,
         created_at -> Timestamp,
@@ -86,7 +86,7 @@ diesel::table! {
         id -> Binary,
         #[max_length = 128]
         name -> Varchar,
-        description -> Nullable<Text>,
+        description -> Text,
         #[max_length = 32]
         source -> Varchar,
         #[max_length = 512]
@@ -98,9 +98,27 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    knowledge_base (id) {
+        #[max_length = 16]
+        id -> Binary,
+        #[max_length = 128]
+        name -> Varchar,
+        description -> Text,
+        #[max_length = 32]
+        source -> Varchar,
+        #[max_length = 512]
+        links -> Varchar,
+        meta -> Json,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
 diesel::joinable!(cve_product -> cves (cve_id));
 diesel::joinable!(cve_product -> products (product_id));
 diesel::joinable!(products -> vendors (vendor_id));
+diesel::joinable!(knowledge_base -> cves (name));
 diesel::joinable!(cve_exploit -> cves (cve_id));
 diesel::joinable!(cve_exploit -> exploits (exploit_id));
 
@@ -112,4 +130,5 @@ diesel::allow_tables_to_appear_in_same_query!(
   products,
   vendors,
   cve_exploit,
+  knowledge_base,
 );

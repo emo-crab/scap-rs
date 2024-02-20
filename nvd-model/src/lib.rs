@@ -13,13 +13,13 @@ pub mod cwe;
 #[cfg(feature = "db")]
 pub mod error;
 pub mod exploit;
+pub mod knowledge_base;
 pub mod pagination;
 pub mod product;
 #[cfg(feature = "db")]
 pub mod schema;
 pub mod types;
 pub mod vendor;
-mod knowledge_base;
 
 #[cfg(feature = "db")]
 pub type DB = diesel::mysql::Mysql;
