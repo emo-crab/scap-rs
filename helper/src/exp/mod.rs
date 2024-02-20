@@ -148,7 +148,7 @@ impl ExploitDB {
   }
 }
 
-fn create_or_update_exploit(
+pub fn create_or_update_exploit(
   connection: &mut MysqlConnection,
   exploit_item: CreateExploit,
   cve_id: Option<String>,
@@ -344,8 +344,8 @@ pub fn import_from_nuclei_templates_path(path: PathBuf) {
           .to_string(),
         meta: AnyValue::new(meta),
         verified: 1,
-        created_at: Utc::now().naive_local(),
-        updated_at: Utc::now().naive_local(),
+        created_at: Utc::now().naive_utc(),
+        updated_at: Utc::now().naive_utc(),
       };
       if let Err(err) = create_or_update_exploit(conn, new_exp, Some(template.id)) {
         println!("import nuclei exploit err: {:?}", err);
@@ -444,8 +444,8 @@ impl GitHubCommit {
                   path,
                   meta: AnyValue::new(meta),
                   verified: 1,
-                  created_at: Utc::now().naive_local(),
-                  updated_at: Utc::now().naive_local(),
+                  created_at: Utc::now().naive_utc(),
+                  updated_at: Utc::now().naive_utc(),
                 };
                 if let Err(err) = create_or_update_exploit(conn, new_exp, Some(template.id)) {
                   println!("import nuclei exploit err: {:?}", err);
@@ -551,7 +551,7 @@ pub async fn update_from_rss() {
     let rss: Rss = quick_xml::de::from_str(&s).unwrap();
     for item in rss.channel.item {
       // 发布时间小于三天前跳过更新
-      if item.published < (Utc::now() - Duration::days(3)).naive_local() {
+      if item.published < (Utc::now() - Duration::days(3)).naive_utc() {
         continue;
       }
       get_info_from_exploit_url(connection_pool.get().unwrap().deref_mut(), &item).await;

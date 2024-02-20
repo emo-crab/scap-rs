@@ -7,8 +7,8 @@ use nvd_model::cve::Cve;
 
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
-  Accordion, CVEConfiguration, CVEConfigurationProps, CVEExploitInfoList, CWEDetails, Comments,
-  CVSS2, CVSS3,
+  Accordion, CVEConfiguration, CVEConfigurationProps, CVEExploitInfoList, CVEKnowledgeBaseInfoList,
+  CWEDetails, Comments, CVSS2, CVSS3,
 };
 use crate::console_log;
 use crate::error::Error;
@@ -122,7 +122,8 @@ impl Component for CVEDetails {
         {self.cvss(cve.clone())}
         {self.references(&cve.references)}
         {self.weaknesses(&cve.weaknesses)}
-        {self.exploit(cve.id)}
+        {self.exploit(&cve.id)}
+        {self.knowledge_base(&cve.id)}
         {self.configurations(&cve.configurations)}
         <Comments/>
       <div class="card-body">
@@ -266,10 +267,17 @@ impl CVEDetails {
       </Accordion>
     }
   }
-  fn exploit(&self, id: String) -> Html {
+  fn exploit(&self, id: &str) -> Html {
     html! {
       <Accordion name={"Exploits"}>
-      <CVEExploitInfoList id={id}/>
+      <CVEExploitInfoList id={id.to_string()}/>
+      </Accordion>
+    }
+  }
+  fn knowledge_base(&self, id: &str) -> Html {
+    html! {
+      <Accordion name={"KnowledgeBase"}>
+      <CVEKnowledgeBaseInfoList id={id.to_string()}/>
       </Accordion>
     }
   }
