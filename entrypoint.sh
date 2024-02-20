@@ -9,9 +9,7 @@ echo "0 */2 * * * /prod/helper sync --cve --exp > /app/var/log/helper.log"> /etc
 # Load cron configuration.
 crontab /etc/cron.d/crontab
 # Start cron as a daemon.
-{
-  echo "DATABASE_URL=${DATABASE_URL}"
-} >> /.env
+printenv > /.env
 cron -f &
 
 # Run your main app.
