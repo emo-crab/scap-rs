@@ -1,10 +1,12 @@
+use request::request_get;
+
+use crate::error::Error;
+
 pub mod cpe;
 pub mod cve;
 pub mod exp;
+pub mod kb;
 mod request;
-
-use crate::error::Error;
-use request::request_get;
 
 pub enum FetchState<T> {
   Success(T),
