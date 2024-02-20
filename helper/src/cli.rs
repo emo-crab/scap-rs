@@ -1,5 +1,6 @@
-use argh::FromArgs;
 use std::path::PathBuf;
+
+use argh::FromArgs;
 
 #[derive(FromArgs, PartialEq, Debug)]
 #[argh(description = "NVDHelper")]
@@ -14,7 +15,8 @@ pub enum NVDHelper {
   CVE(CVECommand),
   CPE(CPECommand),
   EXP(EXPCommand),
-  Sync(SyncCommand),
+  SYNC(SyncCommand),
+  KB(KBCommand),
 }
 
 #[derive(FromArgs, PartialEq, Debug)]
@@ -55,6 +57,14 @@ pub struct EXPCommand {
   pub template: Option<PathBuf>,
   #[argh(switch, description = "update exp from nuclei-templates")]
   pub api: bool,
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(description = "knowledge-base helper")]
+#[argh(subcommand, name = "kb")]
+pub struct KBCommand {
+  #[argh(switch, description = "import knowledge-base from attackerkb api")]
+  pub akb: bool,
 }
 
 #[derive(FromArgs, PartialEq, Debug)]

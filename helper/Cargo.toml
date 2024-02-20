@@ -31,6 +31,8 @@ octocrab = "0.34.0"
 openssl = { version = "0.10", features = ["vendored"] }
 reqwest = { version = "0.11.11", features = ["json", "gzip", "native-tls", "socks"] }
 nvd-model = { path = "../nvd-model", features = ["db"] }
+attackerkb-api-rs = { version = "0.1.0" }
+thiserror = "1.0.50"
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }
 quick-xml = { version = "0.31.0", features = ["serde", "encoding_rs", "serialize"] }

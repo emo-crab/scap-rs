@@ -1,29 +1,28 @@
-use std::ops::DerefMut;
-
 use chrono::{Duration, Utc};
 use diesel::r2d2::ConnectionManager;
 use diesel::{r2d2, MysqlConnection};
-use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::v2::LastModDate;
-use nvd_api::ApiVersion;
 
-use crate::cli::{EXPCommand, SyncCommand};
-use crate::import_cpe::with_archive_cpe;
-use crate::import_cve::with_archive_cve;
-use crate::import_exploit::{
+pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
+use cpe::create_cve_product;
+pub use cwe::import_cwe;
+
+use crate::cli::{EXPCommand, KBCommand, SyncCommand};
+use crate::cpe::with_archive_cpe;
+use crate::cve::{async_cve, with_archive_cve};
+use crate::exp::{
   import_from_nuclei_templates_path, update_from_github, update_from_rss, with_archive_exploit,
 };
-pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
-pub use import_cpe::{create_cve_product, create_product, create_vendor};
-pub use import_cve::{import_from_api, import_from_archive};
-pub use import_cwe::import_cwe;
+use crate::kb::akb_sync;
 
 mod cli;
-mod import_cpe;
-mod import_cve;
-mod import_cwe;
-mod import_exploit;
+mod cpe;
+mod cve;
+mod cwe;
+pub mod error;
+mod exp;
+mod kb;
 
 pub type Connection = MysqlConnection;
 pub type Pool = r2d2::Pool<ConnectionManager<Connection>>;
@@ -34,18 +33,6 @@ pub fn init_db_pool() -> Pool {
   Pool::builder()
     .build(manager)
     .expect("Failed to create pool.")
-}
-
-async fn async_cve(param: CveParameters) {
-  let connection_pool = init_db_pool();
-  let api = nvd_api::NVDApi::new(None, ApiVersion::default()).unwrap();
-  let resp = api.cve(param).await.unwrap();
-  if let Object::Vulnerabilities(vs) = resp.results {
-    for v in vs {
-      println!("正在同步：{:?} {:?}", v.cve.vuln_status, v.cve.id);
-      import_from_api(connection_pool.get().unwrap().deref_mut(), v.cve).unwrap();
-    }
-  }
 }
 
 pub async fn cve_mode(config: CVECommand) {
@@ -113,6 +100,12 @@ pub async fn sync_mode(config: SyncCommand) {
   if config.exp {
     update_from_rss().await;
     update_from_github().await;
+  }
+}
+
+pub async fn kb_mode(config: KBCommand) {
+  if config.akb {
+    let _ = akb_sync().await;
   }
 }
 
