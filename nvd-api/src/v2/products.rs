@@ -11,7 +11,7 @@ use crate::v2::{Keyword, LastModDate, LimitOffset};
 ///
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
-#[builder(setter(into))]
+#[builder(setter(into), default)]
 pub struct CpeParameters {
   pub cpe_name_id: Option<String>,
   pub cpe_match_string: Option<String>,
@@ -27,7 +27,7 @@ pub struct CpeParameters {
 
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
-#[builder(setter(into))]
+#[builder(setter(into), default)]
 pub struct CpeMatchParameters {
   pub cve_id: Option<String>,
   #[serde(flatten)]

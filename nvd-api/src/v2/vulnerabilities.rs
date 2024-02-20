@@ -15,7 +15,7 @@ use crate::v2::{Keyword, LastModDate, LimitOffset};
 ///
 #[derive(Debug, Default, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
 #[serde(rename_all = "camelCase")]
-#[builder(setter(into))]
+#[builder(setter(into), default)]
 pub struct CveParameters {
   /// This parameter returns all CVE associated with a specific CPE. The exact value provided with cpeName is compared against the CPE Match Criteria within a CVE applicability statement. If the value of cpeName is considered to match, the CVE is included in the results.
   pub cpe_name: Option<String>,
@@ -112,9 +112,9 @@ pub struct Vulnerabilities {
   pub cve: nvd_cves::api::CVE,
 }
 
-#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq, Builder)]
+#[derive(Debug, Serialize, Deserialize, PartialEq, Clone, Eq, Builder, Default)]
 #[serde(rename_all = "camelCase")]
-#[builder(setter(into))]
+#[builder(setter(into), default)]
 pub struct CveHistoryParameters {
   pub cve_id: Option<String>,
   #[serde(flatten)]
