@@ -1,8 +1,9 @@
-use crate::routes::Route;
-
-use nvd_model::product::ProductWithVendor;
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use nvd_model::product::ProductWithVendor;
+
+use crate::routes::Route;
 
 // 供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -27,7 +28,11 @@ impl Component for CPERow {
     let update = product.updated_at.to_string();
     let name = product.name;
     let vendor_name = vendor.name;
-    let description = product.description.unwrap_or(String::from("N/A"));
+    let description = if product.description.is_empty() {
+      String::from("N/A")
+    } else {
+      product.description
+    };
     html! {
     <>
         <tr class="table-group-divider">

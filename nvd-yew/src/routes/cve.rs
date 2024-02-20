@@ -1,8 +1,9 @@
 use std::collections::HashSet;
 
-use nvd_model::cve::Cve;
 use yew::prelude::*;
 use yew_router::prelude::*;
+
+use nvd_model::cve::Cve;
 
 use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
@@ -10,6 +11,8 @@ use crate::component::{
   CVSS2, CVSS3,
 };
 use crate::console_log;
+use crate::error::Error;
+use crate::routes::Route;
 use crate::services::cve::cve_details;
 use crate::services::FetchState;
 
@@ -41,6 +44,20 @@ impl Component for CVEDetails {
         match state {
           FetchState::Success(data) => self.cve = Some(data),
           FetchState::Failed(err) => {
+            match err {
+              Error::Request => {}
+              Error::Unauthorized => {}
+              Error::Forbidden => {}
+              Error::NotFound => {
+                ctx.link().navigator().unwrap().push(&Route::NotFound);
+              }
+              Error::UnProcessableEntity => {}
+              Error::InternalServer => {}
+              Error::BadGateway => {}
+              Error::ServiceUnavailable => {}
+              Error::GatewayTimeout => {}
+              Error::Deserialize => {}
+            }
             console_log!("{:?}", err);
           }
         }

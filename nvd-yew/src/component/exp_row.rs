@@ -1,5 +1,9 @@
-use nvd_model::exploit::Exploit;
 use yew::prelude::*;
+use yew_router::prelude::*;
+
+use nvd_model::exploit::Exploit;
+
+use crate::routes::Route;
 
 // 供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -25,12 +29,25 @@ impl Component for EXPRow {
     let source = props.source.clone();
     let meta = props.meta.clone();
     let is_verified = props.verified;
-    let description = props.description.unwrap_or(String::from("N/A"));
+    let description = if props.description.is_empty() {
+      String::from("N/A")
+    } else {
+      props.description
+    };
+    let disabled_open = !name.starts_with("CVE-");
     html! {
     <>
         <tr class="table-group-divider">
-          <th scope="row"  rowspan="2">
-              {name.clone()}
+          <th scope="row" rowspan="2">
+          {if !disabled_open{
+            html!{
+            <Link<Route> disabled={disabled_open} classes={classes!(["text-reset", "text-nowrap"])} to={Route::Cve{id:{name.clone()}}}>
+             <i class="ti ti-external-link"></i>{name.clone()}
+            </Link<Route>>
+            }
+          }else{
+            html!{<span classes={classes!(["text-reset", "text-nowrap"])}>{name.clone()}</span>}
+          }}
           </th>
           <td class="w-25 text-truncate text-nowrap">{self.source(&source)}</td>
           <td class="w-25 text-truncate text-nowrap">{self.verified(is_verified)}</td>

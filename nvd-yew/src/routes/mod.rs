@@ -1,7 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-// use nvd_cvss::Cvss;
 use cpe::VendorProducts;
 use cve::CVEDetails;
 use cve_list::CveInfoList;
@@ -9,12 +8,16 @@ use exp::ExploitInfoList;
 use home::Home;
 use page_not_found::PageNotFound;
 
+// use nvd_cvss::Cvss;
+use crate::routes::kb::KnowledgeBaseInfoList;
+
 mod cve;
 mod cve_list;
 // mod cvss;
 mod cpe;
 mod exp;
 mod home;
+mod kb;
 mod page_not_found;
 
 #[derive(Routable, PartialEq, Eq, Clone, Debug)]
@@ -27,6 +30,8 @@ pub enum Route {
   Cpe,
   #[at("/exp/")]
   Exp,
+  #[at("/kb/")]
+  Kb,
   #[at("/")]
   Home,
   #[not_found]
@@ -51,6 +56,9 @@ impl Route {
       }
       Route::Exp => {
         html! { <ExploitInfoList /> }
+      }
+      Route::Kb => {
+        html! { <KnowledgeBaseInfoList /> }
       }
       Route::NotFound => {
         html! { <PageNotFound /> }
