@@ -1,10 +1,12 @@
 use actix_web::http::StatusCode;
 use actix_web::{HttpResponse, ResponseError};
-use nvd_model::error::DBError;
 use thiserror::Error as ThisError;
+
+use nvd_model::error::DBError;
 
 // API错误处理
 pub type ApiResult<T> = Result<T, NVDApiError>;
+
 // API错误枚举
 #[derive(ThisError, Debug)]
 pub enum NVDApiError {
@@ -21,6 +23,7 @@ impl From<actix_web::error::BlockingError> for NVDApiError {
     }
   }
 }
+
 impl From<actix_web::Error> for NVDApiError {
   fn from(err: actix_web::Error) -> Self {
     NVDApiError::InternalServerError {
@@ -48,8 +51,16 @@ impl ResponseError for NVDApiError {
 impl From<DBError> for NVDApiError {
   fn from(err: DBError) -> Self {
     match err {
-      DBError::DieselError { source } => NVDApiError::InternalServerError {
-        value: source.to_string(),
+      DBError::DieselError { source } => match source.to_string().as_str() {
+        "Record not found" => NVDApiError::NotFound {
+          value: source.to_string(),
+        },
+        _ => {
+          println!("{:?}", source.to_string());
+          NVDApiError::InternalServerError {
+            value: source.to_string(),
+          }
+        }
       },
       _ => NVDApiError::InternalServerError {
         value: err.to_string(),

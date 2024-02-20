@@ -1,17 +1,21 @@
-mod cve_api;
-mod cwe_api;
-mod exploit_api;
-mod product_api;
-mod vendor_api;
+use std::ops::DerefMut;
 
-use crate::{ApiResponse, Pool};
 use actix_web::{get, web, HttpRequest, HttpResponse};
+#[cfg(feature = "openapi")]
+use utoipa::OpenApi;
+
 use nvd_model::cve::{Cve, QueryCve};
 #[cfg(feature = "openapi")]
 use nvd_model::{cwe::Cwe, product::Product, vendor::Vendor};
-use std::ops::DerefMut;
-#[cfg(feature = "openapi")]
-use utoipa::OpenApi;
+
+use crate::{ApiResponse, Pool};
+
+mod cve_api;
+mod cwe_api;
+mod exploit_api;
+mod kb_api;
+mod product_api;
+mod vendor_api;
 
 #[cfg(feature = "openapi")]
 #[derive(OpenApi)]
@@ -25,6 +29,7 @@ product_api::api_product_list,
 vendor_api::api_vendor_name,
 vendor_api::api_vendor_list,
 exploit_api::api_exp_list,
+kb_api::api_kb_list,
 ),
 components(schemas(Cve, Cwe, Product, Vendor)),
 tags((name = "scap-rs open api", description = "National Vulnerability Database (NVD) implemented by rust")),
@@ -60,6 +65,7 @@ pub fn api_route(cfg: &mut web::ServiceConfig) {
         .service(cve_api::api_cve_list),
     )
     .service(web::scope("exp").service(exploit_api::api_exp_list))
+    .service(web::scope("kb").service(kb_api::api_kb_list))
     .service(
       web::scope("vendor")
         .service(vendor_api::api_vendor_name)
