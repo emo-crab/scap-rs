@@ -511,7 +511,7 @@ mod tests {
   use std::collections::HashMap;
   use std::str::FromStr;
 
-  use crate::v4::{CVSS, roundup};
+  use crate::v4::{roundup, CVSS};
 
   #[test]
   fn roundup_test() {

@@ -1,13 +1,13 @@
 pub use accordion::Accordion;
 pub use comments::Comments;
 pub use cpe_query::{CPEQuery, CPEQueryProps};
-pub use cpe_row::{CpeProps, CPERow};
+pub use cpe_row::{CPERow, CpeProps};
 pub use cve_configuration::{CVEConfiguration, CVEConfigurationProps};
 pub use cve_query::{CVEQuery, CVEQueryProps};
-pub use cve_row::{CveProps, CVERow};
+pub use cve_row::{CVERow, CveProps};
 pub use cvss::{CVSS2, CVSS3};
 pub use kb_query::{KBQuery, KBQueryProps};
-pub use kb_row::{KbProps, KBRow};
+pub use kb_row::{KBRow, KbProps};
 pub use knowledge_base::CVEKnowledgeBaseInfoList;
 pub use pagination::{Pagination, PaginationProps};
 pub use tooltip_popover::TooltipPopover;

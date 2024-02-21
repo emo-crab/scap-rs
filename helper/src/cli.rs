@@ -14,9 +14,8 @@ pub struct TopLevel {
 pub enum NVDHelper {
   CVE(CVECommand),
   CPE(CPECommand),
-  EXP(EXPCommand),
-  SYNC(SyncCommand),
   KB(KBCommand),
+  SYNC(SyncCommand),
 }
 
 #[derive(FromArgs, PartialEq, Debug)]
@@ -50,19 +49,13 @@ pub struct CPECommand {
 #[derive(FromArgs, PartialEq, Debug)]
 #[argh(description = "kb helper")]
 #[argh(subcommand, name = "kb")]
-pub struct EXPCommand {
+pub struct KBCommand {
   #[argh(option, description = "import kb from files_exploits.csv")]
   pub path: Option<PathBuf>,
   #[argh(option, description = "import kb from nuclei-templates path")]
   pub template: Option<PathBuf>,
   #[argh(switch, description = "update kb from nuclei-templates")]
   pub api: bool,
-}
-
-#[derive(FromArgs, PartialEq, Debug)]
-#[argh(description = "knowledge-base helper")]
-#[argh(subcommand, name = "kb")]
-pub struct KBCommand {
   #[argh(switch, description = "import knowledge-base from attackerkb api")]
   pub akb: bool,
 }

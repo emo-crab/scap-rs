@@ -1,5 +1,5 @@
 #[cfg(feature = "db")]
-use diesel::{MysqlConnection, r2d2, r2d2::ConnectionManager};
+use diesel::{r2d2, r2d2::ConnectionManager, MysqlConnection};
 
 // wubba lubba dub dub
 // 后端和前端特性不能同时开启

@@ -5,11 +5,11 @@ use yew_router::prelude::*;
 
 use nvd_model::cve::Cve;
 
-use crate::component::{
-  Accordion, Comments, CVEConfiguration, CVEConfigurationProps, CVEKnowledgeBaseInfoList,
-  CVSS2, CVSS3, CWEDetails,
-};
 use crate::component::cvss_tags::{cvss2, cvss3};
+use crate::component::{
+  Accordion, CVEConfiguration, CVEConfigurationProps, CVEKnowledgeBaseInfoList, CWEDetails,
+  Comments, CVSS2, CVSS3,
+};
 use crate::console_log;
 use crate::error::Error;
 use crate::routes::Route;

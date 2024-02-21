@@ -1,14 +1,14 @@
 use chrono::{Duration, Utc};
-use diesel::{MysqlConnection, r2d2};
 use diesel::r2d2::ConnectionManager;
-use nvd_api::v2::LastModDate;
+use diesel::{r2d2, MysqlConnection};
 use nvd_api::v2::vulnerabilities::CveParameters;
+use nvd_api::v2::LastModDate;
 
 pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
 use cpe::create_cve_product;
 pub use cwe::import_cwe;
 
-use crate::cli::{EXPCommand, KBCommand, SyncCommand};
+use crate::cli::{KBCommand, SyncCommand};
 use crate::cpe::with_archive_cpe;
 use crate::cve::{async_cve, with_archive_cve};
 use crate::kb::{
@@ -65,7 +65,7 @@ pub async fn cpe_mode(config: CPECommand) {
   }
 }
 
-pub async fn exploit_mode(config: EXPCommand) {
+pub async fn kb_mode(config: KBCommand) {
   if let Some(path) = config.path {
     with_archive_exploit(path)
   }
@@ -74,6 +74,9 @@ pub async fn exploit_mode(config: EXPCommand) {
   }
   if let Some(path) = config.template {
     import_from_nuclei_templates_path(path)
+  }
+  if config.akb {
+    let _ = akb_sync().await;
   }
 }
 
@@ -99,12 +102,6 @@ pub async fn sync_mode(config: SyncCommand) {
   if config.exp {
     update_from_rss().await;
     update_from_github().await;
-  }
-}
-
-pub async fn kb_mode(config: KBCommand) {
-  if config.akb {
-    let _ = akb_sync().await;
   }
 }
 

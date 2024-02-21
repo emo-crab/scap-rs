@@ -7,12 +7,12 @@ use yew_router::prelude::*;
 
 use nvd_model::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
 
-use crate::component::{KbProps, KBQuery, KBQueryProps, KBRow, Pagination, PaginationProps};
+use crate::component::{KBQuery, KBQueryProps, KBRow, KbProps, Pagination, PaginationProps};
 use crate::console_log;
 use crate::modules::ListResponse;
 use crate::routes::Route;
-use crate::services::FetchState;
 use crate::services::kb::knowledge_base_list;
+use crate::services::FetchState;
 
 pub type KnowledgeBaseInfoList = ListResponse<KnowledgeBase, QueryKnowledgeBase>;
 

@@ -2,11 +2,11 @@ use yew::prelude::*;
 
 use nvd_model::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
 
-use crate::component::{KbProps, KBRow};
+use crate::component::{KBRow, KbProps};
 use crate::console_log;
 use crate::modules::Paging;
-use crate::services::FetchState;
 use crate::services::kb::knowledge_base_list;
+use crate::services::FetchState;
 
 #[derive(Default)]
 pub struct CVEKnowledgeBaseInfoList {

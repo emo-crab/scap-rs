@@ -35,6 +35,12 @@ impl Component for KBRow {
       props.description
     };
     let disabled_open = !name.starts_with("CVE-");
+    let mut tags = meta
+      .get_hashset("tags")
+      .unwrap_or_default()
+      .into_iter()
+      .collect::<Vec<String>>();
+    tags.sort();
     html! {
     <>
         <tr class="table-group-divider">
@@ -52,7 +58,27 @@ impl Component for KBRow {
           <td class="w-25 text-truncate text-nowrap">{self.source(&source)}</td>
           <td class="w-25 text-truncate text-nowrap">{self.verified(is_verified)}</td>
           <td class="w-25 text-truncate text-nowrap">{self.path(&source,&name,&path)}</td>
-          <td class="w-25 text-truncate text-nowrap">{format!("{:?}",meta)}</td>
+                    <td class="w-25 text-truncate text-nowrap">
+          {html!(<span class="badge rounded-pill bg-secondary">{tags.len()}</span>)}
+          {
+            if !tags.is_empty(){
+              tags.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&3)).map(|(_,value)| {
+                if value.starts_with("CVE-"){
+                html!{
+                <a href={format!("/cve/{}",value)} class="text-reset text-nowrap" target="_blank" rel="noreferrer"><i class="ti ti-external-link"></i>{value}</a>
+                }
+              }else{
+                html!{<span class="text-truncate badge">{value}</span>}
+              }
+              }).collect::<Html>()
+            }else{
+            html!{
+                <span class="text-truncate badge">{ "N/A" }</span>
+              }
+            }
+          }
+          {if tags.len()>3{html!(<i>{format!("{} and more",tags.len()-2)}</i>)}else{html!()}}
+          </td>
           <td class="w-25 text-truncate text-nowrap">
             {update}
           </td>

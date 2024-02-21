@@ -1,5 +1,7 @@
-#[cfg(feature = "db")]
-use crate::DB;
+use std::collections::{HashMap, HashSet};
+use std::fmt::{Debug, Display, Formatter};
+use std::ops::{Deref, DerefMut};
+
 #[cfg(feature = "db")]
 use diesel::deserialize::FromSql;
 #[cfg(feature = "db")]
@@ -9,9 +11,9 @@ use diesel::{backend::Backend, deserialize, serialize, sql_types::Json, AsExpres
 #[cfg(feature = "db")]
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use std::collections::{HashMap, HashSet};
-use std::fmt::{Debug, Display, Formatter};
-use std::ops::{Deref, DerefMut};
+
+#[cfg(feature = "db")]
+use crate::DB;
 
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "db", derive(AsExpression, FromSqlRow), diesel(sql_type = Json))]
@@ -129,19 +131,25 @@ impl MetaData {
     i.insert(name.into(), hm.into());
     MetaData::HashSet(i)
   }
-  pub fn get_hashmap(&self, key: &str) -> Option<&HashMap<String, String>> {
+  pub fn get_hashmap(&self, key: &str) -> Option<HashMap<String, String>> {
     match self {
       MetaData::HashMap(m) => {
-        return m.get(key);
+        return m.get(key).cloned();
       }
       MetaData::HashSet(_) => None,
     }
   }
-  pub fn get_hashset(&self, key: &str) -> Option<&HashSet<String>> {
-    match self {
-      MetaData::HashMap(_) => None,
-      MetaData::HashSet(s) => s.get(key),
-    }
+  pub fn get_hashset(&self, key: &str) -> Option<HashSet<String>> {
+    return match self.clone() {
+      MetaData::HashMap(m) => {
+        if let Some(kv) = m.get(key) {
+          let s = kv.values().map(|s| s.to_string()).collect();
+          return Some(s);
+        };
+        None
+      }
+      MetaData::HashSet(s) => s.get(key).cloned(),
+    };
   }
 }
 

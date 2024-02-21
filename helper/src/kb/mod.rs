@@ -7,25 +7,25 @@ use std::ops::DerefMut;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
 
-use attackerkb_api_rs::AttackKBApi;
 use attackerkb_api_rs::pagination::KBResponse;
 use attackerkb_api_rs::v1::query::TopicsParametersBuilder;
+use attackerkb_api_rs::AttackKBApi;
 use chrono::{DateTime, Duration, NaiveDateTime, Utc};
 use diesel::MysqlConnection;
-use octocrab::{Octocrab, Page};
 use octocrab::models::repos::{DiffEntryStatus, RepoCommit};
+use octocrab::{Octocrab, Page};
 use reqwest::header;
 use serde::{de, Deserialize, Deserializer, Serialize};
 
-use nvd_model::cve_knowledge_base::CveKnowledgeBase;
 use nvd_model::cve_knowledge_base::db::CreateCveKB;
+use nvd_model::cve_knowledge_base::CveKnowledgeBase;
 use nvd_model::error::DBResult;
 use nvd_model::knowledge_base::db::{CreateKnowledgeBase, KBSource, KBTypes};
 use nvd_model::knowledge_base::KnowledgeBase;
 use nvd_model::types::{AnyValue, MetaData};
 
-use crate::{Connection, init_db_pool};
 use crate::error::HelperResult;
+use crate::{init_db_pool, Connection};
 
 mod date_format {
   use chrono::{NaiveDate, NaiveDateTime, Utc};
@@ -34,16 +34,16 @@ mod date_format {
   pub(crate) const FORMAT: &str = "%Y-%m-%d";
 
   pub fn serialize<S>(date: &NaiveDateTime, serializer: S) -> Result<S::Ok, S::Error>
-    where
-      S: Serializer,
+  where
+    S: Serializer,
   {
     let s = date.to_string();
     serializer.serialize_str(&s)
   }
 
   pub fn deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
-    where
-      D: Deserializer<'de>,
+  where
+    D: Deserializer<'de>,
   {
     let s = String::deserialize(deserializer)?;
     if s.is_empty() {
@@ -255,8 +255,8 @@ pub async fn update_from_github() {
 
 /// 字符串转set
 fn string_to_hashset<'de, D>(deserializer: D) -> Result<HashSet<String>, D::Error>
-  where
-    D: Deserializer<'de>,
+where
+  D: Deserializer<'de>,
 {
   struct StringToHashSet(PhantomData<HashSet<String>>);
   impl<'de> de::Visitor<'de> for StringToHashSet {
@@ -265,8 +265,8 @@ fn string_to_hashset<'de, D>(deserializer: D) -> Result<HashSet<String>, D::Erro
       formatter.write_str("string or list of strings")
     }
     fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-      where
-        E: de::Error,
+    where
+      E: de::Error,
     {
       let name: Vec<String> = value
         .split(',')
@@ -276,8 +276,8 @@ fn string_to_hashset<'de, D>(deserializer: D) -> Result<HashSet<String>, D::Erro
       Ok(HashSet::from_iter(name))
     }
     fn visit_seq<S>(self, visitor: S) -> Result<Self::Value, S::Error>
-      where
-        S: de::SeqAccess<'de>,
+    where
+      S: de::SeqAccess<'de>,
     {
       Deserialize::deserialize(de::value::SeqAccessDeserializer::new(visitor))
     }
@@ -416,7 +416,6 @@ impl GitHubCommit {
             }
             cache_map.insert(format!("{:?}_{}", file.status, file.filename));
             let path = file.filename.clone();
-            let meta = MetaData::default();
             let cve = Path::new(&file.filename)
               .file_name()
               .unwrap_or_default()
@@ -447,7 +446,7 @@ impl GitHubCommit {
                   name: template.id.clone(),
                   description: template.info.description,
                   source: KBSource::NucleiTemplates.to_string(),
-                  meta: AnyValue::new(meta),
+                  meta: AnyValue::new(MetaData::from_hashset("tags", template.info.tags)),
                   verified: 1,
                   created_at: Utc::now().naive_utc(),
                   updated_at: Utc::now().naive_utc(),
@@ -499,8 +498,8 @@ struct Item {
 }
 
 pub fn rfc3339_deserialize<'de, D>(deserializer: D) -> Result<NaiveDateTime, D::Error>
-  where
-    D: Deserializer<'de>,
+where
+  D: Deserializer<'de>,
 {
   let s = String::deserialize(deserializer)?;
   if s.is_empty() {

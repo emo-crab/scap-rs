@@ -1,12 +1,12 @@
 use std::ops::DerefMut;
 
-use actix_web::{get, HttpRequest, HttpResponse, web};
+use actix_web::{get, web, HttpRequest, HttpResponse};
 #[cfg(feature = "openapi")]
 use utoipa::OpenApi;
 
+use nvd_model::cve::{Cve, QueryCve};
 #[cfg(feature = "openapi")]
 use nvd_model::{cwe::Cwe, product::Product, vendor::Vendor};
-use nvd_model::cve::{Cve, QueryCve};
 
 use crate::{ApiResponse, Pool};
 

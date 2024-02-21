@@ -6,18 +6,18 @@ use std::path::PathBuf;
 use std::str::FromStr;
 
 use diesel::mysql::MysqlConnection;
-use nvd_api::ApiVersion;
 use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;
+use nvd_api::ApiVersion;
 
 use nvd_cves::v4::{CVEContainer, CVEItem};
 use nvd_model::cve::{CreateCve, Cve};
 use nvd_model::error::DBResult;
 use nvd_model::types::AnyValue;
 
-use crate::{create_cve_product, init_db_pool};
 use crate::cpe::{del_expire_product, import_vendor_product_to_db};
 use crate::kb::associate_cve_and_exploit;
+use crate::{create_cve_product, init_db_pool};
 
 pub(crate) async fn async_cve(param: CveParameters) {
   let connection_pool = init_db_pool();
