@@ -99,7 +99,7 @@ pub async fn sync_mode(config: SyncCommand) {
     );
     async_cve(param).await
   }
-  if config.exp {
+  if config.kb {
     update_from_rss().await;
     update_from_github().await;
   }

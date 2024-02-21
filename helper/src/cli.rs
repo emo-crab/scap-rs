@@ -65,7 +65,7 @@ pub struct KBCommand {
 #[argh(subcommand, name = "sync")]
 pub struct SyncCommand {
   #[argh(switch, description = "sync kb")]
-  pub exp: bool,
+  pub kb: bool,
   #[argh(switch, description = "sync cve")]
   pub cve: bool,
 }
