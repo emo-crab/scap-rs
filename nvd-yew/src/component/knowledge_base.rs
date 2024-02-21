@@ -80,6 +80,7 @@ impl Component for CVEKnowledgeBaseInfoList {
               <tr>
                 <th scope="col">{"Name"}</th>
                 <th scope="col">{"Source"}</th>
+                <th scope="col">{"Verified"}</th>
                 <th scope="col">{"Path"}</th>
                 <th scope="col">{"Meta"}</th>
                 <th scope="col">{"Updated"}</th>

@@ -107,11 +107,12 @@ impl ExploitDB {
       application_url: None,
       source_url: None,
     };
+    let mut cve_list = vec![];
     for line in html.lines() {
       if line.contains("<a href=\"https://nvd.nist.gov/vuln/detail/CVE-") {
         if let Some(u) = line.trim().trim_end_matches('"').strip_prefix("<a href=\"") {
           if let Some((_, id)) = u.rsplit_once('/') {
-            exp.codes = Some(id.to_string());
+            cve_list.push(id.to_string());
           };
         };
       } else if line.contains("<a href=\"/?platform=") {
@@ -148,6 +149,7 @@ impl ExploitDB {
         };
       }
     }
+    exp.codes = Some(cve_list.join(";"));
     exp
   }
 }
