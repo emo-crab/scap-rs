@@ -1,18 +1,17 @@
 use std::ops::DerefMut;
 
-use actix_web::{get, web, HttpRequest, HttpResponse};
+use actix_web::{get, HttpRequest, HttpResponse, web};
 #[cfg(feature = "openapi")]
 use utoipa::OpenApi;
 
-use nvd_model::cve::{Cve, QueryCve};
 #[cfg(feature = "openapi")]
 use nvd_model::{cwe::Cwe, product::Product, vendor::Vendor};
+use nvd_model::cve::{Cve, QueryCve};
 
 use crate::{ApiResponse, Pool};
 
 mod cve_api;
 mod cwe_api;
-mod exploit_api;
 mod kb_api;
 mod product_api;
 mod vendor_api;
@@ -28,7 +27,6 @@ cwe_api::api_cwe_list,
 product_api::api_product_list,
 vendor_api::api_vendor_name,
 vendor_api::api_vendor_list,
-exploit_api::api_exp_list,
 kb_api::api_kb_list,
 ),
 components(schemas(Cve, Cwe, Product, Vendor)),
@@ -64,7 +62,6 @@ pub fn api_route(cfg: &mut web::ServiceConfig) {
         .service(cve_api::api_cve_id)
         .service(cve_api::api_cve_list),
     )
-    .service(web::scope("exp").service(exploit_api::api_exp_list))
     .service(web::scope("kb").service(kb_api::api_kb_list))
     .service(
       web::scope("vendor")

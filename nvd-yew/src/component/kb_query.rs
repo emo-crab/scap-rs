@@ -59,7 +59,9 @@ impl Component for KBQuery {
           },
           size: query.size,
           page: query.page,
-          links: None,
+          verified: None,
+          path: None,
+          types: None,
         })
       })
     };
@@ -109,7 +111,10 @@ impl Component for KBQuery {
             </button>
             <ul class="dropdown-menu">
               <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-secondary btn-sm"  value="none">{"none"}</button></li>
-              <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-blue btn-sm" value="attackerkb">{"metasploit"}</button></li>
+              <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-yellow btn-sm" value="exploit-db">{"exploit-db"}</button></li>
+              <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-vk btn-sm" value="attackerkb">{"attackerkb"}</button></li>
+              <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-orange btn-sm" value="metasploit">{"metasploit"}</button></li>
+              <li><button onclick={query_source.clone()} type="button" class="dropdown-item btn bg-azure btn-sm" value="nuclei-templates">{"nuclei-templates"}</button></li>
             </ul>
           <input type="text" class="form-control" readonly=true ref={source_input} value={query.source.clone()}/>
           <button class="input-group-text" onclick={clean.clone()} value="source_input"><i class="ti ti-x link-danger"></i></button>

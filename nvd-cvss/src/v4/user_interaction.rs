@@ -11,11 +11,13 @@
 //! | Active (A) | Successful exploitation of this vulnerability requires a targeted user to perform specific, conscious interactions with the vulnerable system and the attacker’s payload, or the user’s interactions would actively subvert protection mechanisms which would lead to exploitation of the vulnerability. Examples include: importing a file into a vulnerable system in a specific manner placing files into a specific directory prior to executing code submitting a specific string into a web application (e.g. reflected or self XSS) dismiss or accept prompts or security warnings prior to taking an action (e.g. opening/editing a file, connecting a device). |
 //!
 
-use crate::error::{CVSSError, Result};
-use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
-use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
+
+use crate::error::{CVSSError, Result};
+use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
 
 /// User Interaction (UI) 用户交互
 ///
@@ -66,7 +68,7 @@ impl Metric for UserInteractionType {
 
   fn help(&self) -> Help {
     match self {
-      Self::Passive => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
+      Self::Passive => { Help { worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful knowledge_base may only be possible during the installation of an application by a system administrator.".to_string() } }
       Self::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any human user, other than the attacker.".to_string() }}
       Self::Active=>{Help{ worth: Worth::Worst, des: "Successful exploitation of this vulnerability requires a targeted user to perform specific, conscious interactions with the vulnerable system and the attacker’s payload, or the user’s interactions would actively subvert protection mechanisms which would lead to exploitation of the vulnerability.".to_string() }}
     }

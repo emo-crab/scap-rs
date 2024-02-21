@@ -4,7 +4,6 @@ use crate::error::Error;
 
 pub mod cpe;
 pub mod cve;
-pub mod exp;
 pub mod kb;
 mod request;
 

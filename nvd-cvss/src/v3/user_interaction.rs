@@ -7,14 +7,16 @@
 //! | Metric Value | Description |
 //! | --- | --- |
 //! | None (N) | The vulnerable system can be exploited without interaction from any user. |
-//! | Required (R) | Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator. |[](#body)
+//! | Required (R) | Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful knowledge_base may only be possible during the installation of an application by a system administrator. |[](#body)
 //!
+
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 
 use crate::error::{CVSSError, Result};
 use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
-use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 
 /// User Interaction (UI) 用户交互
 ///
@@ -53,7 +55,7 @@ impl Metric for UserInteractionType {
 
   fn help(&self) -> Help {
     match self {
-      Self::Required => {Help{ worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful exploit may only be possible during the installation of an application by a system administrator.".to_string() }}
+      Self::Required => { Help { worth: Worth::Bad, des: "Successful exploitation of this vulnerability requires a user to take some action before the vulnerability can be exploited. For example, a successful knowledge_base may only be possible during the installation of an application by a system administrator.".to_string() } }
       Self::None => {Help{ worth: Worth::Worst, des: "The vulnerable system can be exploited without interaction from any user.".to_string() }}
     }
   }

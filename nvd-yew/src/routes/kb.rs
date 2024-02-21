@@ -7,12 +7,12 @@ use yew_router::prelude::*;
 
 use nvd_model::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
 
-use crate::component::{KBQuery, KBQueryProps, KBRow, KbProps, Pagination, PaginationProps};
+use crate::component::{KbProps, KBQuery, KBQueryProps, KBRow, Pagination, PaginationProps};
 use crate::console_log;
 use crate::modules::ListResponse;
 use crate::routes::Route;
-use crate::services::kb::knowledge_base_list;
 use crate::services::FetchState;
+use crate::services::kb::knowledge_base_list;
 
 pub type KnowledgeBaseInfoList = ListResponse<KnowledgeBase, QueryKnowledgeBase>;
 
@@ -104,7 +104,7 @@ impl Component for KnowledgeBaseInfoList {
           .link()
           .navigator()
           .unwrap()
-          .push_with_query(&Route::Exp, &self.query)
+          .push_with_query(&Route::Kb, &self.query)
           .unwrap();
         ctx.link().send_message(Msg::Send);
       }
@@ -121,7 +121,8 @@ impl Component for KnowledgeBaseInfoList {
               <tr>
                 <th scope="col">{"Name"}</th>
                 <th scope="col">{"Source"}</th>
-                <th scope="col">{"Links"}</th>
+                <th scope="col">{"Verified"}</th>
+                <th scope="col">{"Path"}</th>
                 <th scope="col">{"Meta"}</th>
                 <th scope="col">{"Updated"}</th>
               </tr>

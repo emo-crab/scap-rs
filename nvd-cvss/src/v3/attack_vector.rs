@@ -1,6 +1,6 @@
 //! ### 2.1.1. Attack Vector (AV)
 //!
-//! This metric reflects the context by which vulnerability exploitation is possible. This metric value (and consequently the Base Score) will be larger the more remote (logically, and physically) an attacker can be in order to exploit the vulnerable component. The assumption is that the number of potential attackers for a vulnerability that could be exploited from across a network is larger than the number of potential attackers that could exploit a vulnerability requiring physical access to a device, and therefore warrants a greater Base Score. The list of possible values is presented in Table 1.
+//! This metric reflects the context by which vulnerability exploitation is possible. This metric value (and consequently the Base Score) will be larger the more remote (logically, and physically) an attacker can be in order to knowledge_base the vulnerable component. The assumption is that the number of potential attackers for a vulnerability that could be exploited from across a network is larger than the number of potential attackers that could knowledge_base a vulnerability requiring physical access to a device, and therefore warrants a greater Base Score. The list of possible values is presented in Table 1.
 //!
 //! **Table 1: Attack Vector**
 //!
@@ -8,17 +8,19 @@
 //! | --- | --- |
 //! | Network (N) | The vulnerable component is bound to the network stack and the set of possible attackers extends beyond the other options listed below, up to and including the entire Internet. Such a vulnerability is often termed “remotely exploitable” and can be thought of as an attack being exploitable _at the protocol level_ one or more network hops away (e.g., across one or more routers). An example of a network attack is an attacker causing a denial of service (DoS) by sending a specially crafted TCP packet across a wide area network (e.g., CVE‑2004‑0230). |
 //! | Adjacent (A) | The vulnerable component is bound to the network stack, but the attack is limited _at the protocol level_ to a logically adjacent topology. This can mean an attack must be launched from the same shared physical (e.g., Bluetooth or IEEE 802.11) or logical (e.g., local IP subnet) network, or from within a secure or otherwise limited administrative domain (e.g., MPLS, secure VPN to an administrative network zone). One example of an Adjacent attack would be an ARP (IPv4) or neighbor discovery (IPv6) flood leading to a denial of service on the local LAN segment (e.g., CVE‑2013‑6014). |
-//! | Local (L) | The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: <br>*   the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); _or_<br>*   the attacker relies on User Interaction by another person to perform actions required to exploit the vulnerability (e.g., using social engineering techniques to trick a legitimate user into opening a malicious document).|
+//! | Local (L) | The vulnerable component is not bound to the network stack and the attacker’s path is via read/write/execute capabilities. Either: <br>*   the attacker exploits the vulnerability by accessing the target system locally (e.g., keyboard, console), or remotely (e.g., SSH); _or_<br>*   the attacker relies on User Interaction by another person to perform actions required to knowledge_base the vulnerability (e.g., using social engineering techniques to trick a legitimate user into opening a malicious document).|
 //! | Physical (P) | The attack requires the attacker to physically touch or manipulate the vulnerable component. Physical interaction may be brief (e.g., evil maid attack\[^1\]) or persistent. An example of such an attack is a cold boot attack in which an attacker gains access to disk encryption keys after physically accessing the target system. Other examples include peripheral attacks via FireWire/USB Direct Memory Access (DMA). |
 //!
-//! _Scoring Guidance_: When deciding between Network and Adjacent, if an attack can be launched over a wide area network or from outside the logically adjacent administrative network domain, use Network. Network should be used even if the attacker is required to be on the same intranet to exploit the vulnerable system (e.g., the attacker can only exploit the vulnerability from inside a corporate network).
+//! _Scoring Guidance_: When deciding between Network and Adjacent, if an attack can be launched over a wide area network or from outside the logically adjacent administrative network domain, use Network. Network should be used even if the attacker is required to be on the same intranet to knowledge_base the vulnerable system (e.g., the attacker can only knowledge_base the vulnerability from inside a corporate network).
 //!
+
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 
 use crate::error::{CVSSError, Result};
 use crate::metric::{Help, Metric, MetricType, MetricTypeV3, Worth};
-use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 
 /// Attack Vector(AV) 攻击途径
 ///
@@ -27,7 +29,7 @@ use std::str::FromStr;
 ///
 /// > This metric reflects the context by which vulnerability exploitation is possible.
 /// > This metric value (and consequently the Base score) will be larger the more remote (logically,
-/// > and physically) an attacker can be in order to exploit the vulnerable component.
+/// > and physically) an attacker can be in order to knowledge_base the vulnerable component.
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum AttackVectorType {

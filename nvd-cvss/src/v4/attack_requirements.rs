@@ -6,15 +6,17 @@
 //!
 //! | **Metric Value** | **Description** |
 //! | --- | --- |
-//! | None (N) | The successful attack does not depend on the deployment and execution conditions of the vulnerable system. The attacker can expect to be able to reach the vulnerability and execute the exploit under all or most instances of the vulnerability. |
-//! | Present (P) | The successful attack depends on the presence of specific deployment and execution conditions of the vulnerable system that enable the attack. These include: A **race condition** must be won to successfully exploit the vulnerability. The successfulness of the attack is conditioned on execution conditions that are not under full control of the attacker. The attack may need to be launched multiple times against a single target before being successful. Network injection. The attacker must inject themselves into the logical network path between the target and the resource requested by the victim (e.g. vulnerabilities requiring an on-path attacker). |
+//! | None (N) | The successful attack does not depend on the deployment and execution conditions of the vulnerable system. The attacker can expect to be able to reach the vulnerability and execute the knowledge_base under all or most instances of the vulnerability. |
+//! | Present (P) | The successful attack depends on the presence of specific deployment and execution conditions of the vulnerable system that enable the attack. These include: A **race condition** must be won to successfully knowledge_base the vulnerability. The successfulness of the attack is conditioned on execution conditions that are not under full control of the attacker. The attack may need to be launched multiple times against a single target before being successful. Network injection. The attacker must inject themselves into the logical network path between the target and the resource requested by the victim (e.g. vulnerabilities requiring an on-path attacker). |
 //!
+
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 
 use crate::error::{CVSSError, Result};
 use crate::metric::{Help, Metric, MetricType, MetricTypeV4, Worth};
-use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 
 /// Attack Complexity (AC) 攻击复杂度
 ///
@@ -22,7 +24,7 @@ use std::str::FromStr;
 /// 如下文所述，这些条件可能需要预先收集有关目标或系统的配置或计算异常等更多信息。
 ///
 /// > The Attack Complexity metric describes the conditions beyond the attacker's control that must
-/// > exist in order to exploit the vulnerability. As described below, such conditions may require
+/// > exist in order to knowledge_base the vulnerability. As described below, such conditions may require
 /// > the collection of more information about the target, the presence of certain system
 /// > configuration settings, or computational exceptions.
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
@@ -60,8 +62,8 @@ impl Metric for AttackRequirementsType {
 
   fn help(&self) -> Help {
     match self {
-      AttackRequirementsType::Present => {Help{ worth: Worth::Bad, des: "The successful attack depends on the presence of specific deployment and execution conditions of the vulnerable system that enable the attack. These include: a race condition must be won to successfully exploit the vulnerability (the successfulness of the attack is conditioned on execution conditions that are not under full control of the attacker, or the attack may need to be launched multiple times against a single target before being successful); the attacker must inject themselves into the logical network path between the target and the resource requested by the victim (e.g. vulnerabilities requiring an on-path attacker).".to_string() }}
-      AttackRequirementsType::None => {Help{ worth: Worth::Worst, des: "The attacker must take no measurable action to exploit the vulnerability. The attack requires no target-specific circumvention to exploit the vulnerability. An attacker can expect repeatable success against the vulnerable system.".to_string() }}
+      AttackRequirementsType::Present => { Help { worth: Worth::Bad, des: "The successful attack depends on the presence of specific deployment and execution conditions of the vulnerable system that enable the attack. These include: a race condition must be won to successfully knowledge_base the vulnerability (the successfulness of the attack is conditioned on execution conditions that are not under full control of the attacker, or the attack may need to be launched multiple times against a single target before being successful); the attacker must inject themselves into the logical network path between the target and the resource requested by the victim (e.g. vulnerabilities requiring an on-path attacker).".to_string() } }
+      AttackRequirementsType::None => { Help { worth: Worth::Worst, des: "The attacker must take no measurable action to knowledge_base the vulnerability. The attack requires no target-specific circumvention to knowledge_base the vulnerability. An attacker can expect repeatable success against the vulnerable system.".to_string() } }
     }
   }
 

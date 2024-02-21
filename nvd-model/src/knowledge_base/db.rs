@@ -4,24 +4,44 @@ use chrono::NaiveDateTime;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use diesel::{ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl};
 
+use crate::cve_knowledge_base::CveKnowledgeBase;
 use crate::error::{DBError, DBResult};
 use crate::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
 use crate::pagination::ListResponse;
-use crate::schema::knowledge_base;
+use crate::schema::{cve_knowledge_base, knowledge_base};
 use crate::types::{AnyValue, MetaData};
 use crate::DB;
 
 #[derive(Clone, Copy)]
-pub enum KnowledgeBaseSource {
+pub enum KBSource {
+  ExploitDb,
+  NucleiTemplates,
+  Metasploit,
   AttackerKB,
-  // Vulhub,
 }
 
-impl Display for KnowledgeBaseSource {
+#[derive(Clone, Copy)]
+pub enum KBTypes {
+  Exploit,
+  KnowledgeBase,
+}
+
+impl Display for KBTypes {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     match self {
-      KnowledgeBaseSource::AttackerKB => f.write_str("attackerkb"),
-      // KnowledgeBaseSource::Vulhub => f.write_str("vulhub"),
+      KBTypes::Exploit => f.write_str("exploit"),
+      KBTypes::KnowledgeBase => f.write_str("knowledge-base"),
+    }
+  }
+}
+
+impl Display for KBSource {
+  fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+    match self {
+      KBSource::ExploitDb => f.write_str("exploit-db"),
+      KBSource::NucleiTemplates => f.write_str("nuclei-templates"),
+      KBSource::Metasploit => f.write_str("metasploit"),
+      KBSource::AttackerKB => f.write_str("attackerkb"),
     }
   }
 }
@@ -31,10 +51,12 @@ impl Display for KnowledgeBaseSource {
 pub struct CreateKnowledgeBase {
   pub id: Vec<u8>,
   pub name: String,
-  pub description: String,
   pub source: String,
-  pub links: String,
+  pub types: String,
+  pub description: String,
+  pub path: String,
   pub meta: AnyValue<MetaData>,
+  pub verified: u8,
   pub created_at: NaiveDateTime,
   pub updated_at: NaiveDateTime,
 }
@@ -44,7 +66,7 @@ impl QueryKnowledgeBase {
   // https://github.com/diesel-rs/diesel/discussions/3468
   fn query<'a>(
     &'a self,
-    _conn: &mut MysqlConnection,
+    conn: &mut MysqlConnection,
     mut query: knowledge_base::BoxedQuery<'a, DB>,
   ) -> DBResult<knowledge_base::BoxedQuery<'a, DB>> {
     // 如果有提供商名称，查询精准名称，返回该提供商旗下全部产品
@@ -54,12 +76,16 @@ impl QueryKnowledgeBase {
     if let Some(name) = &self.name {
       query = query.filter(knowledge_base::name.eq(name));
     }
-    if let Some(links) = &self.links {
-      query = query.filter(knowledge_base::links.eq(links));
+    if let Some(verified) = &self.verified {
+      query = query.filter(knowledge_base::verified.eq(verified));
+    }
+    if let Some(link) = &self.path {
+      query = query.filter(knowledge_base::path.eq(link));
     }
     if let Some(cve_id) = &self.cve {
-      // 根据cve编号获取kb id 列表
-      query = query.filter(knowledge_base::name.eq(cve_id));
+      // 根据cve编号获取exp id 列表
+      let exp_ids = CveKnowledgeBase::query_by_cve(conn, cve_id.clone())?;
+      query = query.filter(knowledge_base::id.eq_any(exp_ids));
     }
     Ok(query)
   }
@@ -94,7 +120,7 @@ impl KnowledgeBase {
       knowledge_base::dsl::knowledge_base
         .filter(knowledge_base::name.eq(&args.name))
         .filter(knowledge_base::source.eq(&args.source))
-        .filter(knowledge_base::links.eq(&args.links))
+        .filter(knowledge_base::path.eq(&args.path))
         .first::<KnowledgeBase>(conn)?,
     )
   }
@@ -113,12 +139,14 @@ impl KnowledgeBase {
           let id = diesel::update(
             knowledge_base::table
               .filter(knowledge_base::name.eq(&args.name))
+              .filter(knowledge_base::types.eq(&args.types))
               .filter(knowledge_base::source.eq(&args.source)),
           )
           .set((
-            knowledge_base::links.eq(&args.links),
+            knowledge_base::path.eq(&args.path),
             knowledge_base::meta.eq(&args.meta),
             knowledge_base::description.eq(&args.description),
+            knowledge_base::verified.eq(&args.verified),
             knowledge_base::created_at.eq(&args.created_at),
             knowledge_base::updated_at.eq(&args.updated_at),
           ))
@@ -134,11 +162,11 @@ impl KnowledgeBase {
     // mysql 不支持 get_result，要再查一次得到插入结果
     Self::query_by_name_source(conn, &args.name, &args.source)
   }
-  pub fn delete(
-    conn: &mut MysqlConnection,
-    name: &str,
-    source: KnowledgeBaseSource,
-  ) -> DBResult<usize> {
+  pub fn delete(conn: &mut MysqlConnection, name: &str, source: KBSource) -> DBResult<usize> {
+    let kb = Self::query_by_name_source(conn, name, &source.to_string())?;
+    diesel::delete(cve_knowledge_base::table)
+      .filter(cve_knowledge_base::knowledge_base_id.eq(kb.id))
+      .execute(conn)?;
     Ok(
       diesel::delete(knowledge_base::table)
         .filter(knowledge_base::name.eq(name))
@@ -159,13 +187,15 @@ impl KnowledgeBase {
     )
   }
   pub fn query_by_cve(conn: &mut MysqlConnection, id: &str) -> DBResult<Vec<Self>> {
+    // 还有在meta里的json过滤存在cve的，没找到json的过滤方法，实在不行就使用sql_query执行原生sql
     Ok(
       knowledge_base::dsl::knowledge_base
         .filter(knowledge_base::name.eq(id))
+        // .or_filter(knowledge_base::meta)
         .load::<KnowledgeBase>(conn)?,
     )
   }
-  // 查询KnowledgeBase信息
+  // 查询knowledge_base信息
   pub fn query(
     conn: &mut MysqlConnection,
     args: &QueryKnowledgeBase,

@@ -48,14 +48,14 @@ pub struct CPECommand {
 }
 
 #[derive(FromArgs, PartialEq, Debug)]
-#[argh(description = "exp helper")]
-#[argh(subcommand, name = "exp")]
+#[argh(description = "kb helper")]
+#[argh(subcommand, name = "kb")]
 pub struct EXPCommand {
-  #[argh(option, description = "import exp from files_exploits.csv")]
+  #[argh(option, description = "import kb from files_exploits.csv")]
   pub path: Option<PathBuf>,
-  #[argh(option, description = "import exp from nuclei-templates path")]
+  #[argh(option, description = "import kb from nuclei-templates path")]
   pub template: Option<PathBuf>,
-  #[argh(switch, description = "update exp from nuclei-templates")]
+  #[argh(switch, description = "update kb from nuclei-templates")]
   pub api: bool,
 }
 
@@ -71,7 +71,7 @@ pub struct KBCommand {
 #[argh(description = "sync helper")]
 #[argh(subcommand, name = "sync")]
 pub struct SyncCommand {
-  #[argh(switch, description = "sync exp")]
+  #[argh(switch, description = "sync kb")]
   pub exp: bool,
   #[argh(switch, description = "sync cve")]
   pub cve: bool,

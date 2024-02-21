@@ -1,5 +1,5 @@
 #[cfg(feature = "db")]
-use diesel::{r2d2, r2d2::ConnectionManager, MysqlConnection};
+use diesel::{MysqlConnection, r2d2, r2d2::ConnectionManager};
 
 // wubba lubba dub dub
 // 后端和前端特性不能同时开启
@@ -7,12 +7,11 @@ use diesel::{r2d2, r2d2::ConnectionManager, MysqlConnection};
 // compile_error!("feature \"db\" and feature \"yew\" cannot be enabled at the same time");
 
 pub mod cve;
-pub mod cve_exploit;
+pub mod cve_knowledge_base;
 pub mod cve_product;
 pub mod cwe;
 #[cfg(feature = "db")]
 pub mod error;
-pub mod exploit;
 pub mod knowledge_base;
 pub mod pagination;
 pub mod product;

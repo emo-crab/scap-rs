@@ -1,8 +1,8 @@
 use chrono::{Duration, Utc};
+use diesel::{MysqlConnection, r2d2};
 use diesel::r2d2::ConnectionManager;
-use diesel::{r2d2, MysqlConnection};
-use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::v2::LastModDate;
+use nvd_api::v2::vulnerabilities::CveParameters;
 
 pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
 use cpe::create_cve_product;
@@ -11,17 +11,16 @@ pub use cwe::import_cwe;
 use crate::cli::{EXPCommand, KBCommand, SyncCommand};
 use crate::cpe::with_archive_cpe;
 use crate::cve::{async_cve, with_archive_cve};
-use crate::exp::{
-  import_from_nuclei_templates_path, update_from_github, update_from_rss, with_archive_exploit,
+use crate::kb::{
+  akb_sync, import_from_nuclei_templates_path, update_from_github, update_from_rss,
+  with_archive_exploit,
 };
-use crate::kb::akb_sync;
 
 mod cli;
 mod cpe;
 mod cve;
 mod cwe;
 pub mod error;
-mod exp;
 mod kb;
 
 pub type Connection = MysqlConnection;

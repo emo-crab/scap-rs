@@ -1,21 +1,23 @@
 //! ### 2.1.3. Authentication (Au)
 //!
-//! This metric measures the number of times an attacker must authenticate to a target in order to exploit a vulnerability. This metric does not gauge the strength or complexity of the authentication process, only that an attacker is required to provide credentials before an exploit may occur.  The possible values for this metric are listed in Table 3. The fewer authentication instances that are required, the higher the vulnerability score.
+//! This metric measures the number of times an attacker must authenticate to a target in order to knowledge_base a vulnerability. This metric does not gauge the strength or complexity of the authentication process, only that an attacker is required to provide credentials before an knowledge_base may occur.  The possible values for this metric are listed in Table 3. The fewer authentication instances that are required, the higher the vulnerability score.
 //!
 //! | Metric Value | Description |
 //! | --- | --- |
 //! | Multiple (M) | Exploiting the vulnerability requires that the attacker authenticate two or more times, even if the same credentials are used each time. An example is an attacker authenticating to an operating system in addition to providing credentials to access an application hosted on that system. |
 //! | Single (S) | The vulnerability requires an attacker to be logged into the system (such as at a command line or via a desktop session or web interface). |
-//! | None (N) | Authentication is not required to exploit the vulnerability. |
+//! | None (N) | Authentication is not required to knowledge_base the vulnerability. |
 //!
-//! The metric should be applied based on the authentication the attacker requires before launching an attack.  For example, if a mail server is vulnerable to a command that can be issued before a user authenticates, the metric should be scored as "None" because the attacker can launch the exploit before credentials are required.  If the vulnerable command is only available after successful authentication, then the vulnerability should be scored as "Single" or "Multiple," depending on how many instances of authentication must occur before issuing the command.
+//! The metric should be applied based on the authentication the attacker requires before launching an attack.  For example, if a mail server is vulnerable to a command that can be issued before a user authenticates, the metric should be scored as "None" because the attacker can launch the knowledge_base before credentials are required.  If the vulnerable command is only available after successful authentication, then the vulnerability should be scored as "Single" or "Multiple," depending on how many instances of authentication must occur before issuing the command.
 //!
+
+use std::fmt::{Display, Formatter};
+use std::str::FromStr;
+
+use serde::{Deserialize, Serialize};
 
 use crate::error::{CVSSError, Result};
 use crate::metric::{Help, Metric, MetricType, MetricTypeV2, Worth};
-use serde::{Deserialize, Serialize};
-use std::fmt::{Display, Formatter};
-use std::str::FromStr;
 
 /// Authentication
 #[derive(Clone, PartialEq, Debug, Deserialize, Serialize)]
@@ -55,7 +57,7 @@ impl Metric for AuthenticationType {
       },
       Self::None => Help {
         worth: Worth::Worst,
-        des: "Authentication is not required to exploit the vulnerability.".to_string(),
+        des: "Authentication is not required to knowledge_base the vulnerability.".to_string(),
       },
     }
   }
