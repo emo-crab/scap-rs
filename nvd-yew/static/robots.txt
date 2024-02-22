@@ -1,2 +1,3 @@
 User-Agent: *
 Allow: /
+Sitemap: https://scap.kali-team.cn/sitemap.xml
