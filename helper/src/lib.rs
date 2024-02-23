@@ -4,10 +4,6 @@ use diesel::{r2d2, MysqlConnection};
 use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::v2::LastModDate;
 
-pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
-use cpe::create_cve_product;
-pub use cwe::import_cwe;
-
 use crate::cli::{KBCommand, SyncCommand};
 use crate::cpe::with_archive_cpe;
 use crate::cve::{async_cve, with_archive_cve};
@@ -15,6 +11,9 @@ use crate::kb::{
   akb_sync, import_from_nuclei_templates_path, update_from_github, update_from_rss,
   with_archive_exploit,
 };
+pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
+use cpe::create_cve_product;
+pub use cwe::import_cwe;
 
 mod cli;
 mod cpe;

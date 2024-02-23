@@ -25,3 +25,4 @@ Cargo.lock
 /nvd-yew/dist/
 /nvd-model/migrations/nvd-er.mwb.bak
 /helper/examples/exploit/
+/extensions/pkg/
