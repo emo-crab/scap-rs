@@ -1,0 +1,69 @@
+{
+  "manifest_version": 3,
+  "name": "Mark CVE",
+  "description": "Mark the current page CVE",
+  "version": "0.1.0",
+  "homepage_url": "https://github.com/emo-crab/scap-rs/tree/main/extensions",
+  "author": "Kali-Team",
+  "action": {
+    "default_title": "Mark the current page CVE",
+    "default_icon": {
+      "19": "assets/emo-crab.png",
+      "16": "assets/emo-crab.png",
+      "32": "assets/emo-crab.png",
+      "38": "assets/emo-crab.png"
+    }
+  },
+  "icons": {
+    "19": "assets/emo-crab.png",
+    "16": "assets/emo-crab.png",
+    "32": "assets/emo-crab.png",
+    "38": "assets/emo-crab.png"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
+  },
+  "background": {
+    "type": "module",
+    "scripts": [
+      "background.js"
+    ]
+  },
+  "host_permissions": [
+    "*://*/*",
+    "file:///*/*"
+  ],
+  "permissions": [
+    "find",
+    "activeTab",
+    "scripting",
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "run_at": "document_end",
+      "all_frames": false,
+      "matches": [
+        "*://*/*"
+      ],
+      "js": [
+        "content-script.js"
+      ]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "resources": [
+
+      ]
+    }
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{59705b32-553e-429d-a9e7-d4d887b419a5}"
+    }
+  }
+}
