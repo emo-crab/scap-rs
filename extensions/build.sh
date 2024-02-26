@@ -1,1 +1,0 @@
-wasm-pack build --release --no-typescript  --target web
