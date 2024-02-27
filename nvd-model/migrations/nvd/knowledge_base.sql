@@ -1,4 +1,4 @@
-create table knowledge_base
+create table nvd.knowledge_base
 (
     id          binary(16)                          not null comment '知识库表ID'
         primary key,
@@ -14,7 +14,7 @@ create table knowledge_base
     constraint knowledge_base_UNIQUE
         unique (name, source, links),
     constraint kb_cve
-        foreign key (name) references cves (id)
+        foreign key (name) references nvd.cves (id)
 )
     comment '知识库表';
 

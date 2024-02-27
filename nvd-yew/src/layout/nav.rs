@@ -15,7 +15,7 @@ pub fn set_title(title: &str) {
   if let Some(window) = web_sys::window() {
     if let Some(doc) = window.document() {
       if let Ok(Some(title_el)) = doc.query_selector("title") {
-        title_el.set_inner_html(title);
+        title_el.set_text_content(Some(title));
       };
     }
   };
@@ -38,15 +38,7 @@ impl Component for Nav {
     match msg {
       NavMsg::Title => {
         let route = ctx.link().route::<Route>().unwrap(); // handle event
-        let title = match route {
-          Route::Cve { id } => id,
-          Route::CveList => String::from("CVE"),
-          Route::Cpe => String::from("CPE"),
-          Route::Kb => String::from("KB"),
-          Route::Home => String::from("Home"),
-          Route::NotFound => String::from("NotFound"),
-        };
-        set_title(&title);
+        set_title(&route.to_string());
       }
     }
     true

@@ -1,4 +1,4 @@
-create table cves
+create table nvd.cves
 (
     id             varchar(32)                         not null comment 'CVE编号'
         primary key,
@@ -18,5 +18,5 @@ create table cves
     comment 'CVE表';
 
 create index year_idx
-    on cves (year);
+    on nvd.cves (year);
 

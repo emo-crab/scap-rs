@@ -1,4 +1,4 @@
-create table cwes
+create table nvd.cwes
 (
     id          int                                 not null comment 'CWE ID'
         primary key,

@@ -28,3 +28,4 @@ mod knowledge_base;
 mod pagination;
 mod tooltip_popover;
 mod weaknesses;
+mod i18n;
