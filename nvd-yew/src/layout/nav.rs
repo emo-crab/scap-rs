@@ -1,8 +1,8 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
+use crate::component::I18n;
 use crate::routes::Route;
-
 pub enum NavMsg {
   Title,
 }
@@ -68,6 +68,7 @@ impl Component for Nav {
               </a>
             </div>
           </div>
+          <I18n/>
         </div>
         <div class="collapse navbar-collapse" id="navbar-menu">
           <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">

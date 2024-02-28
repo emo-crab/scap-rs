@@ -37,12 +37,12 @@ pub enum Route {
 impl Display for Route {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     let s = match self {
-      Route::Cve { id } => { id }
-      Route::CveList => { "CVE" }
-      Route::Cpe => { "CPE" }
-      Route::Kb => { "KB" }
-      Route::Home => { "Home" }
-      Route::NotFound => { "Not Found" }
+      Route::Cve { id } => id,
+      Route::CveList => "CVE",
+      Route::Cpe => "CPE",
+      Route::Kb => "KB",
+      Route::Home => "Home",
+      Route::NotFound => "Not Found",
     };
     f.write_str(s)
   }
