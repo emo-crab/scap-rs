@@ -1,17 +1,8 @@
 use yew::prelude::*;
 
-pub struct Home;
-
-impl Component for Home {
-  type Message = ();
-  type Properties = ();
-
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self
-  }
-
-  fn view(&self, _ctx: &Context<Self>) -> Html {
-    html! {
+#[function_component]
+pub fn Home() -> Html {
+  html! {
     <div class="row row-deck row-cards">
     <div class="col-12">
       <div class="card card-md">
@@ -37,5 +28,4 @@ impl Component for Home {
     </div>
     </div>
         }
-  }
 }

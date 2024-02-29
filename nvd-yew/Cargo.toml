@@ -15,6 +15,7 @@ publish = false
 [dependencies]
 yew = { version = "0.21.0", features = ["csr"] }
 yew-router = "0.18.0"
+yewdux = { version = "0.10.0" }
 web-sys = { version = "0.3.63", features = [
     "console",
     "Document",
