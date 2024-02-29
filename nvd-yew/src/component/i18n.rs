@@ -1,9 +1,9 @@
-use std::collections::HashMap;
+use crate::console_log;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
-use crate::console_log;
 
 // https://github.com/futursolo/stylist-rs/tree/master/examples/yew-theme-context
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
@@ -32,7 +32,7 @@ impl Default for I18nProvider {
       .navigator()
       .language()
       .unwrap_or("en-US".to_string())
-      .split_once("-")
+      .split_once('-')
       .unwrap_or(("en", "US"))
       .0
       .to_string();
@@ -41,12 +41,21 @@ impl Default for I18nProvider {
       .unwrap_or_default()
       .unwrap_or(default_lang);
     let mut translations: HashMap<String, HashMap<String, String>> = HashMap::new();
-    translations.insert("zh".to_string(), HashMap::from_iter([("Home".to_string(), "主页".to_string())]));
-    translations.insert("en".to_string(), HashMap::from_iter([("Home".to_string(), "Home".to_string())]));
+    translations.insert(
+      "zh".to_string(),
+      HashMap::from_iter([("Home".to_string(), "主页".to_string())]),
+    );
+    translations.insert(
+      "en".to_string(),
+      HashMap::from_iter([("Home".to_string(), "Home".to_string())]),
+    );
     let current_translations = HashMap::new();
-    let current_translations = translations.get(&current_lang).unwrap_or(&current_translations).clone();
+    let current_translations = translations
+      .get(&current_lang)
+      .unwrap_or(&current_translations)
+      .clone();
     Self {
-      lang: vec![],
+      lang: translations.keys().map(|s| s.to_string()).collect(),
       translations,
       current_lang,
       current_translations,
@@ -60,14 +69,19 @@ impl Component for I18nProvider {
 
   fn create(ctx: &Context<Self>) -> Self {
     let I18nProviderProp { translations, .. } = ctx.props().clone();
-    let lang = translations.keys().map(|k| k.to_string()).collect::<Vec<String>>();
+    let lang = translations
+      .keys()
+      .map(|k| k.to_string())
+      .collect::<Vec<String>>();
     let default_i18n = I18nProvider::default();
     I18nProvider {
       lang,
       translations: translations.clone(),
       current_lang: default_i18n.current_lang.clone(),
-      current_translations: translations.get(&default_i18n.current_lang).unwrap_or(&default_i18n.current_translations).clone(),
-      ..default_i18n
+      current_translations: translations
+        .get(&default_i18n.current_lang)
+        .unwrap_or(&default_i18n.current_translations)
+        .clone(),
     }
   }
   fn view(&self, ctx: &Context<Self>) -> Html {
@@ -85,14 +99,21 @@ impl I18nProvider {
     let lang = lang.to_lowercase();
     if self.lang.contains(&lang) {
       self.current_lang = lang;
-      self.current_translations = self.translations.get(&self.current_lang).unwrap_or(&HashMap::new()).clone();
+      self.current_translations = self
+        .translations
+        .get(&self.current_lang)
+        .unwrap_or(&HashMap::new())
+        .clone();
+      let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
+      storage.set_item("lang", &self.current_lang).unwrap();
     }
   }
   pub fn t(&self, text: &str) -> String {
+    console_log!("{:?}", self.current_translations);
     if let Some(translation) = self.current_translations.get(text) {
       return translation.to_string();
     }
-    return text.to_string();
+    text.to_string()
   }
 }
 
@@ -113,18 +134,19 @@ impl Component for Lang {
   type Properties = ();
 
   fn create(ctx: &Context<Self>) -> Self {
-    let (i18n, _l) = ctx.link().context::<I18nProvider>(ctx.link().callback(Msg::Lang)).unwrap();
+    let (i18n, _l) = ctx
+      .link()
+      .context::<I18nProvider>(ctx.link().callback(Msg::Lang))
+      .unwrap();
     Self { i18n, _l }
   }
-  fn update(&mut self, ctx: &Context<Self>, msg: Msg) -> bool {
+  fn update(&mut self, _ctx: &Context<Self>, msg: Msg) -> bool {
     match msg {
       Msg::LangChanged(lang) => {
-        console_log!("{:?}",lang);
         self.i18n.set_lang(lang);
-        console_log!("{:?}",self.i18n);
       }
       Msg::Lang(i18n) => {
-        console_log!("{:?}",i18n);
+        console_log!("{:?}", i18n);
       }
     }
     true
@@ -158,7 +180,6 @@ impl Component for Lang {
     }
   }
 }
-
 
 #[hook]
 pub fn use_translation() -> I18nProvider {

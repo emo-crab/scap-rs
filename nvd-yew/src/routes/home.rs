@@ -1,7 +1,9 @@
 use yew::prelude::*;
+use crate::component::use_translation;
 
 #[function_component]
 pub fn Home() -> Html {
+  let i18n = use_translation();
   html! {
     <div class="row row-deck row-cards">
     <div class="col-12">
@@ -14,7 +16,7 @@ pub fn Home() -> Html {
         <div class="card-body">
           <div class="row align-items-center">
             <div class="col-10">
-              <h3 class="h1">{"NVD"}</h3>
+              <h3 class="h1">{i18n.t("Home")}</h3>
               <div class="text-secondary">
                 {"The NVD is the U.S. government repository of standards based vulnerability management data represented using the Security Content Automation Protocol (SCAP)."}
               </div>
