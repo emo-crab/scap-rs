@@ -1,3 +1,4 @@
+use crate::component::MessageContext;
 use crate::console_log;
 use crate::services::cve::cwe_details;
 use crate::services::FetchState;
@@ -13,23 +14,38 @@ pub struct WeaknessesProps {
 
 pub struct CWEDetails {
   cwe: Option<Cwe>,
+  i18n: MessageContext,
+  _context_listener: ContextHandle<MessageContext>,
 }
 
 pub enum Msg {
   SetFetchState(FetchState<Cwe>),
   Send,
+  Lang(MessageContext),
 }
 
 impl Component for CWEDetails {
   type Message = Msg;
   type Properties = WeaknessesProps;
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self { cwe: None }
+  fn create(ctx: &Context<Self>) -> Self {
+    let (i18n, lang) = ctx
+      .link()
+      .context::<MessageContext>(ctx.link().callback(Msg::Lang))
+      .unwrap();
+    Self {
+      cwe: None,
+      i18n,
+      _context_listener: lang,
+    }
   }
 
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
+      Msg::Lang(i18n) => {
+        self.i18n = i18n;
+        return true;
+      }
       Msg::SetFetchState(state) => {
         match state {
           FetchState::Success(data) => self.cwe = Some(data),

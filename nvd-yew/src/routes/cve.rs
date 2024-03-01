@@ -5,10 +5,9 @@ use yew_router::prelude::*;
 
 use nvd_model::cve::Cve;
 
-use crate::component::cvss_tags::{cvss2, cvss3};
 use crate::component::{
   Accordion, CVEConfiguration, CVEConfigurationProps, CVEKnowledgeBaseInfoList, CWEDetails,
-  Comments, CVSS2, CVSS3,
+  Comments, MessageContext, CVSS2, CVSS3,cvss2, cvss3
 };
 use crate::console_log;
 use crate::error::Error;
@@ -25,18 +24,29 @@ pub enum Msg {
   SetFetchState(FetchState<Cve>),
   Back,
   Send,
+  Lang(MessageContext),
 }
 
 pub struct CVEDetails {
   cve: Option<Cve>,
+  i18n: MessageContext,
+  _context_listener: ContextHandle<MessageContext>,
 }
 
 impl Component for CVEDetails {
   type Message = Msg;
   type Properties = CVEProps;
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self { cve: None }
+  fn create(ctx: &Context<Self>) -> Self {
+    let (i18n, lang) = ctx
+      .link()
+      .context::<MessageContext>(ctx.link().callback(Msg::Lang))
+      .unwrap();
+    Self {
+      cve: None,
+      i18n,
+      _context_listener: lang,
+    }
   }
   fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
     match msg {
@@ -74,6 +84,10 @@ impl Component for CVEDetails {
       }
       Msg::Back => {
         ctx.link().navigator().unwrap().back();
+      }
+      Msg::Lang(i18n) => {
+        self.i18n = i18n;
+        return true;
       }
     }
     false
@@ -218,9 +232,9 @@ impl CVEDetails {
         <table class="table table-vcenter card-table table-striped">
           <thead>
             <tr>
-              <th>{"Link"}</th>
-              <th>{"Resource"}</th>
-              <th>{"Tags"}</th>
+              <th>{self.i18n.t("Link")}</th>
+              <th>{self.i18n.t("Resource")}</th>
+              <th>{self.i18n.t("Tags")}</th>
             </tr>
           </thead>
           <tbody>

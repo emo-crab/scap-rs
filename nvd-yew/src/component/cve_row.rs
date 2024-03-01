@@ -14,110 +14,100 @@ pub struct CveProps {
   pub set_product: Callback<MouseEvent>,
 }
 
-pub struct CVERow;
-
-impl Component for CVERow {
-  type Message = ();
-  type Properties = CveProps;
-
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self
-  }
-
-  fn view(&self, ctx: &Context<Self>) -> Html {
-    let CveProps {
-      props,
-      set_vendor,
-      set_product,
-      ..
-    } = ctx.props().clone();
-    let cve_id = props.id;
-    let description = props
-      .description
+#[function_component]
+pub fn CVERow(props: &CveProps) -> Html {
+  let CveProps {
+    props,
+    set_vendor,
+    set_product,
+    ..
+  } = props;
+  let cve_id = props.id.clone();
+  let description = props
+    .description
+    .iter()
+    .map(|d| d.value.clone())
+    .collect::<Vec<String>>();
+  let update = props.updated_at.to_string();
+  let cwe: HashSet<String> = props
+    .weaknesses
+    .iter()
+    .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
+    .collect();
+  let vendor_product = unique_vendor_product(&props.configurations);
+  let vendor: HashSet<String> = HashSet::from_iter(
+    vendor_product
       .iter()
-      .map(|d| d.value.clone())
-      .collect::<Vec<String>>();
-    let update = props.updated_at.to_string();
-    let cwe: HashSet<String> = props
-      .weaknesses
-      .iter()
-      .map(|p| p.description.iter().map(|d| d.value.clone()).collect())
-      .collect();
-    let vendor_product = unique_vendor_product(&props.configurations);
-    let vendor: HashSet<String> = HashSet::from_iter(
-      vendor_product
-        .iter()
-        .map(|v| v.vendor.clone())
-        .collect::<Vec<String>>(),
-    );
-    let metrics = props.metrics;
-    let v3 = if metrics.base_metric_v31.inner().is_some() {
-      metrics.base_metric_v31.inner()
-    } else {
-      metrics.base_metric_v3.inner()
-    };
-    html! {
-    <>
-        <tr class="table-group-divider">
-          <th scope="row"  rowspan="2">
-          <Link<Route> classes={classes!(["text-reset", "text-nowrap"])} to={Route::Cve{id:{cve_id.clone()}}}>
-             <i class="ti ti-external-link"></i>
-              {cve_id.clone()}
-          </Link<Route>>
-          </th>
-          <td class="w-25 text-truncate text-nowrap">
-          {
-            vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
+      .map(|v| v.vendor.clone())
+      .collect::<Vec<String>>(),
+  );
+  let metrics = props.metrics.clone();
+  let v3 = if metrics.base_metric_v31.inner().is_some() {
+    metrics.base_metric_v31.inner()
+  } else {
+    metrics.base_metric_v3.inner()
+  };
+  html! {
+  <>
+      <tr class="table-group-divider">
+        <th scope="row"  rowspan="2">
+        <Link<Route> classes={classes!(["text-reset", "text-nowrap"])} to={Route::Cve{id:{cve_id.clone()}}}>
+           <i class="ti ti-external-link"></i>
+            {cve_id.clone()}
+        </Link<Route>>
+        </th>
+        <td class="w-25 text-truncate text-nowrap">
+        {
+          vendor.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
+            html!{
+            <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
+            <b value={value.clone()}>{ value }</b>
+            </button>
+            }
+          }).collect::<Html>()
+        }
+        {if vendor.len()>3{html!(<i>{format!("{} and more",vendor.len()-2)}</i>)}else{html!()}}
+        </td>
+        <td class="w-25 text-truncate text-nowrap">
+        {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
+        {
+          if !vendor_product.is_empty(){
+            vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
               html!{
-              <button onclick={set_vendor.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-info" value={value.clone()} key={value.clone()} title={value.clone()}>
-              <b value={value.clone()}>{ value }</b>
+              <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
+              <b product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
               </button>
               }
             }).collect::<Html>()
-          }
-          {if vendor.len()>3{html!(<i>{format!("{} and more",vendor.len()-2)}</i>)}else{html!()}}
-          </td>
-          <td class="w-25 text-truncate text-nowrap">
-          {html!(<span class="badge rounded-pill bg-secondary">{vendor_product.len()}</span>)}
-          {
-            if !vendor_product.is_empty(){
-              vendor_product.clone().into_iter().enumerate().filter(|(index,_)|index.lt(&2)).map(|(_index,value)| {
-                html!{
-                <button onclick={set_product.clone()} data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success"  value={value.product.clone()} key={value.product.clone()} title={value.product.clone()}>
-                <b product={value.product.clone()} vendor={value.vendor.clone()}>{ value.product }</b>
-                </button>
-                }
-              }).collect::<Html>()
-            }else{
-            html!{
-                <button  disabled=true data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success">
-                <b class="text-truncate">{ "N/A" }</b>
-                </button>
-              }
+          }else{
+          html!{
+              <button  disabled=true data-bs-toggle="tooltip" data-bs-placement="top" type="button" class="btn btn-sm btn-outline-success">
+              <b class="text-truncate">{ "N/A" }</b>
+              </button>
             }
           }
-          {if vendor_product.len()>3{html!(<i>{format!("{} and more",vendor_product.len()-2)}</i>)}else{html!()}}
-          </td>
-          <td>
-            {cwe.iter().map(|w|{
-                html!(<span class={classes!(["badge"])}><b style="fonts-size:larger">{w}</b></span>)
-            }).collect::<Html>()}
-          </td>
-          <td>
-            {cvss2(metrics.base_metric_v2.inner())}
-          </td>
-          <td>
-            {cvss3(v3)}
-          </td>
-          <td class="text-truncate text-nowrap">
-            <span>{update}</span>
-          </td>
-        </tr>
-        <tr class="table-success">
-          <th scope="row" colspan="7" class="table table-active text-truncate" style="max-width: 150px;">{description.join("")}</th>
-        </tr>
-    </>
-    }
+        }
+        {if vendor_product.len()>3{html!(<i>{format!("{} and more",vendor_product.len()-2)}</i>)}else{html!()}}
+        </td>
+        <td>
+          {cwe.iter().map(|w|{
+              html!(<span class={classes!(["badge"])}><b style="fonts-size:larger">{w}</b></span>)
+          }).collect::<Html>()}
+        </td>
+        <td>
+          {cvss2(metrics.base_metric_v2.inner())}
+        </td>
+        <td>
+          {cvss3(v3)}
+        </td>
+        <td class="text-truncate text-nowrap">
+          <span>{update}</span>
+        </td>
+      </tr>
+      <tr class="table-success">
+        <th scope="row" colspan="7" class="table table-active text-truncate" style="max-width: 150px;">{description.join("")}</th>
+      </tr>
+  </>
   }
 }
 

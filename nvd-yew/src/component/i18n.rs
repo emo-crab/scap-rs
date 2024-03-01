@@ -8,12 +8,10 @@ use yew::prelude::*;
 // https://github.com/yewstack/yew/tree/master/examples/contexts
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
 pub struct I18n {
-  pub lang: Vec<String>,
   // 原来文本：_语言：翻译
   // Home: zh: 主页
   pub translations: HashMap<String, HashMap<String, String>>,
   current_lang: String,
-  pub current_translations: HashMap<String, String>,
 }
 
 impl Reducible for I18n {
@@ -40,25 +38,11 @@ impl Default for I18n {
       .get_item("lang")
       .unwrap_or_default()
       .unwrap_or(default_lang);
-    let mut translations: HashMap<String, HashMap<String, String>> = HashMap::new();
-    translations.insert(
-      "zh".to_string(),
-      HashMap::from_iter([("Home".to_string(), "主页".to_string())]),
-    );
-    translations.insert(
-      "en".to_string(),
-      HashMap::from_iter([("Home".to_string(), "Home".to_string())]),
-    );
-    let current_translations = HashMap::new();
-    let current_translations = translations
-      .get(&current_lang)
-      .unwrap_or(&current_translations)
-      .clone();
+    let translations: HashMap<String, HashMap<String, String>> =
+      serde_json::from_str(include_str!("../../i18n.json")).unwrap_or_default();
     Self {
-      lang: translations.keys().map(|s| s.to_string()).collect(),
       translations,
       current_lang,
-      current_translations,
     }
   }
 }
@@ -67,21 +51,17 @@ impl I18n {
   pub fn set_lang(&self, lang: String) -> Self {
     let lang = lang.to_lowercase();
     let mut i18n = self.clone();
-    if i18n.lang.contains(&lang) {
-      i18n.current_lang = lang;
-      i18n.current_translations = i18n
-        .translations
-        .get(&i18n.current_lang)
-        .unwrap_or(&HashMap::new())
-        .clone();
-      let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
-      storage.set_item("lang", &self.current_lang).unwrap();
-    }
+    let storage = web_sys::window().unwrap().local_storage().unwrap().unwrap();
+    storage.set_item("lang", &lang).unwrap();
+    i18n.current_lang = lang;
     i18n
   }
   pub fn t(&self, text: &str) -> String {
-    if let Some(translation) = self.current_translations.get(text) {
-      return translation.to_string();
+    if let Some(translation) = self.translations.get(text) {
+      return translation
+        .get(&self.current_lang)
+        .unwrap_or(&text.to_string())
+        .to_string();
     }
     text.to_string()
   }

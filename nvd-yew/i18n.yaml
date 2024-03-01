@@ -1,0 +1,68 @@
+Home:
+  zh: 主页
+CVE:
+  zh: CVE编号
+Sponsor:
+  zh: 赞助
+"Source Code":
+  zh: 源码
+Vendors:
+  zh: 厂商
+Products:
+  zh: 产品
+CWE:
+  zh: 弱点
+CVSS:
+  zh: 评分
+Updated:
+  zh: 更新时间
+References:
+  zh: 参考
+Link:
+  zh: 链接
+Resource:
+  zh: 资源
+Tags:
+  zh: 标签
+Weaknesses:
+  zh: 弱点
+KnowledgeBase:
+  zh: 知识库
+Configurations:
+  zh: 影响组件
+Comments:
+  zh: 评论
+Operator:
+  zh: 逻辑
+Match:
+  zh: 影响版本
+"Attack Vector":
+  zh: 攻击途径
+"Attack Complexity":
+  zh: 攻击复杂度
+"Privileges Required":
+  zh: 权限要求
+"User Interaction":
+  zh: 用户交互
+Scope:
+  zh: 作用域属性
+"Confidentiality Impact":
+  zh: 机密性影响度
+"Integrity Impact":
+  zh: 完整性影响度
+"Availability Impact":
+  zh: 可用性影响度
+"Access Vector":
+  zh: 访问途径
+"Access Complexity":
+  zh: 访问复杂度
+Authentication:
+  zh: 认证
+Name:
+  zh: 名称
+Verified:
+  zh: 是否已验证
+Path:
+  zh: 路径
+Meta:
+  zh: 元数据

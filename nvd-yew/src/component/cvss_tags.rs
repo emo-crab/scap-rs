@@ -1,4 +1,4 @@
-use crate::component::TooltipPopover;
+use crate::component::{MessageContext, TooltipPopover};
 use nvd_cvss::metric::{Help, Worth};
 use nvd_cvss::severity::{SeverityType, SeverityTypeV2};
 use yew::prelude::*;
@@ -36,6 +36,7 @@ pub fn cvss3(metric: Option<&nvd_cvss::v3::ImpactMetricV3>) -> Html {
   };
   html!(<span class={classes!(["badge",severity_class])}><b style="fonts-size:larger">{score}</b></span>)
 }
+#[derive(Clone, PartialEq)]
 pub enum V3Card {
   AV(nvd_cvss::v3::attack_vector::AttackVectorType),
   AC(nvd_cvss::v3::attack_complexity::AttackComplexityType),
@@ -46,47 +47,56 @@ pub enum V3Card {
   A(nvd_cvss::v3::impact_metrics::AvailabilityImpactType),
   S(nvd_cvss::v3::scope::ScopeType),
 }
-
-impl From<V3Card> for yew::virtual_dom::VNode {
-  fn from(value: V3Card) -> Self {
-    value.to_html()
-  }
+pub enum Msg {
+  Lang(MessageContext),
 }
-impl V3Card {
-  fn help(&self) -> Help {
-    match self {
-      V3Card::AV(av) => av.metric_help(),
-      V3Card::AC(ac) => ac.metric_help(),
-      V3Card::PR(pr) => pr.metric_help(),
-      V3Card::UI(ui) => ui.metric_help(),
-      V3Card::C(c) => c.metric_help(),
-      V3Card::I(i) => i.metric_help(),
-      V3Card::A(a) => a.metric_help(),
-      V3Card::S(s) => s.metric_help(),
+pub struct V3CardTag {
+  inner: V3Card,
+  i18n: MessageContext,
+  _context_listener: ContextHandle<MessageContext>,
+}
+#[derive(PartialEq, Clone, Properties)]
+pub struct V3CardTagProps {
+  pub props: V3Card,
+}
+impl Component for V3CardTag {
+  type Message = Msg;
+  type Properties = V3CardTagProps;
+
+  fn create(ctx: &Context<Self>) -> Self {
+    let v3 = ctx.props().clone().props;
+    let (i18n, lang) = ctx
+      .link()
+      .context::<MessageContext>(ctx.link().callback(Msg::Lang))
+      .unwrap();
+    Self {
+      inner: v3,
+      i18n,
+      _context_listener: lang,
     }
   }
-  fn color(&self, worth: &Worth) -> &'static str {
-    match worth {
-      Worth::Worst => "bg-danger",
-      Worth::Worse => "bg-warning",
-      Worth::Bad => "bg-info",
-      Worth::Good => "bg-secondary",
+  fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    return match msg {
+      Msg::Lang(i18n) => {
+        self.i18n = i18n;
+        true
+      }
     }
   }
-  pub fn to_html(&self) -> Html {
-    let (name, value) = match self {
-      V3Card::AV(v) => ("Attack Vector", format!("{:?}", v)),
-      V3Card::AC(v) => ("Attack Complexity", format!("{:?}", v)),
-      V3Card::PR(v) => ("Privileges Required", format!("{:?}", v)),
-      V3Card::UI(v) => ("User Interaction", format!("{:?}", v)),
-      V3Card::C(v) => ("Confidentiality Impact", format!("{:?}", v)),
-      V3Card::I(v) => ("Integrity Impact", format!("{:?}", v)),
-      V3Card::A(v) => ("Availability Impact", format!("{:?}", v)),
-      V3Card::S(v) => ("Scope", format!("{:?}", v)),
+  fn view(&self, _ctx: &Context<Self>) -> Html {
+    let (name, value) = match self.inner.clone() {
+      V3Card::AV(v) => (self.i18n.t("Attack Vector"), format!("{:?}", v)),
+      V3Card::AC(v) => (self.i18n.t("Attack Complexity"), format!("{:?}", v)),
+      V3Card::PR(v) => (self.i18n.t("Privileges Required"), format!("{:?}", v)),
+      V3Card::UI(v) => (self.i18n.t("User Interaction"), format!("{:?}", v)),
+      V3Card::C(v) => (self.i18n.t("Confidentiality Impact"), format!("{:?}", v)),
+      V3Card::I(v) => (self.i18n.t("Integrity Impact"), format!("{:?}", v)),
+      V3Card::A(v) => (self.i18n.t("Availability Impact"), format!("{:?}", v)),
+      V3Card::S(v) => (self.i18n.t("Scope"), format!("{:?}", v)),
     };
-    let h = self.help();
-    let icon = self.icon();
-    let class_str = self.color(&h.worth);
+    let h = self.inner.help();
+    let icon = self.inner.icon();
+    let class_str = self.inner.color(&h.worth);
     let des = h.des;
     html! {
         <div class="justify-content-between align-items-start">
@@ -106,6 +116,29 @@ impl V3Card {
             </div>
           </li>
         </div>
+    }
+  }
+}
+
+impl V3Card {
+  fn help(&self) -> Help {
+    match self {
+      V3Card::AV(av) => av.metric_help(),
+      V3Card::AC(ac) => ac.metric_help(),
+      V3Card::PR(pr) => pr.metric_help(),
+      V3Card::UI(ui) => ui.metric_help(),
+      V3Card::C(c) => c.metric_help(),
+      V3Card::I(i) => i.metric_help(),
+      V3Card::A(a) => a.metric_help(),
+      V3Card::S(s) => s.metric_help(),
+    }
+  }
+  fn color(&self, worth: &Worth) -> &'static str {
+    match worth {
+      Worth::Worst => "bg-danger",
+      Worth::Worse => "bg-warning",
+      Worth::Bad => "bg-info",
+      Worth::Good => "bg-secondary",
     }
   }
   fn icon(&self) -> &'static str {
@@ -151,7 +184,16 @@ impl V3Card {
     }
   }
 }
-
+#[derive(PartialEq, Clone, Properties)]
+pub struct V2CardTagProps {
+  pub props: V2Card,
+}
+pub struct V2CardTag {
+  inner: V2Card,
+  i18n: MessageContext,
+  _context_listener: ContextHandle<MessageContext>,
+}
+#[derive(Clone, PartialEq)]
 pub enum V2Card {
   AV(nvd_cvss::v2::access_vector::AccessVectorType),
   AC(nvd_cvss::v2::access_complexity::AccessComplexityType),
@@ -161,32 +203,32 @@ pub enum V2Card {
   A(nvd_cvss::v2::impact_metrics::AvailabilityImpactType),
 }
 
-impl From<V2Card> for yew::virtual_dom::VNode {
-  fn from(value: V2Card) -> Self {
-    value.to_html()
-  }
-}
-impl V2Card {
-  fn help(&self) -> Help {
-    match self {
-      V2Card::AV(av) => av.metric_help(),
-      V2Card::AC(ac) => ac.metric_help(),
-      V2Card::AU(pr) => pr.metric_help(),
-      V2Card::C(c) => c.metric_help(),
-      V2Card::I(i) => i.metric_help(),
-      V2Card::A(a) => a.metric_help(),
+impl Component for V2CardTag {
+  type Message = Msg;
+  type Properties = V2CardTagProps;
+
+  fn create(ctx: &Context<Self>) -> Self {
+    let v2 = ctx.props().clone().props;
+    let (i18n, lang) = ctx
+      .link()
+      .context::<MessageContext>(ctx.link().callback(Msg::Lang))
+      .unwrap();
+    Self {
+      inner: v2,
+      i18n,
+      _context_listener: lang,
     }
   }
-  fn color(&self, worth: &Worth) -> &'static str {
-    match worth {
-      Worth::Worst => "bg-danger",
-      Worth::Worse => "bg-warning",
-      Worth::Bad => "bg-info",
-      Worth::Good => "bg-secondary",
+  fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    return match msg {
+      Msg::Lang(i18n) => {
+        self.i18n = i18n;
+        true
+      }
     }
   }
-  pub fn to_html(&self) -> Html {
-    let (name, value) = match self {
+  fn view(&self, _ctx: &Context<Self>) -> Html {
+    let (name, value) = match self.inner.clone() {
       V2Card::AV(v) => ("Access Vector", format!("{:?}", v)),
       V2Card::AC(v) => ("Access Complexity", format!("{:?}", v)),
       V2Card::AU(v) => ("Authentication", format!("{:?}", v)),
@@ -194,9 +236,9 @@ impl V2Card {
       V2Card::I(v) => ("Integrity Impact", format!("{:?}", v)),
       V2Card::A(v) => ("Availability Impact", format!("{:?}", v)),
     };
-    let h = self.help();
-    let icon = self.icon();
-    let class_str = self.color(&h.worth);
+    let h = self.inner.help();
+    let icon = self.inner.icon();
+    let class_str = self.inner.color(&h.worth);
     let des = h.des;
     html! {
         <div class="justify-content-between align-items-start">
@@ -216,6 +258,26 @@ impl V2Card {
             </div>
           </li>
         </div>
+    }
+  }
+}
+impl V2Card {
+  fn help(&self) -> Help {
+    match self {
+      V2Card::AV(av) => av.metric_help(),
+      V2Card::AC(ac) => ac.metric_help(),
+      V2Card::AU(pr) => pr.metric_help(),
+      V2Card::C(c) => c.metric_help(),
+      V2Card::I(i) => i.metric_help(),
+      V2Card::A(a) => a.metric_help(),
+    }
+  }
+  fn color(&self, worth: &Worth) -> &'static str {
+    match worth {
+      Worth::Worst => "bg-danger",
+      Worth::Worse => "bg-warning",
+      Worth::Bad => "bg-info",
+      Worth::Good => "bg-secondary",
     }
   }
   fn icon(&self) -> &'static str {

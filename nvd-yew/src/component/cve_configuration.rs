@@ -1,4 +1,4 @@
-use crate::component::{Accordion, TooltipPopover};
+use crate::component::{Accordion, MessageContext, TooltipPopover};
 use nvd_cves::v4::configurations::Operator;
 use yew::prelude::*;
 
@@ -6,17 +6,36 @@ use yew::prelude::*;
 pub struct CVEConfigurationProps {
   pub props: Vec<nvd_cves::v4::configurations::Node>,
 }
-
-pub struct CVEConfiguration;
+pub enum Msg {
+  Lang(MessageContext),
+}
+pub struct CVEConfiguration {
+  i18n: MessageContext,
+  _context_listener: ContextHandle<MessageContext>,
+}
 
 impl Component for CVEConfiguration {
-  type Message = ();
+  type Message = Msg;
   type Properties = CVEConfigurationProps;
 
-  fn create(_ctx: &Context<Self>) -> Self {
-    Self
+  fn create(ctx: &Context<Self>) -> Self {
+    let (i18n, lang) = ctx
+      .link()
+      .context::<MessageContext>(ctx.link().callback(Msg::Lang))
+      .unwrap();
+    Self {
+      i18n,
+      _context_listener: lang,
+    }
   }
-
+  fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
+    return match msg {
+      Msg::Lang(i18n) => {
+        self.i18n = i18n;
+        true
+      }
+    }
+  }
   fn view(&self, ctx: &Context<Self>) -> Html {
     let configuration = ctx.props().props.clone();
     html! {
@@ -25,8 +44,8 @@ impl Component for CVEConfiguration {
               <table class="table table-vcenter card-table table-striped">
                 <thead>
                   <tr>
-                    <th>{"Operator"}</th>
-                    <th>{"Match"}</th>
+                    <th>{self.i18n.t("Operator")}</th>
+                    <th>{self.i18n.t("Match")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -74,10 +93,10 @@ impl CVEConfiguration {
       html! {
           <thead>
             <tr>
-              <th>{"Vendor"}</th>
-              <th>{"Product"}</th>
-              <th>{"CPE"}</th>
-              <th>{"Version"}</th>
+              <th>{self.i18n.t("Vendor")}</th>
+              <th>{self.i18n.t("Product")}</th>
+              <th>{self.i18n.t("CPE")}</th>
+              <th>{self.i18n.t("Version")}</th>
             </tr>
           </thead>
       }

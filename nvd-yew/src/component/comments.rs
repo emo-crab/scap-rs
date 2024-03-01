@@ -12,6 +12,11 @@ impl Component for Comments {
   }
 
   fn view(&self, _ctx: &Context<Self>) -> Html {
+    let default_lang = web_sys::window()
+      .unwrap()
+      .navigator()
+      .language()
+      .unwrap_or("en-US".to_string());
     html! {
         <Accordion name={"Comments"}>
         <script src="https://giscus.app/client.js"
@@ -25,7 +30,7 @@ impl Component for Comments {
             data-emit-metadata="0"
             data-input-position="top"
             data-theme="preferred_color_scheme"
-            data-lang="zh-CN"
+            data-lang={default_lang}
             data-loading="lazy"
             crossorigin="anonymous">
         </script>
