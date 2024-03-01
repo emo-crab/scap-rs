@@ -6,7 +6,7 @@ pub use cve_configuration::{CVEConfiguration, CVEConfigurationProps};
 pub use cve_query::{CVEQuery, CVEQueryProps};
 pub use cve_row::{CVERow, CveProps};
 pub use cvss::{CVSS2, CVSS3};
-pub use i18n::{use_translation, I18nProvider, Lang};
+pub use i18n::{use_translation, LangSelector, MessageProvider};
 pub use kb_query::{KBQuery, KBQueryProps};
 pub use kb_row::{KBRow, KbProps};
 pub use knowledge_base::CVEKnowledgeBaseInfoList;

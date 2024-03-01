@@ -1,7 +1,7 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::component::Lang;
+use crate::component::LangSelector;
 use crate::routes::Route;
 
 pub enum NavMsg {
@@ -67,7 +67,7 @@ impl Component for Nav {
               </a>
             </div>
           </div>
-          <Lang/>
+          <LangSelector/>
         </div>
         <div class="collapse navbar-collapse" id="navbar-menu">
           <div class="d-flex flex-column flex-md-row flex-fill align-items-stretch align-items-md-center">
