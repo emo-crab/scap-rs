@@ -27,6 +27,7 @@ COPY nvd-yew/index.html index.html
 COPY nvd-yew/Trunk.toml Trunk.toml
 COPY nvd-yew/static static
 COPY nvd-yew/src src
+COPY nvd-yew/i18n.json i18n.json
 RUN trunk build --release --no-sri
 
 # Use any runner as you want
