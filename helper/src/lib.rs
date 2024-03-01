@@ -101,6 +101,7 @@ pub async fn sync_mode(config: SyncCommand) {
   if config.kb {
     update_from_rss().await;
     update_from_github().await;
+    let _ = akb_sync().await;
   }
 }
 

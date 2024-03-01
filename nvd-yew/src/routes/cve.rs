@@ -203,6 +203,7 @@ impl CVEDetails {
   fn description(&self, description_data: &[nvd_cves::v4::Description]) -> Html {
     let description = description_data
       .iter()
+      .filter(|d| d.lang == "en")
       .map(|d| d.value.clone())
       .collect::<String>();
     let mut description = description.chars();

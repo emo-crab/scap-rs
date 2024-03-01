@@ -4,28 +4,25 @@ mod github;
 mod nuclei;
 mod serde_format;
 
+use attackerkb_api_rs::v1::query::TopicsParametersBuilder;
+use attackerkb_api_rs::AttackKBApi;
+use chrono::{Duration, Utc};
+use diesel::MysqlConnection;
 use std::fs::File;
 use std::ops::DerefMut;
 use std::path::{Path, PathBuf};
 
-use attackerkb_api_rs::pagination::KBResponse;
-use attackerkb_api_rs::v1::query::TopicsParametersBuilder;
-use attackerkb_api_rs::AttackKBApi;
-use chrono::Utc;
-use diesel::MysqlConnection;
-
-use nvd_model::cve_knowledge_base::db::CreateCveKB;
-use nvd_model::cve_knowledge_base::CveKnowledgeBase;
-use nvd_model::error::DBResult;
-use nvd_model::knowledge_base::db::{CreateKnowledgeBase, KBSource, KBTypes};
-use nvd_model::knowledge_base::KnowledgeBase;
-use nvd_model::types::{AnyValue, MetaData};
-
 use crate::error::HelperResult;
+use crate::kb::attackerkb::fetch_query;
 use crate::kb::exploit_db::ExploitDB;
 use crate::kb::github::GitHubCommit;
 use crate::kb::nuclei::Template;
 use crate::{init_db_pool, Connection};
+use nvd_model::cve_knowledge_base::db::CreateCveKB;
+use nvd_model::cve_knowledge_base::CveKnowledgeBase;
+use nvd_model::error::DBResult;
+use nvd_model::knowledge_base::db::CreateKnowledgeBase;
+use nvd_model::knowledge_base::KnowledgeBase;
 
 // 绑定cve和exploit，也许是先有了exp，cve还没更新进来
 pub fn associate_cve_and_exploit(conn: &mut Connection, id: &str) {
@@ -131,68 +128,10 @@ pub async fn akb_sync() -> HelperResult<()> {
   };
   if let Ok(api) = AttackKBApi::new(token) {
     let query = TopicsParametersBuilder::default()
-      .q(Some("cve-2023-46805".into()))
+      .rapid7_analysis_revised_after(Some((Utc::now() - Duration::days(3)).date_naive()))
       .build()
       .unwrap_or_default();
-    let resp = api.topics(query).await;
-    if let Ok(KBResponse::Topics(topics)) = resp {
-      let connection_pool = init_db_pool();
-      let meta = MetaData::default();
-      for topic in topics.data {
-        if topic.rapid7_analysis.is_some() {
-          let new_kb = CreateKnowledgeBase {
-            id: uuid::Uuid::new_v4().as_bytes().to_vec(),
-            name: topic.name.clone(),
-            description: topic.document,
-            source: KBSource::AttackerKB.to_string(),
-            path: format!("https://attackerkb.com/topics/{}", topic.name),
-            meta: AnyValue::new(meta),
-            verified: true as u8,
-            created_at: topic
-              .rapid7_analysis_created
-              .unwrap_or(Utc::now())
-              .naive_utc(),
-            updated_at: topic
-              .rapid7_analysis_revision_date
-              .unwrap_or(Utc::now())
-              .naive_utc(),
-            types: KBTypes::KnowledgeBase.to_string(),
-          };
-          if let Err(err) = create_or_update_exploit(
-            connection_pool.get().unwrap().deref_mut(),
-            &new_kb,
-            Some(topic.name),
-          ) {
-            println!("import attackerkb err: {:?}", err);
-          }
-          break;
-        }
-        if let Some(credits) = topic.metadata.credits {
-          for module in credits.module {
-            println!("同步metasploit插件：{}", module);
-            let new_exp = CreateKnowledgeBase {
-              id: uuid::Uuid::new_v4().as_bytes().to_vec(),
-              name: topic.name.to_string(),
-              description: topic.document.clone(),
-              source: KBSource::Metasploit.to_string(),
-              path: module,
-              meta: AnyValue::new(meta.clone()),
-              verified: true as u8,
-              created_at: topic.created.naive_utc(),
-              updated_at: topic.revision_date.naive_utc(),
-              types: KBTypes::Exploit.to_string(),
-            };
-            if let Err(err) = create_or_update_exploit(
-              connection_pool.get().unwrap().deref_mut(),
-              &new_exp,
-              Some(topic.name.clone()),
-            ) {
-              println!("同步metasploit 插件失败： {:?}", err);
-            };
-          }
-        }
-      }
-    }
+    fetch_query(api, query).await;
   }
   Ok(())
 }
