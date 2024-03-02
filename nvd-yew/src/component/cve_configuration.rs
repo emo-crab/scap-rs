@@ -29,7 +29,7 @@ impl Component for CVEConfiguration {
     }
   }
   fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
-    return match msg {
+    match msg {
       Msg::Lang(i18n) => {
         self.i18n = i18n;
         true

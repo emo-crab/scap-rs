@@ -102,7 +102,7 @@ pub fn LangSelector() -> Html {
     <div class="nav-item d-none d-md-flex me-3">
         <div class="dropdown">
           <button type="button" class="btn dropdown-toggle" data-bs-toggle="dropdown">
-          <i class="ti ti-language"></i>{i18n.t("Home")}
+          <i class="ti ti-language"></i>{i18n.t("Lang")}
           </button>
           <div class="dropdown-menu">
           <li>

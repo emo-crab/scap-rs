@@ -6,8 +6,8 @@ use yew_router::prelude::*;
 use nvd_model::cve::Cve;
 
 use crate::component::{
-  Accordion, CVEConfiguration, CVEConfigurationProps, CVEKnowledgeBaseInfoList, CWEDetails,
-  Comments, MessageContext, CVSS2, CVSS3,cvss2, cvss3
+  cvss2, cvss3, Accordion, CVEConfiguration, CVEConfigurationProps, CVEKnowledgeBaseInfoList,
+  CWEDetails, Comments, MessageContext, CVSS2, CVSS3,
 };
 use crate::console_log;
 use crate::error::Error;

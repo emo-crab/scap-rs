@@ -6,7 +6,9 @@ use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
 use yew_router::prelude::*;
 
-use crate::component::{CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps};
+use crate::component::{
+  use_translation, CVEQuery, CVEQueryProps, CVERow, CveProps, Pagination, PaginationProps,
+};
 use crate::console_log;
 use crate::modules::ListResponse;
 use crate::routes::Route;
@@ -126,17 +128,7 @@ impl Component for CveInfoList {
         {self.query(ctx)}
         <div class="table-responsive">
           <table class="table card-table table-vcenter table-striped table-sm table-hover">
-            <thead>
-              <tr>
-                <th scope="col">{"CVE"}</th>
-                <th scope="col">{"Vendors"}</th>
-                <th scope="col">{"Products"}</th>
-                <th scope="col">{"CWE"}</th>
-                <th scope="col">{"CVSS v2"}</th>
-                <th scope="col">{"CVSS v3"}</th>
-                <th scope="col">{"Updated"}</th>
-              </tr>
-            </thead>
+            <CVEHead/>
             <tbody>
             {
               self.result.iter().map(|item| {
@@ -194,5 +186,22 @@ impl CveInfoList {
     html! {
       <CVEQuery ..p.clone()/>
     }
+  }
+}
+#[function_component]
+pub fn CVEHead() -> Html {
+  let i18n = use_translation();
+  html! {
+    <thead>
+      <tr>
+        <th scope="col">{i18n.t("CVE")}</th>
+        <th scope="col">{i18n.t("Vendors")}</th>
+        <th scope="col">{i18n.t("Products")}</th>
+        <th scope="col">{i18n.t("CWE")}</th>
+        <th scope="col">{i18n.t("CVSS") +" v2"}</th>
+        <th scope="col">{i18n.t("CVSS")+" v3"}</th>
+        <th scope="col">{i18n.t("Updated")}</th>
+      </tr>
+    </thead>
   }
 }

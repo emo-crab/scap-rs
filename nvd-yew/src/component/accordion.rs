@@ -1,5 +1,5 @@
-use yew::prelude::*;
 use crate::component::use_translation;
+use yew::prelude::*;
 
 #[derive(PartialEq, Clone, Default, Properties)]
 pub struct AccordionProp {

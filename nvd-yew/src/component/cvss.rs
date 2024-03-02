@@ -1,9 +1,9 @@
+use crate::component::cvss_tags::V2CardTag;
 use crate::component::use_translation;
 use crate::component::{V2Card, V3Card, V3CardTag};
 use nvd_cvss::v2::ImpactMetricV2;
 use nvd_cvss::v3::ImpactMetricV3;
 use yew::prelude::*;
-use crate::component::cvss_tags::V2CardTag;
 
 #[derive(Clone, Debug, PartialEq, Properties)]
 pub struct V3Props {

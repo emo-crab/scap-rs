@@ -28,5 +28,6 @@ mod kb_query;
 mod kb_row;
 mod knowledge_base;
 mod pagination;
+mod table;
 mod tooltip_popover;
 mod weaknesses;
