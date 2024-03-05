@@ -85,14 +85,14 @@ impl Component for V3CardTag {
   }
   fn view(&self, _ctx: &Context<Self>) -> Html {
     let (name, value) = match self.inner.clone() {
-      V3Card::AV(v) => (self.i18n.t("Attack Vector"), format!("{:?}", v)),
-      V3Card::AC(v) => (self.i18n.t("Attack Complexity"), format!("{:?}", v)),
-      V3Card::PR(v) => (self.i18n.t("Privileges Required"), format!("{:?}", v)),
-      V3Card::UI(v) => (self.i18n.t("User Interaction"), format!("{:?}", v)),
-      V3Card::C(v) => (self.i18n.t("Confidentiality Impact"), format!("{:?}", v)),
-      V3Card::I(v) => (self.i18n.t("Integrity Impact"), format!("{:?}", v)),
-      V3Card::A(v) => (self.i18n.t("Availability Impact"), format!("{:?}", v)),
-      V3Card::S(v) => (self.i18n.t("Scope"), format!("{:?}", v)),
+      V3Card::AV(v) => ("Attack Vector", format!("{:?}", v)),
+      V3Card::AC(v) => ("Attack Complexity", format!("{:?}", v)),
+      V3Card::PR(v) => ("Privileges Required", format!("{:?}", v)),
+      V3Card::UI(v) => ("User Interaction", format!("{:?}", v)),
+      V3Card::C(v) => ("Confidentiality Impact", format!("{:?}", v)),
+      V3Card::I(v) => ("Integrity Impact", format!("{:?}", v)),
+      V3Card::A(v) => ("Availability Impact", format!("{:?}", v)),
+      V3Card::S(v) => ("Scope", format!("{:?}", v)),
     };
     let h = self.inner.help();
     let icon = self.inner.icon();
@@ -102,14 +102,14 @@ impl Component for V3CardTag {
         <div class="justify-content-between align-items-start">
           <li class="card card-sm card-link card-link-pop">
             <div class={classes!(["card-status-start",class_str])}></div>
-            <div class="card-header p-2"><h5 class="card-title">{name}</h5>
+            <div class="card-header p-2"><h5 class="card-title">{self.i18n.t(name)}</h5>
             <div class="card-actions">
             <TooltipPopover
               toggle={"toggle"}
               placement={"top"}
               content={des}>
               <span class={classes!(["badge",class_str])}>
-                <i class={classes!( ["ti",icon])}></i>{value}
+                <i class={classes!( ["ti",icon])}></i>{self.i18n.t(&value)}
               </span>
             </TooltipPopover>
             </div>
