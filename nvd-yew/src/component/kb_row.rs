@@ -106,7 +106,7 @@ impl KBRow {
         "https://github.com/projectdiscovery/nuclei-templates/blob/main/{}",
         path
       ),
-      _ => source.to_string(),
+      _ => path.to_string(),
     };
     html! {<div><a href={kb_url} class="text-reset text-nowrap" target="_blank" rel="noreferrer"><i class="ti ti-external-link"></i>{path}</a></div>}
   }
@@ -119,7 +119,7 @@ impl KBRow {
         html! {<div><span class="badge bg-azure"><i class="ti ti-storm"></i>{source}</span></div>}
       }
       "attackerkb" => {
-        html! {<div><span class="badge bg-green"><i class="ti ti-check"></i>{source}</span></div>}
+        html! {<div><span class="badge bg-vk"><i class="ti ti-check"></i>{source}</span></div>}
       }
       _ => {
         html! {<div><span class="badge bg-google"><i class="ti ti-check"></i>{source}</span></div>}
