@@ -80,3 +80,33 @@ Next:
   zh: 下一页
 Lang:
   zh: 语言
+Network:
+  zh: 网络
+AdjacentNetwork:
+  zh: 相邻网络
+Local:
+  zh: 本地网络
+Physical:
+  zh: 物理
+None:
+  zh: 无
+High:
+  zh: 高
+Medium:
+  zh: 中
+Low:
+  zh: 低
+Multiple:
+  zh: 多个
+Single:
+  zh: 单个
+Partial:
+  zh: 部分
+Complete:
+  zh: 完全
+Unchanged:
+  zh: 未更改
+Changed:
+  zh: 更改
+Required:
+  zh: 需要

@@ -15,7 +15,7 @@ impl Component for Main {
     html! {
       <div class="page-wrapper">
       <div class="page-body">
-        <div class="container">
+        <div class="container-xl">
         <Switch<Route> render={Route::switch} />
         </div>
       </div>
