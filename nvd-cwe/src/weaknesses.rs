@@ -20,11 +20,12 @@
 //! nature of the weakness. The required Status attribute defines the maturity of the information
 //! for this weakness.
 //!
+use serde::{Deserialize, Serialize};
+
 use crate::content_history::ContentHistory;
 use crate::mapping_notes::MappingNotes;
 use crate::notes::Notes;
 use crate::structured_text::{StructuredCode, StructuredText};
-use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -45,7 +46,7 @@ pub struct Weakness {
   #[serde(rename(deserialize = "@Structure"))]
   pub structure: String,
   #[serde(rename(deserialize = "@Status"))]
-  pub status: String,
+  pub status: Status,
   #[serde(rename(deserialize = "Description"))]
   pub description: String,
   #[serde(rename(deserialize = "Extended_Description"))]
@@ -92,6 +93,16 @@ pub struct Weakness {
   pub notes: Option<Notes>,
   #[serde(rename(deserialize = "Mapping_Notes"))]
   pub mapping_notes: MappingNotes,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
+#[serde(deny_unknown_fields)]
+pub enum Status {
+  Deprecated,
+  Draft,
+  Incomplete,
+  Obsolete,
+  Stable,
 }
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 #[serde(deny_unknown_fields)]
