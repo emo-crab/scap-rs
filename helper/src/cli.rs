@@ -13,6 +13,7 @@ pub struct TopLevel {
 #[argh(subcommand)]
 pub enum NVDHelper {
   CVE(CVECommand),
+  CWE(CWECommand),
   CPE(CPECommand),
   KB(KBCommand),
   SYNC(SyncCommand),
@@ -33,6 +34,16 @@ pub struct CVECommand {
   pub hours: Option<i64>,
   #[argh(option, description = "update cve from nvd api by id")]
   pub id: Option<String>,
+}
+
+#[derive(FromArgs, PartialEq, Debug)]
+#[argh(description = "cwe helper")]
+#[argh(subcommand, name = "cwe")]
+pub struct CWECommand {
+  #[argh(option, description = "import cwe from xml.zip. cwec_latest.xml.zip")]
+  pub path: Option<PathBuf>,
+  #[argh(option, description = "import cwe from json. cwe.json")]
+  pub json: Option<PathBuf>,
 }
 
 #[derive(FromArgs, PartialEq, Debug)]

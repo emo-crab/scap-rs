@@ -1,19 +1,21 @@
 use chrono::{Duration, Utc};
 use diesel::r2d2::ConnectionManager;
-use diesel::{r2d2, MysqlConnection};
 use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::v2::LastModDate;
 
-use crate::cli::{KBCommand, SyncCommand};
+pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
+use cpe::create_cve_product;
+pub use cwe::import_cwe;
+use nvd_model::{Connection, Pool};
+
+use crate::cli::{CWECommand, KBCommand, SyncCommand};
 use crate::cpe::with_archive_cpe;
 use crate::cve::{async_cve, with_archive_cve};
+use crate::cwe::update_zh_cwe;
 use crate::kb::{
   akb_sync, import_from_nuclei_templates_path, update_from_github, update_from_rss,
   with_archive_exploit,
 };
-pub use cli::{CPECommand, CVECommand, NVDHelper, TopLevel};
-use cpe::create_cve_product;
-pub use cwe::import_cwe;
 
 mod cli;
 mod cpe;
@@ -21,9 +23,6 @@ mod cve;
 mod cwe;
 pub mod error;
 mod kb;
-
-pub type Connection = MysqlConnection;
-pub type Pool = r2d2::Pool<ConnectionManager<Connection>>;
 
 pub fn init_db_pool() -> Pool {
   let database_url = dotenvy::var("DATABASE_URL").expect("DATABASE_URL must be set");
@@ -61,6 +60,15 @@ pub async fn cve_mode(config: CVECommand) {
 pub async fn cpe_mode(config: CPECommand) {
   if let Some(path) = config.path {
     with_archive_cpe(path)
+  }
+}
+
+pub async fn cwe_mode(config: CWECommand) {
+  if let Some(path) = config.path {
+    import_cwe(path);
+  }
+  if let Some(path) = config.json {
+    update_zh_cwe(path);
   }
 }
 
