@@ -1,10 +1,13 @@
+use std::str::FromStr;
+
+use yew::prelude::*;
+
+use nvd_model::cwe::Cwe;
+
 use crate::component::MessageContext;
 use crate::console_log;
 use crate::services::cve::cwe_details;
 use crate::services::FetchState;
-use nvd_model::cwe::Cwe;
-use std::str::FromStr;
-use yew::prelude::*;
 
 // 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -69,12 +72,22 @@ impl Component for CWEDetails {
   }
   fn view(&self, _ctx: &Context<Self>) -> Html {
     if let Some(cwe) = self.cwe.clone() {
-      let mut description = cwe.description.chars();
+      let name = if !cwe.name_zh.is_empty() && self.i18n.current_lang == "zh" {
+        cwe.name_zh
+      } else {
+        cwe.name
+      };
+      let des = if !cwe.description_zh.is_empty() && self.i18n.current_lang == "zh" {
+        cwe.description_zh
+      } else {
+        cwe.description
+      };
+      let mut description = des.chars();
       return html! {
           <div class="card">
             <div class="card-header">
               <i class="ti ti-shield-check-filled"></i>
-              <h3 class="card-title">{cwe.name}<span class="card-subtitle">{format!("CWE-{}",cwe.id)}</span></h3>
+              <h3 class="card-title">{name}<span class="card-subtitle">{format!("CWE-{}",cwe.id)}</span></h3>
             </div>
           <div class="card-stamp">
               <div class="card-stamp-icon bg-red">
@@ -83,6 +96,7 @@ impl Component for CWEDetails {
             </div>
             <div class="card-body">
                 <h3 class="card-title"><span style="fonts-weight:200;text-shadow:none;display:block;float:left;line-height:24px;width:.7em;fonts-size:2.1em;fonts-family:georgia;margin-right:5px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
+                <p class="text-secondary" style="white-space: pre-line;">{cwe.remediation}</p>
               </div>
           </div>
       };

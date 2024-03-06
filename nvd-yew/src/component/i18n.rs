@@ -1,6 +1,7 @@
-use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::rc::Rc;
+
+use serde::{Deserialize, Serialize};
 use wasm_bindgen::JsCast;
 use web_sys::{EventTarget, HtmlButtonElement};
 use yew::prelude::*;
@@ -11,7 +12,7 @@ pub struct I18n {
   // 原来文本：_语言：翻译
   // Home: zh: 主页
   pub translations: HashMap<String, HashMap<String, String>>,
-  current_lang: String,
+  pub current_lang: String,
 }
 
 impl Reducible for I18n {
