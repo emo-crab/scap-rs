@@ -1,12 +1,13 @@
-use crate::cwe::{Cwe, QueryCwe};
-use crate::error::{DBError, DBResult};
-use crate::pagination::ListResponse;
-use crate::schema::cwes;
-use crate::DB;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use diesel::{
   ExpressionMethods, Insertable, MysqlConnection, QueryDsl, RunQueryDsl, TextExpressionMethods,
 };
+
+use crate::cwe::{Cwe, QueryCwe};
+use crate::error::{DBError, DBResult};
+use crate::pagination::ListResponse;
+use crate::schema::cwes;
+use crate::{Connection, DB};
 
 #[derive(Insertable)]
 #[diesel(table_name = cwes)]
@@ -14,6 +15,16 @@ pub struct CreateCwe {
   pub id: i32,
   pub name: String,
   pub description: String,
+  pub status: String,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = cwes)]
+pub struct UpdateCwe {
+  pub id: i32,
+  pub name_zh: String,
+  pub description_zh: String,
+  pub remediation: String,
 }
 
 impl QueryCwe {
@@ -44,7 +55,7 @@ impl QueryCwe {
 
 impl Cwe {
   // 创建弱点枚举
-  pub fn create(conn: &mut MysqlConnection, args: &CreateCwe) -> DBResult<Self> {
+  pub fn create(conn: &mut Connection, args: &CreateCwe) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(cwes::table).values(args).execute(conn) {
       // 重复了，说明已经存在弱点
       match err {
@@ -67,6 +78,18 @@ impl Cwe {
         .filter(cwes::id.eq(id))
         .first::<Self>(conn)?,
     )
+  }
+  pub fn update(conn: &mut MysqlConnection, args: &UpdateCwe) -> DBResult<Self> {
+    // 更新这个KB
+    let _id = diesel::update(cwes::table.filter(cwes::id.eq(&args.id)))
+      .set((
+        cwes::name_zh.eq(&args.name_zh),
+        cwes::description_zh.eq(&args.description_zh),
+        cwes::remediation.eq(&args.remediation),
+      ))
+      .execute(conn);
+    // mysql 不支持 get_result，要再查一次得到插入结果
+    Self::query_by_id(conn, &args.id)
   }
   pub fn query(
     conn: &mut MysqlConnection,

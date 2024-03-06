@@ -43,6 +43,12 @@ diesel::table! {
         #[max_length = 256]
         name -> Varchar,
         description -> Text,
+        #[max_length = 256]
+        name_zh -> Varchar,
+        description_zh -> Text,
+        #[max_length = 32]
+        status -> Varchar,
+        remediation -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
     }
