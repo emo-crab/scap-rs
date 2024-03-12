@@ -11,7 +11,7 @@ Vendors:
 Products:
   zh: 产品
 CWE:
-  zh: 弱点
+  zh: 脆弱点
 CVSS:
   zh: 评分
 Updated:
@@ -25,11 +25,11 @@ Resource:
 Tags:
   zh: 标签
 Weaknesses:
-  zh: 弱点
+  zh: 脆弱点
 KnowledgeBase:
   zh: 知识库
 Configurations:
-  zh: 影响组件
+  zh: 影响产品
 Comments:
   zh: 评论
 Operator:
@@ -110,3 +110,13 @@ Changed:
   zh: 更改
 Required:
   zh: 需要
+Source:
+  zh: 来源
+Vendor:
+  zh: 厂商
+Product:
+  zh: 产品
+CPE:
+  zh: 通用平台枚举
+Version:
+  zh: 版本

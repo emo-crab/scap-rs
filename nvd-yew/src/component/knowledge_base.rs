@@ -2,7 +2,7 @@ use yew::prelude::*;
 
 use nvd_model::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
 
-use crate::component::{KBRow, KbProps};
+use crate::component::{use_translation, KBRow, KbProps};
 use crate::console_log;
 use crate::modules::Paging;
 use crate::services::kb::knowledge_base_list;
@@ -76,16 +76,7 @@ impl Component for CVEKnowledgeBaseInfoList {
       return html! {
       <div class="table-responsive">
         <table class="table table-vcenter card-table table-striped">
-            <thead>
-              <tr>
-                <th scope="col">{"Name"}</th>
-                <th scope="col">{"Source"}</th>
-                <th scope="col">{"Verified"}</th>
-                <th scope="col">{"Path"}</th>
-                <th scope="col">{"Meta"}</th>
-                <th scope="col">{"Updated"}</th>
-              </tr>
-            </thead>
+          <KBHead/>
           <tbody>
           {knowledge_base.into_iter().map(|e|{
             let p = KbProps{props:e.clone()};
@@ -102,5 +93,21 @@ impl Component for CVEKnowledgeBaseInfoList {
     if first_render {
       ctx.link().send_message(Msg::Send);
     }
+  }
+}
+#[function_component]
+pub fn KBHead() -> Html {
+  let i18n = use_translation();
+  html! {
+    <thead>
+      <tr>
+        <th scope="col">{i18n.t("Name")}</th>
+        <th scope="col">{i18n.t("Source")}</th>
+        <th scope="col">{i18n.t("Verified")}</th>
+        <th scope="col">{i18n.t("Path")}</th>
+        <th scope="col">{i18n.t("Meta")}</th>
+        <th scope="col">{i18n.t("Updated")}</th>
+      </tr>
+    </thead>
   }
 }
