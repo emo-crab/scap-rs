@@ -86,18 +86,21 @@ impl Component for CWEDetails {
       return html! {
           <div class="card">
             <div class="card-header">
+              {self.status(&cwe.status)}
               <i class="ti ti-shield-check-filled"></i>
-              <h3 class="card-title">{name}<span class="card-subtitle">{format!("CWE-{}",cwe.id)}</span></h3>
+              <h3 class="card-title">{name}<a href={format!("https://cwe.mitre.org/data/definitions/{}.html",cwe.id)} class="text-reset text-nowrap" target="_blank" rel="noreferrer"><i class="ti ti-external-link"></i><span class="card-subtitle">{format!("CWE-{}",cwe.id)}</span></a></h3>
             </div>
           <div class="card-stamp">
               <div class="card-stamp-icon bg-red">
                 <i class="ti ti-shield-exclamation"></i>
               </div>
             </div>
-            <div class="card-body">
-                <h3 class="card-title"><span style="fonts-weight:200;text-shadow:none;display:block;float:left;line-height:24px;width:.7em;fonts-size:2.1em;fonts-family:georgia;margin-right:5px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
-                <p class="text-secondary" style="white-space: pre-line;">{cwe.remediation}</p>
+            if self.i18n.current_lang=="zh"{
+              <div class="card-body">
+                  <h3 class="card-title"><span style="fonts-weight:200;text-shadow:none;display:block;float:left;line-height:24px;width:.7em;fonts-size:2.1em;fonts-family:georgia;margin-right:5px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>
+                  <p class="text-secondary" style="white-space: pre-line;">{cwe.remediation}</p>
               </div>
+            }
           </div>
       };
     }
@@ -106,6 +109,32 @@ impl Component for CWEDetails {
   fn rendered(&mut self, ctx: &Context<Self>, first_render: bool) {
     if first_render {
       ctx.link().send_message(Msg::Send);
+    }
+  }
+}
+
+impl CWEDetails {
+  fn status(&self, status: &str) -> Html {
+    let i18n_status = self.i18n.t(status);
+    match status {
+      "Stable" => {
+        html! {<div><span class="badge bg-green"><i class="ti ti-check"></i>{i18n_status}</span></div>}
+      }
+      "Obsolete" => {
+        html! {<div><span class="badge bg-azure"><i class="ti ti-urgent"></i>{i18n_status}</span></div>}
+      }
+      "Incomplete" => {
+        html! {<div><span class="badge bg-vk"><i class="ti ti-time-duration-off"></i>{i18n_status}</span></div>}
+      }
+      "Draft" => {
+        html! {<div><span class="badge bg-teal"><i class="ti ti-notes"></i>{i18n_status}</span></div>}
+      }
+      "Deprecated" => {
+        html! {<div><span class="badge bg-red"><i class="ti ti-text-decrease"></i>{i18n_status}</span></div>}
+      }
+      _ => {
+        html! {<div><span class="badge"><i class="ti ti-check"></i>{i18n_status}</span></div>}
+      }
     }
   }
 }

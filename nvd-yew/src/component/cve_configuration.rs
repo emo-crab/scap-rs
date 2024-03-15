@@ -6,9 +6,11 @@ use yew::prelude::*;
 pub struct CVEConfigurationProps {
   pub props: Vec<nvd_cves::v4::configurations::Node>,
 }
+
 pub enum Msg {
   Lang(MessageContext),
 }
+
 pub struct CVEConfiguration {
   i18n: MessageContext,
   _context_listener: ContextHandle<MessageContext>,
@@ -41,6 +43,7 @@ impl Component for CVEConfiguration {
     html! {
         <Accordion name={"Configurations"}>
             <div class="table-responsive">
+              if !configuration.is_empty(){
               <table class="table table-vcenter card-table table-striped">
                 <thead>
                   <tr>
@@ -52,6 +55,7 @@ impl Component for CVEConfiguration {
                 {self.node(configuration)}
                 </tbody>
               </table>
+            }
             </div>
         </Accordion>
     }
@@ -126,7 +130,7 @@ impl CVEConfiguration {
   }
   fn node(&self, nodes: Vec<nvd_cves::v4::configurations::Node>) -> Html {
     nodes.into_iter().map(|node| {
-            html! {
+      html! {
             <tr>
             <td class="col-md-1">
                 <i class={classes!( ["ti",operator(node.operator.clone())])}></i>{format!("{:?}",node.operator)}
@@ -145,7 +149,7 @@ impl CVEConfiguration {
             </td>
           </tr>
           }
-        }).collect::<Html>()
+    }).collect::<Html>()
   }
 }
 // CVE-2023-0056
