@@ -15,6 +15,4 @@ jobs:
     uses: ./.github/workflows/docker-publish.yml
     with:
       deploy_to_fly: true
-    needs:
-      - docker
     secrets: inherit
