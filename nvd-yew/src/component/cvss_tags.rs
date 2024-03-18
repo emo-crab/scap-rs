@@ -244,14 +244,14 @@ impl Component for V2CardTag {
         <div class="justify-content-between align-items-start">
           <li class="card card-sm card-link card-link-pop">
             <div class={classes!(["card-status-start",class_str])}></div>
-            <div class="card-header p-2"><h5 class="card-title">{name}</h5>
+            <div class="card-header p-2"><h5 class="card-title">{self.i18n.t(name)}</h5>
             <div class="card-actions">
             <TooltipPopover
               toggle={"toggle"}
               placement={"top"}
               content={des}>
               <span class={classes!(["badge",class_str])}>
-                <i class={classes!( ["ti",icon])}></i>{value}
+                <i class={classes!( ["ti",icon])}></i>{self.i18n.t(&value)}
               </span>
             </TooltipPopover>
             </div>

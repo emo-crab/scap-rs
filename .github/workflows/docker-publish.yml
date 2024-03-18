@@ -3,6 +3,13 @@ on:
   push:
     tags:
       - "v*"
+  workflow_call:
+    inputs:
+      deploy_to_fly:
+        description: '[Auto Fly Deploy]'
+        required: false
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       deploy_to_fly:
