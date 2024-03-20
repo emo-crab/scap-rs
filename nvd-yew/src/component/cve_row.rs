@@ -1,6 +1,7 @@
-use crate::component::cvss_tags::{cvss2, cvss3};
+use crate::component::cvss_tags::cvss;
 use crate::routes::Route;
 use std::collections::HashSet;
+use std::ops::Deref;
 
 use nvd_model::cve::Cve;
 use yew::prelude::*;
@@ -41,12 +42,7 @@ pub fn CVERow(props: &CveProps) -> Html {
       .map(|v| v.vendor.clone())
       .collect::<Vec<String>>(),
   );
-  let metrics = props.metrics.clone();
-  let v3 = if metrics.base_metric_v31.inner().is_some() {
-    metrics.base_metric_v31.inner()
-  } else {
-    metrics.base_metric_v3.inner()
-  };
+  let metrics = props.metrics.deref();
   html! {
   <>
       <tr class="table-group-divider">
@@ -95,10 +91,7 @@ pub fn CVERow(props: &CveProps) -> Html {
           }).collect::<Html>()}
         </td>
         <td>
-          {cvss2(metrics.base_metric_v2.inner())}
-        </td>
-        <td>
-          {cvss3(v3)}
+          {cvss(metrics)}
         </td>
         <td class="text-truncate text-nowrap">
           <span>{update}</span>

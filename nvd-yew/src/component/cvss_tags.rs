@@ -1,7 +1,30 @@
 use crate::component::{MessageContext, TooltipPopover};
+use nvd_cves::impact::ImpactMetrics;
 use nvd_cvss::metric::{Help, Worth};
 use nvd_cvss::severity::{SeverityType, SeverityTypeV2};
 use yew::prelude::*;
+
+pub fn cvss(metrics: &ImpactMetrics) -> Html {
+  let na = metrics.base_metric_v31.inner().is_none()
+    && metrics.base_metric_v3.inner().is_none()
+    && metrics.base_metric_v2.inner().is_none();
+  html! {
+    <>
+    if let Some(v31)=metrics.base_metric_v31.inner(){
+      {cvss3(Some(v31))}
+    }
+    if let Some(v30)=metrics.base_metric_v3.inner(){
+      {cvss3(Some(v30))}
+    }
+    if let Some(v2)=metrics.base_metric_v2.inner(){
+      {cvss2(Some(v2))}
+    }
+    if na{
+      <span class="badge bg-secondary"><b style="fonts-size:larger">{"N/A"}</b></span>
+    }
+    </>
+  }
+}
 
 pub fn cvss2(metric: Option<&nvd_cvss::v2::ImpactMetricV2>) -> Html {
   let mut score = String::from("N/A");

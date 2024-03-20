@@ -198,8 +198,7 @@ pub fn CVEHead() -> Html {
         <th scope="col">{i18n.t("Vendors")}</th>
         <th scope="col">{i18n.t("Products")}</th>
         <th scope="col">{i18n.t("CWE")}</th>
-        <th scope="col">{i18n.t("CVSS") +" v2"}</th>
-        <th scope="col">{i18n.t("CVSS")+" v3"}</th>
+        <th scope="col">{i18n.t("CVSS")}</th>
         <th scope="col">{i18n.t("Updated")}</th>
       </tr>
     </thead>
