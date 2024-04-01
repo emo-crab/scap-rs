@@ -1,3 +1,4 @@
+#![allow(clippy::large_enum_variant)]
 use yew::prelude::*;
 
 use nvd_model::knowledge_base::{KnowledgeBase, QueryKnowledgeBase};
@@ -20,7 +21,7 @@ pub struct IDProps {
   pub id: String,
 }
 
-#[allow(clippy::large_enum_variant)]
+
 pub enum Msg {
   SetFetchState(FetchState<CVEKnowledgeBaseInfoList>),
   Send,
