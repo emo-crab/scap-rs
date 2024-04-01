@@ -34,6 +34,8 @@ pub struct CVECommand {
   pub hours: Option<i64>,
   #[argh(option, description = "update cve from nvd api by id")]
   pub id: Option<String>,
+  #[argh(switch, description = "update cve from cnnvd api")]
+  pub cnnvd_api: bool,
 }
 
 #[derive(FromArgs, PartialEq, Debug)]

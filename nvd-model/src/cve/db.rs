@@ -74,6 +74,7 @@ impl Cve {
             .set((
               cves::assigner.eq(&args.assigner),
               cves::description.eq(&args.description),
+              cves::translated.eq(0),
               cves::severity.eq(&args.severity),
               cves::metrics.eq(&args.metrics),
               cves::weaknesses.eq(&args.weaknesses),

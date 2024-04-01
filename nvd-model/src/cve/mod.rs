@@ -22,6 +22,7 @@ pub struct Cve {
   pub year: i32,
   pub assigner: String,
   pub description: AnyValue<Vec<nvd_cves::v4::Description>>,
+  pub translated: u8,
   pub severity: String,
   pub metrics: AnyValue<nvd_cves::impact::ImpactMetrics>,
   pub weaknesses: AnyValue<Vec<nvd_cves::v4::Weaknesses>>,

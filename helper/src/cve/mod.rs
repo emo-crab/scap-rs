@@ -1,3 +1,4 @@
+use chrono::{NaiveDate, Utc};
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
@@ -5,6 +6,7 @@ use std::ops::DerefMut;
 use std::path::PathBuf;
 use std::str::FromStr;
 
+use cnvd::cnnvd::{CNNVDData, VulListParametersBuilder};
 use diesel::mysql::MysqlConnection;
 use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;
@@ -138,5 +140,25 @@ pub(crate) fn with_archive_cve(path: PathBuf) {
   let c: CVEContainer = serde_json::from_reader(file).unwrap();
   for w in c.CVE_Items {
     import_from_archive(connection_pool.get().unwrap().deref_mut(), w).unwrap_or_default();
+  }
+}
+
+pub async fn cnnvd_api() {
+  let api = cnvd::cnnvd::CNNVDApi::new().unwrap();
+  let list = api
+    .vul_list(
+      VulListParametersBuilder::default()
+        .end_time(Some(NaiveDate::from(Utc::now().naive_local())))
+        .build()
+        .unwrap(),
+    )
+    .await
+    .unwrap();
+  if let CNNVDData::VulList(list) = list.data {
+    for v in list.records {
+      if let CNNVDData::Detail(detail) = api.detail(v.into()).await.unwrap().data {
+        println!("{:?}", detail);
+      }
+    }
   }
 }

@@ -26,6 +26,7 @@ diesel::table! {
         #[max_length = 64]
         assigner -> Varchar,
         description -> Json,
+        translated -> Unsigned<Tinyint>,
         #[max_length = 32]
         severity -> Varchar,
         metrics -> Json,

@@ -21,7 +21,6 @@ pub struct IDProps {
   pub id: String,
 }
 
-
 pub enum Msg {
   SetFetchState(FetchState<CVEKnowledgeBaseInfoList>),
   Send,

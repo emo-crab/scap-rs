@@ -17,6 +17,7 @@ nvd-cves = { version = "0.1.1" }
 nvd-cpe = { version = "0.1.0" }
 nvd-cvss = { version = "0.1.0" }
 nvd-api = { version = "0.1.0" }
+cnvd = { path = "../cnvd" }
 serde_json = "1.0"
 serde = { version = "1", features = ["derive"] }
 quick-xml = { version = "0.31.0", features = ["serde", "encoding_rs", "serialize"] }

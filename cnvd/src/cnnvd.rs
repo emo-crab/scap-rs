@@ -1,8 +1,11 @@
 // CNVD的反爬需要执行js设置cookie，而且有防火墙。所以选CNNVD的API
 #![allow(clippy::large_enum_variant)]
 
+use crate::error::Error;
+use chrono::NaiveDate;
+use derive_builder::Builder;
+use reqwest::{ClientBuilder, RequestBuilder};
 use serde::{Deserialize, Serialize};
-
 const BASE_URL: &str = "https://www.cnnvd.org.cn/web/";
 
 #[derive(Debug, Clone)]
@@ -10,20 +13,80 @@ pub struct CNNVDApi {
   base_path: String,
   client: reqwest::Client,
 }
+impl CNNVDApi {
+  pub fn new() -> Result<Self, Error> {
+    let api_client = ClientBuilder::new()
+      .build()
+      .map_err(|source| Error::BuildingClient { source })?;
+    Ok(CNNVDApi {
+      base_path: BASE_URL.to_owned(),
+      client: api_client,
+    })
+  }
+  async fn request(&self, request: RequestBuilder) -> Result<CNNVDResult, Error> {
+    let request = request.build()?;
+    let result = self
+      .client
+      .execute(request)
+      .await
+      .map_err(|source| Error::RequestFailed { source })?
+      .json()
+      .await
+      .map_err(|source| Error::ResponseIo { source })?;
+    // let result = serde_json::from_str(&json).unwrap();
+    Ok(result)
+  }
+}
+impl CNNVDApi {
+  pub async fn detail(&self, query: DetailParameters) -> Result<CNNVDResult, Error> {
+    let u = format!(
+      "{}/{}",
+      self.base_path, "cnnvdVul/getCnnnvdDetailOnDatasource"
+    );
+    self.request(self.client.post(u).json(&query)).await
+  }
+  pub async fn vul_list(&self, query: VulListParameters) -> Result<CNNVDResult, Error> {
+    let u = format!("{}/{}", self.base_path, "homePage/cnnvdVulList");
+    self.request(self.client.post(u).json(&query)).await
+  }
+}
+#[derive(Default, Debug, Clone, Serialize, Deserialize, Builder)]
+#[serde(rename_all = "camelCase")]
+#[builder(setter(into), default)]
+pub struct DetailParameters {
+  pub id: Option<String>,
+  pub vul_type: Option<String>,
+  pub cnnvd_code: Option<String>,
+}
+#[derive(Default, Debug, Clone, Serialize, Deserialize, Builder)]
+#[serde(rename_all = "camelCase")]
+#[builder(setter(into), default)]
+pub struct VulListParameters {
+  pub begin_time: Option<NaiveDate>,
+  pub end_time: Option<NaiveDate>,
+  pub page_index: Option<i64>,
+  pub page_size: Option<i64>,
+  pub keyword: Option<String>,
+  pub hazard_level: Option<String>,
+  pub vul_type: Option<String>,
+  pub vendor: Option<String>,
+  pub product: Option<String>,
+  pub date_type: Option<String>,
+}
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CNNVD {
-  code: u16,
-  success: bool,
-  message: String,
-  data: Data,
-  time: String,
+pub struct CNNVDResult {
+  pub code: u16,
+  pub success: bool,
+  pub message: String,
+  pub data: CNNVDData,
+  pub time: String,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum Data {
+pub enum CNNVDData {
   Detail(Detail),
   VulList(VulList),
   None,
@@ -32,26 +95,26 @@ pub enum Data {
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Detail {
-  pub cnnvd_detail: CnnvdDetail,
+  pub cnnvd_detail: CNNVDDetail,
   pub recevice_vul_detail: Option<String>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CnnvdDetail {
+pub struct CNNVDDetail {
   pub id: Option<String>,
   pub vul_name: String,
   pub cnnvd_code: String,
   pub cve_code: String,
   pub publish_time: String,
   pub is_official: i64,
-  pub vendor: String,
-  pub hazard_level: Option<String>,
+  pub vendor: Option<String>,
+  pub hazard_level: Option<u16>,
   pub vul_type: String,
   pub vul_type_name: String,
   pub vul_desc: String,
   pub affected_product: Option<String>,
-  pub affected_vendor: String,
+  pub affected_vendor: Option<String>,
   pub product_desc: Option<String>,
   pub affected_system: Option<String>,
   pub refer_url: String,
@@ -103,4 +166,14 @@ pub struct Record {
   pub update_time: String,
   pub type_name: Option<String>,
   pub vul_type: String,
+}
+
+impl From<Record> for DetailParameters {
+  fn from(val: Record) -> Self {
+    DetailParameters {
+      id: Some(val.id),
+      vul_type: Some(val.vul_type),
+      cnnvd_code: Some(val.cnnvd_code),
+    }
+  }
 }

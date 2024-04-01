@@ -10,7 +10,7 @@ use nvd_model::{Connection, Pool};
 
 use crate::cli::{CWECommand, KBCommand, SyncCommand};
 use crate::cpe::with_archive_cpe;
-use crate::cve::{async_cve, with_archive_cve};
+use crate::cve::{async_cve, cnnvd_api, with_archive_cve};
 use crate::cwe::update_zh_cwe;
 use crate::kb::{
   akb_sync, import_from_nuclei_templates_path, update_from_github, update_from_rss,
@@ -53,7 +53,10 @@ pub async fn cve_mode(config: CVECommand) {
         ..param
       };
     }
-    async_cve(param).await
+    async_cve(param).await;
+  }
+  if config.cnnvd_api {
+    cnnvd_api().await;
   }
 }
 
