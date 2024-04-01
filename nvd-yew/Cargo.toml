@@ -32,7 +32,7 @@ nvd-cpe = { version = "0.1.0" }
 nvd-cvss = { version = "0.1.0" }
 chrono = { version = "0.4", default-features = false, features = ["serde", "wasmbind", "clock"] }
 js-sys = "0.3.65"
-reqwest = { version = "0.11", features = ["json", "cookies"] }
+reqwest = { version = "0.12", features = ["json", "cookies"] }
 serde = "1"
 thiserror = "1.0"
 wasm-bindgen-futures = "0.4.37"
