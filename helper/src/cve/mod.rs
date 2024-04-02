@@ -180,6 +180,7 @@ pub async fn cnnvd_api() -> HelperResult<()> {
   // 更新还没翻译的漏洞
   let args = QueryCve {
     translated: Some(0),
+    page: Some(1),
     ..QueryCve::default()
   };
   if let Ok(list) = Cve::query(connection_pool.get().unwrap().deref_mut(), &args) {

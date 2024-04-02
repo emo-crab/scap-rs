@@ -7,6 +7,7 @@ RUN --mount=type=cache,target=/var/lib/cache/ apt-get update &&\
 COPY .cargo .cargo
 COPY helper/Cargo.toml Cargo.toml
 COPY nvd-model/ /nvd-model
+COPY cnvd/ /cnvd
 RUN cargo fetch
 COPY helper/src src
 RUN cargo build --release
