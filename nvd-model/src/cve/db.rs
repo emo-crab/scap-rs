@@ -67,9 +67,6 @@ impl Cve {
   }
   pub fn update_translated(conn: &mut MysqlConnection, id: &str, description: &str) {
     if let Ok(mut c) = Cve::query_by_id(conn, id) {
-      if c.translated == 1 {
-        return;
-      }
       c.update_description("zh".to_string(), description.to_string());
       diesel::update(cves::table.filter(cves::id.eq(id)))
         .set((

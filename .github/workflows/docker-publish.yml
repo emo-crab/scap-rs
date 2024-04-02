@@ -3,20 +3,7 @@ on:
   push:
     tags:
       - "v*"
-  workflow_call:
-    inputs:
-      deploy_to_fly:
-        description: '[Auto Fly Deploy]'
-        required: false
-        type: boolean
-        default: false
-  workflow_dispatch:
-    inputs:
-      deploy_to_fly:
-        description: '[Auto Fly Deploy]'
-        required: false
-        type: boolean
-        default: false
+
 jobs:
   docker:
     runs-on: ubuntu-latest
@@ -53,9 +40,13 @@ jobs:
           tags: ${{ secrets.DOCKER_USERNAME }}/nvd-helper-rs:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/nvd-helper-rs:latest
           cache-to: type=inline
-  deploy:
-    if: inputs.deploy_to_fly
-    uses: ./.github/workflows/fly.yml
-    needs:
-      - docker
-    secrets: inherit
+      - name: Build and push scap-fly
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: DockerfileFly
+          platforms: linux/amd64
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/scap-fly:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/scap-fly:latest
+          cache-to: type=inline

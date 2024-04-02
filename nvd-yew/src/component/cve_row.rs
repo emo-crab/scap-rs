@@ -6,6 +6,7 @@ use std::ops::Deref;
 use nvd_model::cve::Cve;
 use yew::prelude::*;
 use yew_router::prelude::*;
+use crate::component::use_translation;
 
 // 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -23,12 +24,30 @@ pub fn CVERow(props: &CveProps) -> Html {
     set_product,
     ..
   } = props;
+  let i18n = use_translation();
   let cve_id = props.id.clone();
-  let description = props
-    .description
+  let mut description = props.description
     .iter()
+    .filter(|d| d.lang == i18n.current_lang)
     .map(|d| d.value.clone())
-    .collect::<Vec<String>>();
+    .collect::<String>();
+  // 把第一行丢弃掉，第一行是组件描述
+  let lines: Vec<&str> = description.lines().collect();
+  if lines.len() >= 2 {
+    let desc: Vec<String> = lines.iter()
+      .enumerate()
+      .filter(|(i, _d)| i != &0)
+      .map(|(_i, d)| d.to_string())
+      .collect();
+    description = desc.join("\r\n");
+  }
+  if description.is_empty() {
+    description = props.description
+      .iter()
+      .filter(|d| d.lang == "en")
+      .map(|d| d.value.clone())
+      .collect::<String>();
+  }
   let update = props.updated_at.to_string();
   let cwe: HashSet<String> = props
     .weaknesses
@@ -98,7 +117,7 @@ pub fn CVERow(props: &CveProps) -> Html {
         </td>
       </tr>
       <tr class="table-success">
-        <th scope="row" colspan="7" class="table table-active text-truncate" style="max-width: 150px;">{description.join("")}</th>
+        <th scope="row" colspan="7" class="table table-active text-truncate" style="max-width: 150px;">{description}</th>
       </tr>
   </>
   }
