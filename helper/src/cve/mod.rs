@@ -1,4 +1,3 @@
-use chrono::{NaiveDate, Utc};
 use std::collections::HashSet;
 use std::fs::File;
 use std::io::BufReader;
@@ -6,18 +5,20 @@ use std::ops::DerefMut;
 use std::path::PathBuf;
 use std::str::FromStr;
 
-use cnvd::cnnvd::{CNNVDData, VulListParametersBuilder};
+use chrono::{Duration, Utc};
 use diesel::mysql::MysqlConnection;
 use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::ApiVersion;
 
+use cnvd::cnnvd::{CNNVDData, VulListParameters, VulListParametersBuilder};
 use nvd_cves::v4::{CVEContainer, CVEItem};
-use nvd_model::cve::{CreateCve, Cve};
+use nvd_model::cve::{CreateCve, Cve, QueryCve};
 use nvd_model::error::DBResult;
 use nvd_model::types::AnyValue;
 
 use crate::cpe::{del_expire_product, import_vendor_product_to_db};
+use crate::error::HelperResult;
 use crate::kb::associate_cve_and_exploit;
 use crate::{create_cve_product, init_db_pool};
 
@@ -143,22 +144,54 @@ pub(crate) fn with_archive_cve(path: PathBuf) {
   }
 }
 
-pub async fn cnnvd_api() {
+async fn update_translated_from_cnnvd_api(
+  connection: &mut MysqlConnection,
+  parameter: VulListParameters,
+) -> HelperResult<()> {
   let api = cnvd::cnnvd::CNNVDApi::new().unwrap();
-  let list = api
-    .vul_list(
-      VulListParametersBuilder::default()
-        .end_time(Some(NaiveDate::from(Utc::now().naive_local())))
-        .build()
-        .unwrap(),
-    )
-    .await
-    .unwrap();
+  let list = api.vul_list(parameter).await?;
   if let CNNVDData::VulList(list) = list.data {
     for v in list.records {
-      if let CNNVDData::Detail(detail) = api.detail(v.into()).await.unwrap().data {
-        println!("{:?}", detail);
+      if let Ok(detail) = api.detail(v.into()).await {
+        if let CNNVDData::Detail(detail) = detail.data {
+          if let Some(cve_id) = detail.cnnvd_detail.cve_code {
+            Cve::update_translated(connection, &cve_id, &detail.cnnvd_detail.vul_desc);
+            println!("更新了翻译：{}", cve_id);
+          }
+        }
       }
     }
   }
+  Ok(())
+}
+
+// 更新今天的翻译
+pub async fn cnnvd_api() -> HelperResult<()> {
+  let connection_pool = init_db_pool();
+  let q = VulListParametersBuilder::default()
+    .end_time(Some(Utc::now().date_naive()))
+    .begin_time(Some((Utc::now() - Duration::days(3)).date_naive()))
+    .page_size(Some(50))
+    .build()
+    .unwrap_or_default();
+  update_translated_from_cnnvd_api(connection_pool.get().unwrap().deref_mut(), q)
+    .await
+    .unwrap_or_default();
+  // 更新还没翻译的漏洞
+  let args = QueryCve {
+    translated: Some(0),
+    ..QueryCve::default()
+  };
+  if let Ok(list) = Cve::query(connection_pool.get().unwrap().deref_mut(), &args) {
+    for cve in list.result {
+      let cve_args = VulListParametersBuilder::default()
+        .keyword(Some(cve.id))
+        .build()
+        .unwrap_or_default();
+      update_translated_from_cnnvd_api(connection_pool.get().unwrap().deref_mut(), cve_args)
+        .await
+        .unwrap_or_default();
+    }
+  }
+  Ok(())
 }

@@ -56,7 +56,7 @@ pub async fn cve_mode(config: CVECommand) {
     async_cve(param).await;
   }
   if config.cnnvd_api {
-    cnnvd_api().await;
+    cnnvd_api().await.unwrap_or_default();
   }
 }
 
@@ -107,7 +107,8 @@ pub async fn sync_mode(config: SyncCommand) {
       three_hours.to_rfc3339(),
       now.to_rfc3339()
     );
-    async_cve(param).await
+    async_cve(param).await;
+    cnnvd_api().await.unwrap_or_default();
   }
   if config.kb {
     update_from_rss().await;

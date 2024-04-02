@@ -7,4 +7,9 @@ pub enum Error {
     #[from]
     source: attackerkb_api_rs::error::Error,
   },
+  #[error("Error CNNVDApi: {}", source)]
+  CNNVDApi {
+    #[from]
+    source: cnvd::error::Error,
+  },
 }
