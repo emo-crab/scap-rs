@@ -23,6 +23,9 @@ impl QueryCve {
     if let Some(year) = &self.year {
       query = query.filter(cves::year.eq(year));
     }
+    if let Some(translated) = &self.translated {
+      query = query.filter(cves::translated.eq(translated));
+    }
     // 根据供应商和产品查询CVE编号，和字段ID冲突
     if self.vendor.is_some() || self.product.is_some() {
       let cve_ids = CveProduct::query_cve_by_product(
