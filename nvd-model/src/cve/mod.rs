@@ -1,9 +1,5 @@
-#[cfg(feature = "db")]
-pub mod db;
+use std::collections::HashMap;
 
-#[cfg(feature = "db")]
-use crate::schema::cves;
-use crate::types::AnyValue;
 use chrono::NaiveDateTime;
 #[cfg(feature = "db")]
 use diesel::{Identifiable, Insertable, Queryable};
@@ -12,6 +8,13 @@ use serde::{Deserialize, Serialize};
 use utoipa::{IntoParams, ToSchema};
 #[cfg(feature = "yew")]
 use yew::Properties;
+
+#[cfg(feature = "db")]
+use crate::schema::cves;
+use crate::types::AnyValue;
+
+#[cfg(feature = "db")]
+pub mod db;
 
 #[cfg_attr(feature = "openapi", derive(ToSchema))]
 #[cfg_attr(feature = "db", derive(Queryable, Identifiable), diesel(table_name = cves))]
@@ -60,6 +63,8 @@ pub struct QueryCve {
   pub year: Option<i32>,
   // 是否为官方数据
   pub official: Option<u8>,
+  // 是否已经翻译
+  pub translated: Option<u8>,
   // 供应商
   pub vendor: Option<String>,
   // 产品
@@ -70,4 +75,30 @@ pub struct QueryCve {
   pub size: Option<i64>,
   // 分页偏移
   pub page: Option<i64>,
+}
+
+impl Cve {
+  fn description_to_map(&self) -> HashMap<String, String> {
+    let mut dm = HashMap::new();
+    for d in self.description.iter() {
+      dm.insert(d.lang.clone(), d.value.clone());
+    }
+    dm
+  }
+  fn map_to_description(
+    &self,
+    dm: HashMap<String, String>,
+  ) -> AnyValue<Vec<nvd_cves::v4::Description>> {
+    let mut description = Vec::new();
+    for (lang, value) in dm {
+      description.push(nvd_cves::v4::Description { lang, value })
+    }
+    AnyValue::new(description)
+  }
+  pub fn update_description(&mut self, lang: String, value: String) {
+    let mut dm = self.description_to_map();
+    dm.insert(lang, value);
+    self.description = self.map_to_description(dm);
+    self.translated = true as u8;
+  }
 }

@@ -1,3 +1,6 @@
+use diesel::result::{DatabaseErrorKind, Error as DieselError};
+use diesel::{ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
+
 use crate::cve::{CreateCve, Cve, QueryCve};
 use crate::cve_product::db::ProductByName;
 use crate::cve_product::CveProduct;
@@ -5,8 +8,6 @@ use crate::error::{DBError, DBResult};
 use crate::pagination::ListResponse;
 use crate::schema::cves;
 use crate::DB;
-use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use diesel::{ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
 
 impl QueryCve {
   // 查询参数过滤实现,免得写重复的过滤代码
@@ -63,6 +64,21 @@ impl Cve {
     }
     // mysql 不支持 get_result，要再查一次得到插入结果
     Self::query_by_id(conn, &args.id)
+  }
+  pub fn update_translated(conn: &mut MysqlConnection, id: &str, description: &str) {
+    if let Ok(mut c) = Cve::query_by_id(conn, id) {
+      if c.translated == 1 {
+        return;
+      }
+      c.update_description("zh".to_string(), description.to_string());
+      diesel::update(cves::table.filter(cves::id.eq(id)))
+        .set((
+          cves::description.eq(&c.description),
+          cves::translated.eq(&c.translated),
+        ))
+        .execute(conn)
+        .unwrap_or_default();
+    };
   }
   pub fn create_or_update(conn: &mut MysqlConnection, args: &CreateCve) -> DBResult<Self> {
     if let Err(err) = diesel::insert_into(cves::table).values(args).execute(conn) {
