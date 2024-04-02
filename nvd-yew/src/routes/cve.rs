@@ -215,11 +215,18 @@ impl CVEDetails {
     }
   }
   fn description(&self, description_data: &[nvd_cves::v4::Description]) -> Html {
-    let description = description_data
+    let mut description = description_data
       .iter()
-      .filter(|d| d.lang == "en")
+      .filter(|d| d.lang == self.i18n.current_lang)
       .map(|d| d.value.clone())
       .collect::<String>();
+    if description.is_empty() {
+      description = description_data
+        .iter()
+        .filter(|d| d.lang == "en")
+        .map(|d| d.value.clone())
+        .collect::<String>();
+    }
     let mut description = description.chars();
     html! {
       <h3 class="card-title"><span style="fonts-weight:400;text-shadow:none;display:block;float:left;line-height:36px;width:.7em;fonts-size:3.1em;fonts-family:georgia;margin-right:6px;">{description.next().unwrap_or_default()}</span>{description.collect::<String>()}</h3>

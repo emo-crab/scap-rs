@@ -68,6 +68,7 @@ impl Component for CVEQuery {
           },
           year: None,
           official: None,
+          translated: None,
           vendor: if vendor.is_empty() {
             None
           } else {
