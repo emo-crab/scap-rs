@@ -11,7 +11,7 @@ use nvd_api::pagination::Object;
 use nvd_api::v2::vulnerabilities::CveParameters;
 use nvd_api::ApiVersion;
 
-use cnvd::cnnvd::{CNNVDData, VulListParameters, VulListParametersBuilder};
+use cnvd::cnnvd::{CNNVDData, DataType, VulListParameters, VulListParametersBuilder};
 use nvd_cves::v4::{CVEContainer, CVEItem};
 use nvd_model::cve::{CreateCve, Cve, QueryCve};
 use nvd_model::error::DBResult;
@@ -172,6 +172,7 @@ pub async fn cnnvd_api() -> HelperResult<()> {
     .end_time(Some(Utc::now().date_naive()))
     .begin_time(Some((Utc::now() - Duration::days(3)).date_naive()))
     .page_size(Some(50))
+    .date_type(Some(DataType::UpdateTime))
     .build()
     .unwrap_or_default();
   update_translated_from_cnnvd_api(connection_pool.get().unwrap().deref_mut(), q)
@@ -180,7 +181,7 @@ pub async fn cnnvd_api() -> HelperResult<()> {
   // 更新还没翻译的漏洞
   let args = QueryCve {
     translated: Some(0),
-    page: Some(1),
+    page: Some(3),
     ..QueryCve::default()
   };
   if let Ok(list) = Cve::query(connection_pool.get().unwrap().deref_mut(), &args) {

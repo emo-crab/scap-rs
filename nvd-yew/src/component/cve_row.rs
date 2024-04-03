@@ -3,10 +3,10 @@ use crate::routes::Route;
 use std::collections::HashSet;
 use std::ops::Deref;
 
+use crate::component::use_translation;
 use nvd_model::cve::Cve;
 use yew::prelude::*;
 use yew_router::prelude::*;
-use crate::component::use_translation;
 
 // 单行的cve信息，和点击供应商，产品回调
 #[derive(PartialEq, Clone, Properties)]
@@ -26,7 +26,8 @@ pub fn CVERow(props: &CveProps) -> Html {
   } = props;
   let i18n = use_translation();
   let cve_id = props.id.clone();
-  let mut description = props.description
+  let mut description = props
+    .description
     .iter()
     .filter(|d| d.lang == i18n.current_lang)
     .map(|d| d.value.clone())
@@ -34,7 +35,8 @@ pub fn CVERow(props: &CveProps) -> Html {
   // 把第一行丢弃掉，第一行是组件描述
   let lines: Vec<&str> = description.lines().collect();
   if lines.len() >= 2 {
-    let desc: Vec<String> = lines.iter()
+    let desc: Vec<String> = lines
+      .iter()
       .enumerate()
       .filter(|(i, _d)| i != &0)
       .map(|(_i, d)| d.to_string())
@@ -42,7 +44,8 @@ pub fn CVERow(props: &CveProps) -> Html {
     description = desc.join("\r\n");
   }
   if description.is_empty() {
-    description = props.description
+    description = props
+      .description
       .iter()
       .filter(|d| d.lang == "en")
       .map(|d| d.value.clone())

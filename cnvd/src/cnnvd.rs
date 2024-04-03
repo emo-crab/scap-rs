@@ -77,7 +77,15 @@ pub struct VulListParameters {
   pub vul_type: Option<String>,
   pub vendor: Option<String>,
   pub product: Option<String>,
-  pub date_type: Option<String>,
+  pub date_type: Option<DataType>,
+}
+
+#[derive(Default, Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub enum DataType {
+  #[default]
+  UpdateTime,
+  PublishTime,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
