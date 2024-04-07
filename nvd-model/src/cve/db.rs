@@ -1,5 +1,7 @@
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
-use diesel::{ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
+use diesel::{BoxableExpression, ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
+use diesel::expression::expression_types::NotSelectable;
+use crate::common::order::OrderBy;
 
 use crate::cve::{CreateCve, Cve, QueryCve};
 use crate::cve_product::db::ProductByName;
@@ -39,6 +41,13 @@ impl QueryCve {
     }
     if let Some(severity) = &self.severity {
       query = query.filter(cves::severity.eq(severity.to_lowercase()));
+    }
+    if let Some(order) = &self.order {
+      let o:Box<dyn BoxableExpression<cves::table, _, SqlType = NotSelectable>> = match order.order {
+        OrderBy::Asc =>  Box::new(cves::id.asc()),
+        OrderBy::Desc =>  Box::new(cves::id.desc())
+      };
+      query = query.order_by(o);
     }
     Ok(query)
   }
@@ -127,7 +136,6 @@ impl Cve {
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;
       query
-        .order(cves::id.desc())
         .offset(page * size)
         .limit(size)
         .load::<Cve>(conn)?

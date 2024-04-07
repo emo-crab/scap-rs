@@ -12,6 +12,7 @@ use yew::Properties;
 #[cfg(feature = "db")]
 use crate::schema::cves;
 use crate::types::AnyValue;
+use crate::common::order::{OrderMap, order_serde};
 
 #[cfg(feature = "db")]
 pub mod db;
@@ -75,6 +76,9 @@ pub struct QueryCve {
   pub size: Option<i64>,
   // 分页偏移
   pub page: Option<i64>,
+  // 排序
+  #[serde(with = "order_serde", default)]
+  pub order: Option<OrderMap>,
 }
 
 impl Cve {
