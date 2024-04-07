@@ -86,6 +86,7 @@ impl Component for CVEQuery {
           },
           size: query.size,
           page: query.page,
+          order: None,
         })
       })
     };

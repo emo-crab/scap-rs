@@ -1,7 +1,7 @@
+use crate::common::order::OrderBy;
+use diesel::expression::expression_types::NotSelectable;
 use diesel::result::{DatabaseErrorKind, Error as DieselError};
 use diesel::{BoxableExpression, ExpressionMethods, MysqlConnection, QueryDsl, RunQueryDsl};
-use diesel::expression::expression_types::NotSelectable;
-use crate::common::order::OrderBy;
 
 use crate::cve::{CreateCve, Cve, QueryCve};
 use crate::cve_product::db::ProductByName;
@@ -43,11 +43,14 @@ impl QueryCve {
       query = query.filter(cves::severity.eq(severity.to_lowercase()));
     }
     if let Some(order) = &self.order {
-      let o:Box<dyn BoxableExpression<cves::table, _, SqlType = NotSelectable>> = match order.order {
-        OrderBy::Asc =>  Box::new(cves::id.asc()),
-        OrderBy::Desc =>  Box::new(cves::id.desc())
+      let o: Box<dyn BoxableExpression<cves::table, _, SqlType = NotSelectable>> = match order.order
+      {
+        OrderBy::Asc => Box::new(cves::id.asc()),
+        OrderBy::Desc => Box::new(cves::id.desc()),
       };
       query = query.order_by(o);
+    } else {
+      query = query.order_by(cves::id.desc());
     }
     Ok(query)
   }
@@ -135,10 +138,7 @@ impl Cve {
     let size = std::cmp::min(args.size.to_owned().unwrap_or(10).abs(), 10);
     let result = {
       let query = args.query(conn, cves::table.into_boxed())?;
-      query
-        .offset(page * size)
-        .limit(size)
-        .load::<Cve>(conn)?
+      query.offset(page * size).limit(size).load::<Cve>(conn)?
     };
     Ok(ListResponse::new(result, total, page, size, args.clone()))
   }

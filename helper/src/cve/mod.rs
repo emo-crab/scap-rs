@@ -13,6 +13,7 @@ use nvd_api::ApiVersion;
 
 use cnvd::cnnvd::{CNNVDData, DataType, VulListParameters, VulListParametersBuilder};
 use nvd_cves::v4::{CVEContainer, CVEItem};
+use nvd_model::common::order::{OrderBy, OrderMap};
 use nvd_model::cve::{CreateCve, Cve, QueryCve};
 use nvd_model::error::DBResult;
 use nvd_model::types::AnyValue;
@@ -152,12 +153,17 @@ async fn update_translated_from_cnnvd_api(
   let list = api.vul_list(parameter).await?;
   if let CNNVDData::VulList(list) = list.data {
     for v in list.records {
-      if let Ok(detail) = api.detail(v.into()).await {
-        if let CNNVDData::Detail(detail) = detail.data {
-          if let Some(cve_id) = detail.cnnvd_detail.cve_code {
-            Cve::update_translated(connection, &cve_id, &detail.cnnvd_detail.vul_desc);
-            println!("更新了翻译：{}", cve_id);
+      match api.detail(v.into()).await {
+        Ok(detail) => {
+          if let CNNVDData::Detail(detail) = detail.data {
+            if let Some(cve_id) = detail.cnnvd_detail.cve_code {
+              Cve::update_translated(connection, &cve_id, &detail.cnnvd_detail.vul_desc);
+              println!("更新了翻译：{}", cve_id);
+            }
           }
+        }
+        Err(err) => {
+          println!("{}", err);
         }
       }
     }
@@ -181,7 +187,10 @@ pub async fn cnnvd_api() -> HelperResult<()> {
   // 更新还没翻译的漏洞
   let args = QueryCve {
     translated: Some(0),
-    page: Some(3),
+    order: Some(OrderMap {
+      name: "id".to_string(),
+      order: OrderBy::Asc,
+    }),
     ..QueryCve::default()
   };
   if let Ok(list) = Cve::query(connection_pool.get().unwrap().deref_mut(), &args) {

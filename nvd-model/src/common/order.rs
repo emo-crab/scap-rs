@@ -1,7 +1,7 @@
+use serde::{Deserialize, Serialize};
 use std::fmt::{Display, Formatter};
 use std::io;
 use std::str::FromStr;
-use serde::{Deserialize, Serialize};
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize, PartialEq)]
 pub struct OrderMap {
@@ -35,39 +35,38 @@ impl FromStr for OrderMap {
   type Err = io::Error;
 
   fn from_str(s: &str) -> Result<Self, Self::Err> {
-    let order = if s.starts_with('-') { OrderBy::Desc } else { OrderBy::Asc };
-    Ok(OrderMap { name: s.strip_prefix('-').unwrap_or_default().to_string(), order })
+    let order = if s.starts_with('-') {
+      OrderBy::Desc
+    } else {
+      OrderBy::Asc
+    };
+    Ok(OrderMap {
+      name: s.strip_prefix('-').unwrap_or_default().to_string(),
+      order,
+    })
   }
 }
 
 pub mod order_serde {
-  use std::str::FromStr;
-  use serde::{Deserialize, Deserializer, Serializer};
   use crate::common::order::OrderMap;
+  use serde::{Deserialize, Deserializer, Serializer};
+  use std::str::FromStr;
 
   pub fn serialize<S: Serializer>(v: &Option<OrderMap>, s: S) -> Result<S::Ok, S::Error> {
     match v {
-      None => {
-        s.serialize_none()
-      }
-      Some(v) => {
-        serde::Serialize::serialize(&v.to_string(), s)
-      }
+      None => s.serialize_none(),
+      Some(v) => serde::Serialize::serialize(&v.to_string(), s),
     }
   }
 
   pub fn deserialize<'de, D: Deserializer<'de>>(d: D) -> Result<Option<OrderMap>, D::Error> {
     let opt: Option<String> = Option::deserialize(d)?;
     match opt {
-      None => {
-        Ok(None)
-      }
-      Some(s) => {
-        match crate::common::order::OrderMap::from_str(&s) {
-          Ok(m) => Ok(Some(m)),
-          Err(e) => Err(serde::de::Error::custom(e)),
-        }
-      }
+      None => Ok(None),
+      Some(s) => match crate::common::order::OrderMap::from_str(&s) {
+        Ok(m) => Ok(Some(m)),
+        Err(e) => Err(serde::de::Error::custom(e)),
+      },
     }
   }
 }

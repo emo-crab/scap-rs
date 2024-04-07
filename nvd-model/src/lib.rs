@@ -19,7 +19,7 @@ pub mod product;
 pub mod schema;
 pub mod types;
 pub mod vendor;
-mod common;
+pub mod common;
 
 #[cfg(feature = "db")]
 pub type DB = diesel::mysql::Mysql;
