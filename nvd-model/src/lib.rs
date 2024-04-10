@@ -6,6 +6,7 @@ use diesel::{r2d2, r2d2::ConnectionManager, MysqlConnection};
 // #[cfg(all(feature = "db", feature = "yew"))]
 // compile_error!("feature \"db\" and feature \"yew\" cannot be enabled at the same time");
 
+pub mod common;
 pub mod cve;
 pub mod cve_knowledge_base;
 pub mod cve_product;
@@ -19,7 +20,6 @@ pub mod product;
 pub mod schema;
 pub mod types;
 pub mod vendor;
-pub mod common;
 
 #[cfg(feature = "db")]
 pub type DB = diesel::mysql::Mysql;

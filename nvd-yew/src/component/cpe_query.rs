@@ -74,7 +74,7 @@ impl Component for CPEQuery {
           },
           part: if part.is_empty() { None } else { Some(part) },
           size: query.size,
-          page: query.page,
+          page: None,
           official: None,
         })
       })

@@ -85,7 +85,7 @@ impl Component for CVEQuery {
             Some(severity)
           },
           size: query.size,
-          page: query.page,
+          page: None,
           order: None,
         })
       })

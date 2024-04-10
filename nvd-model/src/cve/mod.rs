@@ -9,10 +9,10 @@ use utoipa::{IntoParams, ToSchema};
 #[cfg(feature = "yew")]
 use yew::Properties;
 
+use crate::common::order::{order_serde, OrderMap};
 #[cfg(feature = "db")]
 use crate::schema::cves;
 use crate::types::AnyValue;
-use crate::common::order::{OrderMap, order_serde};
 
 #[cfg(feature = "db")]
 pub mod db;

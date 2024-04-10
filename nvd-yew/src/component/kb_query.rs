@@ -58,7 +58,7 @@ impl Component for KBQuery {
             Some(source)
           },
           size: query.size,
-          page: query.page,
+          page: None,
           verified: None,
           path: None,
           types: None,
