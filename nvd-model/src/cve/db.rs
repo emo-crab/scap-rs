@@ -45,12 +45,12 @@ impl QueryCve {
     if let Some(order) = &self.order {
       let o: Box<dyn BoxableExpression<cves::table, _, SqlType = NotSelectable>> = match order.order
       {
-        OrderBy::Asc => Box::new(cves::created_at.asc()),
-        OrderBy::Desc => Box::new(cves::created_at.desc()),
+        OrderBy::Asc => Box::new(cves::id.asc()),
+        OrderBy::Desc => Box::new(cves::id.desc()),
       };
       query = query.order_by(o);
     } else {
-      query = query.order_by(cves::created_at.desc());
+      query = query.order_by(cves::id.desc());
     }
     Ok(query)
   }

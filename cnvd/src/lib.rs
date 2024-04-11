@@ -16,9 +16,6 @@ mod tests {
 
   #[test]
   fn it_works() {
-    let json_str = include_str!("/home/kali-team/error.json");
-    let c: CNNVDResult = serde_json::from_str(json_str).unwrap();
-    println!("{:?}", c);
     let result = add(2, 2);
     assert_eq!(result, 4);
   }
