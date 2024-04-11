@@ -14,21 +14,25 @@ use crate::services::FetchState;
 use nvd_model::product::{ProductWithVendor, QueryProduct};
 
 pub type VendorProducts = ListResponse<ProductWithVendor, QueryProduct>;
+
 pub enum Msg {
   SetFetchState(FetchState<VendorProducts>),
   Send,
   Page(PageMsg),
   Query(QueryMsg),
 }
+
 pub enum PageMsg {
   Next,
   Prev,
   To(i64),
 }
+
 pub enum QueryMsg {
   Query(QueryProduct),
   Part(String),
 }
+
 impl Component for VendorProducts {
   type Message = Msg;
   type Properties = ();
@@ -89,6 +93,7 @@ impl Component for VendorProducts {
       Msg::Query(query) => {
         match query {
           QueryMsg::Part(part) => {
+            self.paging.page = 0;
             self.query.part = Some(part);
           }
           QueryMsg::Query(query) => {

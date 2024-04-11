@@ -88,12 +88,15 @@ impl Component for CveInfoList {
       Msg::Query(query) => {
         match query {
           QueryMsg::Severity(severity) => {
+            self.paging.page = 0;
             self.query.severity = Some(severity);
           }
           QueryMsg::Vendor(vendor) => {
+            self.paging.page = 0;
             self.query.vendor = Some(vendor);
           }
           QueryMsg::Product(vendor, product) => {
+            self.paging.page = 0;
             self.query.vendor = Some(vendor);
             self.query.product = Some(product);
           }

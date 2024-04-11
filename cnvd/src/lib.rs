@@ -12,7 +12,7 @@ pub fn add(left: usize, right: usize) -> usize {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use crate::cnnvd::CNNVDResult;
+  
 
   #[test]
   fn it_works() {

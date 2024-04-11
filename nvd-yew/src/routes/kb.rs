@@ -96,6 +96,7 @@ impl Component for KnowledgeBaseInfoList {
       Msg::Query(query) => {
         match query {
           QueryMsg::Source(part) => {
+            self.paging.page = 0;
             self.query.source = Some(part);
           }
           QueryMsg::Query(query) => {
