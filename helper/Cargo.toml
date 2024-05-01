@@ -27,7 +27,7 @@ cached = "0.50.0"
 tokio = { version = "1.34.0", features = ["full"] }
 similar = "2.4.0"
 csv = "1.3.0"
-octocrab = "0.37.0"
+octocrab = "0.38.0"
 openssl = { version = "0.10", features = ["vendored"] }
 reqwest = { version = "0.12.2", features = ["json", "gzip", "native-tls", "socks"] }
 nvd-model = { path = "../nvd-model", features = ["db"] }
