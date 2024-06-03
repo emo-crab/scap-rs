@@ -46,7 +46,7 @@ pub fn create_cve_product(
 }
 
 #[cached(
-  type = "SizedCache<String, Vec<u8>>",
+  ty = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{:?}", product.to_owned()) }"#
 )]
@@ -59,7 +59,7 @@ pub fn import_vendor_product_to_db(
 }
 
 #[cached(
-  type = "SizedCache<String, Vec<u8>>",
+  ty = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{}", name.to_owned()) }"#
 )]
@@ -88,7 +88,7 @@ pub fn create_vendor(
 }
 
 #[cached(
-  type = "SizedCache<String, Vec<u8>>",
+  ty = "SizedCache<String, Vec<u8>>",
   create = "{ SizedCache::with_size(100) }",
   convert = r#"{ format!("{}:{:?}", name.to_owned(),vendor.to_owned()) }"#
 )]
