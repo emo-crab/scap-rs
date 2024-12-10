@@ -33,7 +33,7 @@ reqwest = { version = "0.12.2", features = ["json", "gzip", "native-tls", "socks
 nvd-model = { path = "../nvd-model", features = ["db"] }
 cnvd = { path = "../cnvd", version = "0.0.0" }
 attackerkb-api-rs = { version = "0.1.2" }
-thiserror = "1.0.50"
+thiserror = "2.0.6"
 regex = { version = "1.10.3", default-features = false, features = [
     "std",
     "unicode",

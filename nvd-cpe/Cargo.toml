@@ -16,4 +16,4 @@ chrono = { version = "0.4", default-features = false, features = ["serde"] }
 percent-encoding = "2.1"
 version-compare = "0.2"
 language-tags = { version = "0.3", features = ["serde"] }
-thiserror = "1.0"
+thiserror = "2.0"
