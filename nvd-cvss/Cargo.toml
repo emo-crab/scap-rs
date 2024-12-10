@@ -13,4 +13,4 @@ version.workspace = true
 
 [dependencies]
 serde = { version = "1", features = ["derive"] }
-thiserror = "1.0"
+thiserror = "2.0"

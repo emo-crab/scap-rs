@@ -17,7 +17,7 @@ diesel = { version = "2.1.4", features = ["r2d2", "mysql", "chrono", "uuid", "se
 dotenvy = { version = "0.15", optional = true }
 serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", default-features = false, features = ["serde"] }
-thiserror = "1.0"
+thiserror = "2.0"
 uuid = { version = "1.6.1", features = ["v4", "serde", "v7"] }
 serde_json = { version = "1", features = ["preserve_order"] }
 utoipa = { version = "5.2.0", features = ["actix_extras", "chrono", "uuid", "openapi_extensions"], optional = true }

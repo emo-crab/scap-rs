@@ -16,4 +16,4 @@ serde = { version = "1", features = ["derive"] }
 chrono = { version = "0.4", default-features = false, features = ["serde"] }
 nvd-cpe.workspace = true
 nvd-cvss.workspace = true
-thiserror = "1.0"
+thiserror = "2.0"
