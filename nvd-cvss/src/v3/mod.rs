@@ -118,7 +118,7 @@ impl CVSS {
     // > BaseScore
     // If (Impact sub score <= 0)     0 else,
     // Scope Unchanged                 𝑅𝑜𝑢𝑛𝑑𝑢𝑝(𝑀𝑖𝑛𝑖𝑚𝑢𝑚[(𝐼𝑚𝑝𝑎𝑐𝑡 + 𝐸𝑥𝑝𝑙𝑜𝑖𝑡𝑎𝑏𝑖𝑙𝑖𝑡𝑦), 10])
-    if impact_score_scope < 0.0 {
+    if impact_score_scope <= 0.0 {
       0.0
     } else if !self.scope.is_changed() {
       roundup((impact_score_scope + exploit_ability_score).min(10.0))

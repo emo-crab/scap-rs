@@ -49,7 +49,7 @@ pub enum AttackVectorType {
   /// 攻击者只能通过物理方式接触或操作脆弱组件，例如将外围设备连接到系统。
   Physical,
 }
-///
+
 impl Display for AttackVectorType {
   fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
     write!(f, "{}:{}", Self::name(), self.as_str())
