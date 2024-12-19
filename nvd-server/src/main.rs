@@ -16,8 +16,6 @@ use utoipa_swagger_ui::SwaggerUi;
 async fn main() -> std::io::Result<()> {
   let connection_pool = init_db_pool();
   env_logger::init_from_env(env_logger::Env::new().default_filter_or("debug"));
-  #[cfg(feature = "openapi")]
-  let openapi = ApiDoc::openapi();
   HttpServer::new(move || {
     let cors = Cors::default()
       .allowed_origin_fn(|origin, _req_head| origin.as_bytes().ends_with(b".kali-team.cn"))
@@ -28,7 +26,7 @@ async fn main() -> std::io::Result<()> {
     let session = SessionMiddleware::builder(CookieSessionStore::default(), secret_key)
       .cookie_http_only(false)
       .build();
-    let app = App::new()
+    let mut app = App::new()
       .wrap(cors)
       .wrap(middleware::Logger::default())
       .wrap(session)
@@ -41,9 +39,12 @@ async fn main() -> std::io::Result<()> {
       )
       .service(sitemap);
     #[cfg(feature = "openapi")]
-    let app = app
-      .service(SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()));
-
+    {
+      let openapi = ApiDoc::openapi();
+      app = app.service(
+        SwaggerUi::new("/swagger-ui/{_:.*}").url("/api-docs/openapi.json", openapi.clone()),
+      );
+    }
     app.service(
       actix_files::Files::new("/", "dist")
         .prefer_utf8(true)

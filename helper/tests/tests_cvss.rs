@@ -80,6 +80,7 @@ mod tests {
       ("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:H/A:H", 9.4),
       ("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:C/C:H/I:H/A:H", 10.0),
       ("CVSS:3.1/AV:A/AC:H/PR:H/UI:R/S:U/C:N/I:N/A:L", 1.8),
+      ("CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:N", 0.0),
     ]);
     for (c, s) in cvss_map.into_iter() {
       let cvss_v3 = nvd_cvss::v3::CVSS::from_str(c).unwrap();
