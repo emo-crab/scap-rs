@@ -7,7 +7,7 @@ publish = false
 
 [dependencies]
 argh = "0.1.12"
-mysqlclient-sys = "0.4.0"
+mysqlclient-sys = "0.5.0"
 diesel = { version = "2.1.0", features = ["r2d2", "mysql", "chrono", "uuid", "serde_json"] }
 chrono = { version = "0.4", default-features = false, features = ["serde", "clock"] }
 dotenvy = "0.15"
