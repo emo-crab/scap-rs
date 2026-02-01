@@ -19,7 +19,7 @@ nvd-cvss = { version = "0.1.0" }
 nvd-api = { version = "0.1.0" }
 serde_json = "1.0"
 serde = { version = "1", features = ["derive"] }
-quick-xml = { version = "0.38.0", features = ["serde", "encoding_rs", "serialize"] }
+quick-xml = { version = "0.39.0", features = ["serde", "encoding_rs", "serialize"] }
 serde_yaml = "0.9"
 flate2 = "1.0"
 zip = "7.2"
@@ -41,7 +41,7 @@ regex = { version = "1.10.3", default-features = false, features = [
 once_cell = "1.18.0"
 [dev-dependencies]
 serde = { version = "1", features = ["derive"] }
-quick-xml = { version = "0.38.0", features = ["serde", "encoding_rs", "serialize"] }
+quick-xml = { version = "0.39.0", features = ["serde", "encoding_rs", "serialize"] }
 serde_yaml = "0.9"
 serde_json = "1.0"
 flate2 = "1.0"

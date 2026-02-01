@@ -19,5 +19,5 @@ derive_builder = "0.20.0"
 chrono = { version = "0.4", default-features = false, features = ["serde"] }
 serde = { version = "1", features = ["derive"] }
 [dev-dependencies]
-quick-xml = { version = "0.38.0", features = ["serde", "encoding_rs", "serialize"] }
+quick-xml = { version = "0.39.0", features = ["serde", "encoding_rs", "serialize"] }
 serde_json = "1.0"
