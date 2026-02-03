@@ -13,7 +13,7 @@ publish = false
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-yew = { version = "0.21.0", features = ["csr"] }
+yew = { version = "0.22.0", features = ["csr"] }
 yew-router = "0.18.0"
 web-sys = { version = "0.3.63", features = [
     "console",
